@@ -10,3 +10,4 @@
 # Known Bug (but, maybe slow improvement?)?
   1. /./test/../test/../test <- .. is ok in just nested case. ( /./../../test )
   2. Load Data API? do not check error(syntax, and etc...) totally.?? 
+  3. In Linux, Parallel Load Data is Very Slow?(maybe pthread problem?)
