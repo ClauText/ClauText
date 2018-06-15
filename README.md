@@ -8,6 +8,6 @@
   5. Load Clausewitz Engine Data File, Edit Data, and Save Data.
   6. In Sequential Load Data Function, Line Comments are also saved! (but not exactly!)
 # Known Bug (but, maybe slow improvement?)?
-  1. /./test/../test/../test <- .. is ok in just nested case. ( /./../../test )
+  1. /./test/../test/../test <- is no ok, and .. is ok in just nested case. ( /./../../test )
   2. Load Data API? do not check error(syntax, and etc...) totally.?? 
   3. In Linux, Parallel Load Data is Very Slow?(maybe pthread problem?)
