@@ -2,6 +2,7 @@ G :
   empty |
   var = val |
   val
+  
 G : 
   var = { 
     list of G
