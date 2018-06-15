@@ -11,4 +11,5 @@ G :
 (ex = -> :, { -> { or [, } -> } or ])
 
 "#" can be also changed easily in ClauText API. ( string -> string )
-(but, Do Not Change Line Comment Delimeter in Parallel Load Data Functions. - (using hard? coding, # is used.)
+
+(but, Do Not Change Line Comment Delimeter in Parallel Load Data Functions. - using hard? coding, # is used.)
