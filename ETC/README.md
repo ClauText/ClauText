@@ -1,8 +1,8 @@
 G :
   empty |
   var = val |
-  val
-  
+  val |
+  G G 
 G : 
   var = { 
     list of G
