@@ -10,7 +10,9 @@ G :
   }
   
 =, {, }  can be changed easily in ClauText API. ( only char -> char )
+
 (ex = -> :, { -> { or [, } -> } or ])
+
 
 "#" can be also changed easily in ClauText API. ( string -> string )
 
