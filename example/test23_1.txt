@@ -1,0 +1,21 @@
+
+Main = { $call = { id = 0 } }
+
+Test = { 
+	#
+}
+
+Event = {
+	id = 0
+	
+	$print = { data = { test_ } }
+	#$_getch = { }q
+	$load_only_data3 = { fileName = { "C:\Users\vztpv\Desktop\Clau\ClauText\input.eu4" } 
+		dir = { Test } lex_thr = { 8 } parse_thr = { 8 } } 
+	$print = { data = { _end } }
+	
+	$_getch = { }
+	$edit_mode = { }
+	
+	$_getch = { }
+}

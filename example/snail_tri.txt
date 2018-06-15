@@ -1,0 +1,204 @@
+
+
+Main = {
+	$call = { id = 0 }
+}
+
+arr[0] = {
+	0 0 0 0 0 0 0 0 0
+}
+arr[1] = {
+	0 0 0 0 0 0 0 0 0
+}
+arr[2] = {
+	0 0 0 0 0 0 0 0 0
+}
+arr[3] = {
+	0 0 0 0 0 0 0 0 0
+}
+arr[4] = {
+	0 0 0 0 0 0 0 0 0
+}
+arr[5] = {
+	0 0 0 0 0 0 0 0 0
+}
+arr[6] = {
+	0 0 0 0 0 0 0 0 0
+}
+arr[7] = {
+	0 0 0 0 0 0 0 0 0
+}
+arr[8] = {
+	0 0 0 0 0 0 0 0 0
+}
+size = 8
+pointA = { row = 0 col = 0 }
+pointB = { row = 7 col = 7 }
+pointC = { row = 7 col = 0 }
+
+x = 0
+y = 0
+
+
+val = 1
+
+Event = {
+	id = AB
+	
+	$option = { REMOVE_IF_CALL_ONESELF_EVENT }
+	$if = { 
+		condition = {
+			$COMP< = { /./x /./pointB/row }
+		}
+		then = {
+			$assign2 = { dir = { $concat_all = { / . / arr [ /./x ] / $ it /./y } } value = { /./val } }
+			
+			$assign = { /./val value = { $add = { 1 /./val } } }
+			$assign = { /./x value = { $add = { 1 /./x } } }
+			$assign = { /./y value = { $add = { 1 /./y } } }
+			
+			$call = { id = AB }
+		}
+	}	
+}
+Event = {
+	id = BC
+	$option = { REMOVE_IF_CALL_ONESELF_EVENT }
+
+	$if = { 
+		condition = {
+			$COMP> = { /./y /./pointC/col }
+		}
+		then = {
+			$assign2 = { dir = { $concat_all = { / . / arr [ /./x ] / $ it /./y } } value = { /./val } }
+			
+			$assign = { /./val value = { $add = { 1 /./val } } }
+			$assign = { /./y value = { $add = { -1 /./y } } }
+			
+			$call = { id = BC }
+		}
+	}	
+}
+
+Event = {
+	id = CA
+	$option = { REMOVE_IF_CALL_ONESELF_EVENT }
+	
+	$if = { 
+		condition = {
+			$COMP> = { /./x /./pointA/row }
+		}
+		then = {
+			$assign2 = { dir = { $concat_all = { / . / arr [ /./x ] / $ it /./y } } value = { /./val } }
+			
+			$assign = { /./val value = { $add = { 1 /./val } } }
+			$assign = { /./x value = { $add = { -1 /./x } } }
+			
+			$call = { id = CA }
+		}
+	}	
+}
+
+
+Event = {
+	id = 1
+	
+	$option = { REMOVE_IF_CALL_ONESELF_EVENT }
+	
+	
+	$assign = { /./x value = { /./pointA/row } }
+	$assign = { /./y value = { /./pointA/col } }
+	
+	$call = { id = AB }
+	
+	$call = { id = BC }
+	
+	$call = { id = CA }
+
+	$assign = { /./size value = { $add = { -3 /./size } } }
+	$assign = { /./pointA/row value = { $add = { 2 /./pointA/row } } }
+	$assign = { /./pointA/col value = { $add = { 1 /./pointA/col } } }
+	
+	$assign = { /./pointB/row value = { $add = { -1 /./pointB/row } } }
+	$assign = { /./pointB/col value = { $add = { -1 /./pointB/col } } }
+	
+	$assign = { /./pointC/row value = { $add = { -1 /./pointC/row } } }
+	$assign = { /./pointC/col value = { $add = { 1 /./pointC/col } } }
+	
+	$if = { 
+		condition = {
+			$COMP> = { /./size 0 }
+		}
+		then = {
+			$call = { id = 1 }
+		}
+	}
+	#$else = {
+	#	then = {
+	#		# 1개짜리
+	#		$if = { condition = { $EQ = { 0 $get = { $concat_all = { / . / arr [ /./x ] / $ it /./y } } } } 
+	#			then = {
+	#				$assign2 = { dir = { $concat_all = { / . / arr [ /./x ] / $ it /./y } } val = { /./val } }
+	#			}
+	#		}
+	#	}
+	#}
+}
+
+ROW_MAX = 7
+COL_MAX = 7
+
+Event = {
+	id = print
+	
+	$option = { REMOVE_IF_CALL_ONESELF_EVENT }
+	$parameter = { start_row start_col }
+	
+	$if = {
+		condition = {
+			$AND = {
+				$COMP> = { $parameter.start_row /./ROW_MAX }
+				$COMP> = { $parameter.start_col /./COL_MAX }
+			}
+		}
+		then = {
+			$return = { }
+		}
+	}
+	
+	$if = {
+		condition = {
+			$COMP<EQ = { $parameter.start_col /./COL_MAX }
+		}
+		then = {
+			$print = { data = { $element = { $concat_all = { / . / arr [ $parameter.start_row ] } $parameter.start_col } } }
+			$print = { data = { " " } }
+			
+			$call = { id = print start_row = { $parameter.start_row } start_col = { $add = { 1 $parameter.start_col } } }
+		}
+	}
+	$if = {
+		condition = {
+			$COMP< = { $parameter.start_row /./ROW_MAX }
+		}
+		then = {
+			$print = { enter = { \n } }
+			
+			$call = { id = print start_row = { $add = { 1 $parameter.start_row } } start_col = 0 }
+		}
+	}
+}
+
+
+Event = {
+	id = 0
+	
+	$call = { id = 1 }
+
+	$call = { id = print start_row = 0 start_col = 0 }
+	
+	$print = { enter = { \n } }
+			
+	$_getch = { }
+}
+

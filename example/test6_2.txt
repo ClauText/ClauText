@@ -1,0 +1,208 @@
+
+Main =
+{
+	$call = { id = 0 }
+} 
+
+Test = { x = { y = { z = { 1 3 }  5 4 3 } w = 1 a = { 7 3  } } k = 1 }
+Test = { x = { y = 1 x = 5 w = 0 } k = 0 } 
+Test2 = { { no = BBB } }
+x = 0 
+
+Event =
+{
+	id = 0
+
+	$local = { x y }
+
+	$insert2 = { dir = { /Test/x } value = { { n = { 1 } } { m = 2 } } condition = { EQ = { w / /./x ~ 0 } } }
+
+	$assign_local = { dir = { $local.y } value = { y } }
+
+	$assign = { $local.x value = { $concat = { Test2/$ut $concat = { 0 /no } } } }
+	$assign_global = { dir = { $concat = { / $local.x } } value = { CCC } condition = { TRUE } }
+	$assign_global = { dir = { $concat = { / $local.x } } value = { CCCA } condition = { TRUE } }
+	$print = { value = { /Test2/$ut0/no } }
+	$print = { value = { \n } }
+	
+	$register_module = { name = { "test5.txt" } }
+	
+	
+	$call_registered_module = { name = { "test5.txt" } value=  { input=/./x  } }
+	$print = { value = { $return_value = { } } }
+	$print = { value = { \n } }
+
+	$call_registered_module = { name = { "test5.txt" } value=  { input = 6 } }
+
+	$print = { value = { $return_value = { } } }
+	$print = { value = { \n } }
+	
+	$print = { value = { $size2 = { $concat = { / $concat = { Test/ x/y } } } } }
+	$print = { value = { \n } }
+
+	$sort = { value = { /Test/x } }
+
+
+	$print = { value = { "-----------------" } }
+	$print = { value = { \n } }
+	$print = { str = {  "TEST " } }
+	$print = { value = { $get = { $concat_all = { @/$/$. "x" /y } } } } 
+	$print = { value = { \n } }
+	
+	$print2 = { value = { / } }
+	$print = { value = { \n } }
+
+	$make = { /eu4Game }
+
+#	$load_only_data = { fileName = { "input.eu4" } dir = { eu4Game } }
+	$load_only_data3 = { fileName = { "C:\Users\vztpv\Desktop\Clau\ClauText\input4.eu4" } dir = { eu4Game } lex_thr = { 8 } parse_thr = { 8 } } 
+$edit_mode = { }
+#	$remove = { dir = { /./eu4Game/provinces/$/histyory } }
+	#$remove_usertype_total = { name = { country } cond = { TRUE } start = { ^/./eu4Game/ai/ } }
+	
+	$print = { value = { "load_only_data end" } }
+	$print = { value = { \n } }
+
+	$call = { id = replaceA }
+	$call = { id = replaceB }
+		
+	$print = { val = { "change end" } }
+	$print = { val = { \n } }
+	
+	$call = { id = save } 
+	
+	$_getch = { }
+}
+
+Event = 
+{
+	id = replaceA
+
+	
+	$replace_datetype = {
+		val = { 1821.1.1 }
+		condition = { 
+			AND = {
+				COMP> = { ~~ ~ 1821.1.1 ~ 0 }
+				NOT = { $is_quoted_str = { ~~ } }
+			}
+		}
+		start_dir = { /eu4Game }
+	}
+	$replace_datetype = {
+		val = { "1821.1.1" }
+		condition = { 
+			AND = {
+				COMP> = { $remove_quoted = { ~~ } ~ 1821.1.1 ~ 0 }
+				$is_quoted_str = { ~~ } 
+			}
+		}
+		start_dir = { /eu4Game }
+	}
+	$print = { value= { "replace_datetypeA end" } }
+	$print = { value = { \n } }
+
+	$replace_datetype = { 
+		val = { 1821.1.1 }
+		condition = {
+			AND = {
+				COMP> = { ~~ / 1821.1.1 ~ 0 } 
+				NOT = { $is_quoted_str = { ~~~ } }
+			}
+		}
+		start_dir = { /eu4Game }
+	}
+	$replace_datetype = { 
+		val = { "1821.1.1" }
+		condition = {
+			AND = {
+				COMP> = { $remove_quoted = { ~~ } / 1821.1.1 ~ 0 } # check.. 3 - NOT USE?
+				$is_quoted_str = { ~~~ }
+			}
+		}
+		start_dir = { /eu4Game }
+	}
+	$print = { value = { "replace_datetypeB end" } }
+	$print = { value = { \n } }
+}
+
+Event = 
+{
+	id = replaceB
+
+	$replace_datetype2 = { 
+		val = { 1821.1.1 }
+		condition = {
+			AND = {
+				COMP> = { ~~ ~ 1821.1.1 ~ 0 }  # 0? 1? 2? check.. 3??
+				NOT = { $is_quoted_str = { ~~ } }
+			}
+		}
+		start_dir = { /eu4Game }
+	}
+	$replace_datetype2 = { 
+		val = { "1821.1.1" }
+		condition = {
+			AND = {
+				COMP> = { $remove_quoted = { ~~ } ~ 1821.1.1 ~ 0 } 
+				$is_quoted_str = { ~~ }
+			}
+		}
+		start_dir = { /eu4Game }
+	}
+	$print = { value = { "replace_datetypeC end" } }
+	$print = { value = { \n } }
+}
+
+Event =
+{
+	id = save
+	
+	$save_data_only2 = { dirName = { eu4Game } fileName = { "C:\Users\vztpv\Desktop\Clau\ClauText\save1.eu4" } option = { 1 } }
+	
+	$print = { value = { "save_data_end" } }
+	$print = { value = { \n } }
+}
+Event = 
+{
+	id = save2
+
+	$save_data_only2 = { dirName = { eu4Game } fileName = { "save2.txt" } option = { 3 } } 
+
+	$print = { value = { "save_end" } }
+	$print = { value = { \n } }
+}
+ 
+Event = {
+	id = test
+	
+	$local = { name value }
+
+	$parameter = { name value is_user_type }
+	
+	$if = { condition = { $AND = { $EQ = { FALSE $parameter.is_user_type } 
+			$EQ = { base_tax $parameter.name }
+			}
+		} 
+		then = {
+			$assign = { $local.name data = { $parameter.name } }
+ 			$assign = { $local.value data = { 
+							$add = { 100.0 $parameter.value } } } 
+	
+			$return = { name = $local.name value = $local.value }
+		}
+	}
+}
+
+Event = {
+	id = print
+	
+	$local = { name value }
+
+	$parameter = { name value is_user_type }
+	
+	$print = { data = { "name : " } }
+	$print = { data = { $parameter.name } }
+	$print = { enter = { \n } }
+}
+

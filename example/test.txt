@@ -1,0 +1,34 @@
+
+Main = { $call = { id = 0 } }
+
+data = {
+	x = hello
+	y = world
+}
+
+Event = {
+	id = 0
+	
+	$call = { id = 1 x = { a = { /./data/x } } }
+}
+
+Event = {
+	id = 1
+	
+	$parameter = { x } 
+	$local = { a b c }
+
+	# @?
+	$print = { data = { $concat_all = { $get = { /./data/x } __ /./data/y } } }
+	$print = { enter = { \n } }
+	
+	$assign = { $local.a data = { x = /./data/y } }
+	$assign = { /./data/x data = { $local.a } }
+	$print = { data = { /./data/x } }
+	$print = { enter = { \n } }
+	$print = { data = { $parameter.x } }
+#	$edit_mode = { }
+	
+	$_getch = { }
+}
+
