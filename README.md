@@ -1,5 +1,5 @@
 # ClauText
-  NOTYET - My Own Language for Editing? of Paradox Game Data
+  NOTYET - My Own Language for Editing? of Paradox Game(Clausewitz Engine) Data
 # Feature
   1. Parallel Load Data From File (cf JSON Parser)
   2. Linux is supported, but some has bug, is limited(especially $edit_mode)
