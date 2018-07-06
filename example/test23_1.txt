@@ -11,7 +11,7 @@ Event = {
 	$print = { data = { test_ } }
 	#$_getch = { }q
 	$load_only_data3 = { fileName = { "C:\Users\vztpv\Desktop\Clau\ClauText\input.eu4" } 
-		dir = { Test } lex_thr = { 8 } parse_thr = { 8 } } 
+		dir = { Test } lex_thr = { 0 } parse_thr = { 0 } } 
 	$print = { data = { _end } }
 	
 	$_getch = { }
