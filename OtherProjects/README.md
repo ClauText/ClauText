@@ -1,3 +1,3 @@
 https://github.com/ClauText/ClauToCpp
 
-https://github.com/ClauText/ClauLint
+https://github.com/vztpv/ClauLint
