@@ -14,5 +14,8 @@
   2. Load Data API? do not check error(syntax, and etc...) totally.?? 
   3. In Linux, Parallel Load Data is Very Slow?(maybe pthread problem?)
 # ToDo
-  1. Now Position for Data? Next Position for Data? Move Up? or Move Down? for fast linear search?
-  
+  1. REMOVE - Now Position for Data? Next Position for Data? Move Up? or Move Down? for fast linear search?
+  2. "iterate and some condition => remove data" function?, using changing name to # ( line comment start with # )
+  3. riterate ( iterate begin -> last, riterate last -> begin? ) ?
+  4. in iterate fucntion, for example, $iterate = { dir = { /./eu4Game/provinces/$/history } events = { A B C } },
+        A -> end or A -> B -> end or A -> B -> C -> end ?   if event returns FALSE (default TRUE?) -> stop events??
