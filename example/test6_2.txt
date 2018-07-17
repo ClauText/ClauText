@@ -55,7 +55,7 @@ Event =
 	$make = { /eu4Game }
 
 #	$load_only_data = { fileName = { "input.eu4" } dir = { eu4Game } }
-	$load_only_data3 = { fileName = { "C:\Users\vztpv\Desktop\Clau\ClauText\input4.eu4" } dir = { eu4Game } lex_thr = { 8 } parse_thr = { 8 } } 
+	$load_only_data2 = { fileName = { "C:\Users\vztpv\Desktop\Clau\ClauText\input4.eu4" } dir = { eu4Game } lex_thr = { 0 } parse_thr = { 0  } } 
 $edit_mode = { }
 #	$remove = { dir = { /./eu4Game/provinces/$/histyory } }
 	#$remove_usertype_total = { name = { country } cond = { TRUE } start = { ^/./eu4Game/ai/ } }
