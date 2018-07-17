@@ -18,5 +18,6 @@
   2. "riterate and some condition => remove data" function?, using changing name to # ( line comment start with # ), 
       and later remove data ( name of data is # )
   3. riterate ( iterate begin -> last, riterate last -> begin? ) ?
-  4. REMOVE - in iterate fucntion, for example, $iterate = { dir = { /./eu4Game/provinces/$/history } events = { A B C } },
+  4. in iterate fucntion, for example, $iterate = { dir = { /./eu4Game/provinces/$/history } events = { A B C } },
         A -> end or A -> B -> end or A -> B -> C -> end ?   if event returns FALSE (default TRUE?) -> stop events??
+        before value?, get ut ??
