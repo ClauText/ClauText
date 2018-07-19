@@ -15,9 +15,9 @@
   3. In Linux, Parallel Load Data is Very Slow?(maybe pthread problem?)
 # ToDo
   1. REMOVE - Now Position for Data? Next Position for Data? Move Up? or Move Down? for fast linear search?
-  2. "riterate and some condition => remove data" function?
-  3. riterate ( iterate begin -> last, riterate last -> begin? ) ?
-  4. in iterate function, for example, $iterate = { dir = { /./eu4Game/provinces/$/history } events = { A B C } },
+  2. DONE - "riterate and some condition => remove data" function?
+  3. DONE - riterate ( iterate begin -> last, riterate last -> begin? ) ?
+  4. DONE? - in iterate function, for example, $iterate = { dir = { /./eu4Game/provinces/$/history } events = { A B C } },
         A -> end or A -> B -> end or A -> B -> C -> end ?   if event returns FALSE (default TRUE?) -> stop events??
         before_value?, get ut ??
   5. Copy function!
