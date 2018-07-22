@@ -20,4 +20,4 @@
   4. DONE? - in iterate function, for example, $iterate = { dir = { /./eu4Game/provinces/$/history } events = { A B C } },
         A -> end or A -> B -> end or A -> B -> C -> end ?   if event returns FALSE (default TRUE?) -> stop events??
         before_value?, get ut ??
-  5. Copy function!
+  5. DONE - Copy function!
