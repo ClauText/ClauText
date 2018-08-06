@@ -12,7 +12,7 @@
 # Known Bug (but, maybe slow improvement?)?
   1. /./test/../test/../test <- is no ok, and .. is ok in just front? nested case. ( /./../../test )
   2. Load Data API? do not check error(syntax, and etc...) totally.?? 
-  3. In Linux, Parallel Load Data is Very Slow?(maybe pthread problem?)
+  
 # ToDo / Done
   1. REMOVE - Now Position for Data? Next Position for Data? Move Up? or Move Down? for fast linear search?
   2. DONE - "riterate and some condition => remove data" function?
