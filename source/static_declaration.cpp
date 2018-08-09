@@ -9,7 +9,7 @@
 #include <conio.h>
 #endif
 
-#include "wiz/STRINGBUILDER.h"
+#include "wiz/STRINGBUILDER.H"
 
 #include "wiz/load_data.h"
 

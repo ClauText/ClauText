@@ -1,11 +1,13 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
+
 #include "wiz/ClauText.h"
 
 namespace wiz {
 
-#ifdef _MSC_VER
+
 void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 {
+#ifdef _MSC_VER
 	wiz::StringBuilder builder(1024);
 	std::vector<wiz::load_data::ItemType<wiz::load_data::UserType*>> utVec;
 	std::vector<MData> mdVec;
@@ -781,8 +783,8 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 			}
 		}
 	}
-}
 #endif
+}
 
 
 template <class T> // T has clear method, default constructor.
@@ -806,7 +808,6 @@ public:
 		return result;
 	}
 };
-
 
 std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::UserType* _global, const ExcuteData& excuteData, Option& opt, int chk)
 {
