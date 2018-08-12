@@ -21,3 +21,4 @@
         A -> end or A -> B -> end or A -> B -> C -> end ?   if event returns FALSE (default TRUE?) -> stop events??
         before_value?, get ut ??
   5. DONE - Copy function!
+  6. DONE - std::map -> wiz::ArrayMap
