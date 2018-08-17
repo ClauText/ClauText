@@ -24,8 +24,10 @@ namespace wiz {
 	private:
 		void _sort(const size_t last, const size_t num) {
 			size_t count = num >> 1; // two group, count is size of one group.
-			
-			std::sort(begin() + last - 2 * count + 1, begin() + last + 1);//_merge(last - 2 * count + 1, last - count + 1, count);
+
+			std::inplace_merge(arr.begin() + (last - 2 * count + 1), arr.begin() + (last - count + 1), arr.begin() + (last + 1));
+
+			//std::sort(begin() + last - 2 * count + 1, begin() + last + 1);//_merge(last - 2 * count + 1, last - count + 1, count);
 		}
 		iterator binary_search(long long left, long long right, const Key& key)
 		{
