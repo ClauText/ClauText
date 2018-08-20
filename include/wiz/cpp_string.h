@@ -4,6 +4,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "global.h"
+#include "STRINGBUILDER.H"
 #include <cstring>
 #include <string>
 #include <vector>

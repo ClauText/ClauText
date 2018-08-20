@@ -22,126 +22,6 @@
 
 #include <string>
 
-namespace wiz {
-	class Token2
-	{
-	public:
-		char* str = nullptr;
-		int len = 0;
-		bool isComment = false;
-	public:
-		Token2(char* str, int len, bool isComment) :
-			str(str), len(len), isComment(isComment) { }
-
-		Token2() { }
-
-		void clear()
-		{
-			str = nullptr;
-			len = 0;
-			isComment = false;
-		}
-	};
-
-	//
-	inline std::string ToString(WIZ_STRING_TYPE&& x) {
-		return x;
-	}
-	inline std::string ToString(const WIZ_STRING_TYPE& x) {
-		return x;
-		/*
-		if (x.index() == 0) {
-			return std::get<0>(x);
-		}
-		else {
-			wiz::Token2 temp = std::get<1>(x);
-
-			return std::string(temp.str, temp.len);
-		}
-		*/
-	}
-
-	inline std::string ToString(WIZ_STRING_TYPE& x) {
-		return x;
-		/*
-		if (x.index() == 0) {
-			return std::get<0>(x);
-		}
-		else {
-			wiz::Token2 temp = std::get<1>(x);
-
-			if (UseConvertToken2ToString) {
-				x = std::string(temp.str, temp.len);
-				return std::get<0>(x);
-			}
-			else {
-				return std::string(temp.str, temp.len);
-			}
-		}
-		*/
-	}
-	/*
-	inline bool operator==(const WIZ_STRING_TYPE& x, const WIZ_STRING_TYPE& y)
-	{
-		return ToString(x) == ToString(y);
-	}
-	inline bool operator!=(const WIZ_STRING_TYPE& x, const WIZ_STRING_TYPE& y) 
-	{
-		return ToString(x) != ToString(y);
-	}
-	inline bool operator<(const WIZ_STRING_TYPE& x, const WIZ_STRING_TYPE& y)
-	{
-		return ToString(x) < ToString(y);
-	}
-	*/
-
-	class Token
-	{
-	public:
-		std::string str; // cf) && ?
-		bool isComment;
-	public:
-		Token & operator=(const Token& token) {
-			str = token.str;
-			isComment = token.isComment;
-			return *this;
-		}
-		void operator=(Token&& token) {
-			str = std::move(token.str);
-			isComment = token.isComment;
-		}
-		virtual ~Token() {
-
-		}
-		Token(Token&& token) : str(std::move(token.str)), isComment(token.isComment) { }
-		Token(const Token& token) : str(token.str), isComment(token.isComment) { }
-		explicit Token() : isComment(false) { }
-		explicit Token(std::string&& str, bool isComment = false) : str(std::move(str)), isComment(isComment) { }
-		explicit Token(const std::string& str, bool isComment = false) : str(str), isComment(isComment) { }
-	};
-
-	class LoadDataOption
-	{
-	public:
-		std::vector<std::string> LineComment;	// # 
-		std::vector<std::string> MuitipleLineCommentStart; // ###  // ?
-		std::vector<std::string> MuitipleLineCommentEnd;   // ### // ?
-		std::vector<char> Left, Right;	// { } , [ ] <- json
-		std::vector<std::string> Assignment;	// = , :
-		std::vector<char> Removal;		// ',', empty. 
-	};
-
-	inline int Equal(const std::vector<char>& option, const char ch)
-	{
-		for (int i = 0; i < option.size(); ++i) {
-			if (ch == option[i]) {
-				return i;
-			}
-		}
-		return -1;
-	}
-}
-
 #include "load_data_types.h"
 #include "load_data_utility.h"
 #include "load_data_reservers.h"
@@ -4596,7 +4476,7 @@ namespace wiz {
 							x[k]->GetItemList(1).Set(0, ut[i]->GetUserTypeList(utCount)->GetName());
 							x[k]->GetItemList(2).Set(0, "NONE"); // check..
 							x[k]->GetItemList(3).Set(0, "TRUE");
-							const std::string name = ut[i]->GetUserTypeList(utCount)->GetName();
+							const std::string name = ut[i]->GetUserTypeList(utCount)->GetName().ToString();
 							x[k]->GetItemList(4).Set(0, GetRealDir(dir + (name.empty() ? "_" : name) + "/", ut[i]->GetUserTypeList(utCount), builder));
 						}
 
@@ -4734,7 +4614,7 @@ namespace wiz {
 							x[k]->GetItemList(1).Set(0, ut[i]->GetUserTypeList(utCount)->GetName());
 							x[k]->GetItemList(2).Set(0, "NONE"); // check..
 							x[k]->GetItemList(3).Set(0, "TRUE");
-							const std::string name = ut[i]->GetUserTypeList(utCount)->GetName();
+							const std::string name = ut[i]->GetUserTypeList(utCount)->GetName().ToString();
 							x[k]->GetItemList(4).Set(0, GetRealDir(dir + (name.empty() ? "_" : name) + "/", ut[i]->GetUserTypeList(utCount), builder));
 						}
 
@@ -4864,7 +4744,7 @@ namespace wiz {
 							x[k]->GetItemList(1).Set(0, ut[i]->GetUserTypeList(utCount)->GetName());
 							x[k]->GetItemList(2).Set(0, "NONE"); // check..
 							x[k]->GetItemList(3).Set(0, "TRUE");
-							const std::string name = ut[i]->GetUserTypeList(utCount)->GetName();
+							const std::string name = ut[i]->GetUserTypeList(utCount)->GetName().ToString();
 							x[k]->GetItemList(4).Set(0, GetRealDir(dir + (name.empty() ? "_" : name) + "/", ut[i]->GetUserTypeList(utCount), builder));
 						}
 
@@ -6186,7 +6066,7 @@ namespace wiz {
 				if (_var == " " || _var == "_") { _var = ""; }
 
 				for (int i = 0; i < ut->GetItemListSize(); ++i) {
-					if (ut->GetItemList(i).GetName() == _var) {
+					if (ut->GetItemList(i).GetName().ToString() == _var) {
 						std::string _condition = condition;
 
 						if (_var == "") { _condition = wiz::String::replace(_condition, "~~", "_"); }
@@ -6254,7 +6134,7 @@ namespace wiz {
 				if (_var == " " || _var == "_") { _var = ""; }
 
 				for (int i = 0; i < ut->GetUserTypeListSize(); ++i) {
-					if (ut->GetUserTypeList(i)->GetName() == _var) {
+					if (ut->GetUserTypeList(i)->GetName().ToString() == _var) {
 						std::string _condition = condition;
 
 						if (_var == "") { _condition = wiz::String::replace(_condition, "~~", "_"); }
@@ -6854,8 +6734,8 @@ namespace wiz {
 			//need to renewal. add $AND $OR $NOT
 
 			/// remove /, parameter chk!!
-			static bool operation(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const std::string& str,
-				wiz::ArrayStack<std::string>& operandStack, const ExcuteData& excuteData, wiz::StringBuilder* builder);
+			static bool operation(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const WIZ_STRING_TYPE& str,
+				wiz::ArrayStack<WIZ_STRING_TYPE>& operandStack, const ExcuteData& excuteData, wiz::StringBuilder* builder);
 
 			static std::string ToBool3(wiz::load_data::UserType& global, const wiz::ArrayMap<std::string, std::string>& parameters, const std::string& temp,
 				const EventInfo& info, StringBuilder* builder);
@@ -6956,7 +6836,7 @@ namespace wiz {
 
 				std::string result;
 				//
-				wiz::ArrayStack<std::string> operandStack;
+				wiz::ArrayStack<WIZ_STRING_TYPE> operandStack;
 				wiz::ArrayStack<std::string> operatorStack;
 				//wiz::StringTokenizer tokenizer(result, { " ", "\n", "\t", "\r" }, builder, 1);
 				//vector<std::string> tokenVec;
@@ -7014,7 +6894,7 @@ namespace wiz {
 				{
 					if (operandStack[i] == "}") {
 						chkBrace.top()++;
-						if (chkBrace.top() == 2 && !(i + 4 <= operandStack.size() - 1 && operandStack[i + 3] == "=" && operandStack[i + 4][0] == '$' && operandStack[i + 4].size() > 1))
+						if (chkBrace.top() == 2 && !(i + 4 <= operandStack.size() - 1 && operandStack[i + 3] == "=" && operandStack[i + 4].ToString()[0] == '$' && operandStack[i + 4].ToString().size() > 1))
 						{
 							std::string temp = strVec.back();
 							strVec.pop_back();
@@ -7034,7 +6914,7 @@ namespace wiz {
 						chkBrace.top()++;
 					}
 
-					strVec.push_back(std::move(operandStack[i]));
+					strVec.push_back(std::move(operandStack[i].ToString()));
 				}
 
 				//result = std::string(builder->Str(), builder->size());

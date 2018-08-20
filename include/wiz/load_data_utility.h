@@ -12,6 +12,7 @@
 #include <thread> // maybe error with C++/CLI?
 #include <algorithm>
 
+
 #include "cpp_string.h"
 #include "STRINGBUILDER.H"
 

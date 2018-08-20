@@ -31,7 +31,7 @@ namespace wiz {
 			}
 		public:
 			explicit Type(const WIZ_STRING_TYPE& name = "", const bool valid = true) : name(name) { }//chk();  }
-			explicit Type(WIZ_STRING_TYPE&& name, const bool valid = true) : name(move(name)) { }//chk(); }
+			explicit Type(WIZ_STRING_TYPE&& name, const bool valid = true) : name(std::move(name)) { }//chk(); }
 			Type(const Type& type)
 				: name(type.name)
 			{
@@ -60,7 +60,7 @@ namespace wiz {
 				return name == t.name;
 			}
 			bool operator<(const Type& t) const {
-				return name < t.name;
+				return name.ToString() < t.name.ToString();
 			}
 			Type& operator=(const Type& type)
 			{
@@ -101,7 +101,7 @@ namespace wiz {
 
 			}
 			explicit ItemType(WIZ_STRING_TYPE&& name, T&& value, const bool valid = true)
-				:Type(move(name), valid), data(move(value)), inited(true)
+				:Type(std::move(name), valid), data(std::move(value)), inited(true)
 			{
 
 			}
@@ -184,13 +184,13 @@ namespace wiz {
 			{
 			public:
 				bool operator() (const UserType* x, const UserType* y) const {
-					return x->GetName() < y->GetName();
+					return x->GetName().ToString() < y->GetName().ToString();
 				}
 			};
 			class ItemTypeStringPtrCompare {
 			public:
 				bool operator() (const ItemType<WIZ_STRING_TYPE>* x, const ItemType<WIZ_STRING_TYPE>* y) const {
-					return x->GetName() < y->GetName();
+					return x->GetName().ToString() < y->GetName().ToString();
 				}
 			};
 			int binary_find_ut(const std::vector<UserType*>& arr, const UserType& x) const
@@ -204,7 +204,7 @@ namespace wiz {
 					if (arr[middle]->GetName() == x.GetName()) {
 						return middle;
 					}
-					else if (arr[middle]->GetName() < x.GetName()) {
+					else if (arr[middle]->GetName().ToString() < x.GetName().ToString()) {
 						left = middle + 1;
 					}
 					else {
@@ -225,7 +225,7 @@ namespace wiz {
 					if (arr[middle]->GetName() == x.GetName()) {
 						return middle;
 					}
-					else if (arr[middle]->GetName() < x.GetName()) {
+					else if (arr[middle]->GetName().ToString() < x.GetName().ToString()) {
 						left = middle + 1;
 					}
 					else {
@@ -309,12 +309,12 @@ namespace wiz {
 			bool noRemove = false;
 			//bool reservedA = false;
 		public:
-			explicit UserType(WIZ_STRING_TYPE&& name, bool noRemove = false) : Type(move(name)), parent(nullptr), noRemove(noRemove) { }
+			explicit UserType(WIZ_STRING_TYPE&& name, bool noRemove = false) : Type(std::move(name)), parent(nullptr), noRemove(noRemove) { }
 			explicit UserType(const WIZ_STRING_TYPE& name = "", bool noRemove = false) : Type(name), parent(nullptr), noRemove(noRemove) { } //, userTypeList_sortFlagA(true), userTypeList_sortFlagB(true) { }
 			UserType(const UserType& ut) : Type(ut.GetName()) {
 				Reset(ut);  // Initial
 			}
-			UserType(UserType&& ut) : Type(move(ut.GetName())) {
+			UserType(UserType&& ut) : Type(std::move(ut.GetName())) {
 				Reset2(std::move(ut));
 			}
 			virtual ~UserType() {
@@ -708,7 +708,7 @@ namespace wiz {
 
 				if (itemIndex != -1) {
 					for (int i = itemList.size() - 1; i > itemIndex; --i) {
-						itemList[i] = move(itemList[i - 1]);
+						itemList[i] = std::move(itemList[i - 1]);
 					}
 					itemList[itemIndex] = ItemType<WIZ_STRING_TYPE>(name, item);
 				}
@@ -732,12 +732,12 @@ namespace wiz {
 				itemList.emplace_back("", WIZ_STRING_TYPE(""));
 				if (itemIndex != -1) {
 					for (int i = itemList.size() - 1; i > itemIndex; --i) {
-						itemList[i] = move(itemList[i - 1]);
+						itemList[i] = std::move(itemList[i - 1]);
 					}
-					itemList[itemIndex] = ItemType<WIZ_STRING_TYPE>(move(name), move(item));
+					itemList[itemIndex] = ItemType<WIZ_STRING_TYPE>(std::move(name), std::move(item));
 				}
 				else {
-					itemList[0] = ItemType<WIZ_STRING_TYPE>(move(name), move(item));
+					itemList[0] = ItemType<WIZ_STRING_TYPE>(std::move(name), std::move(item));
 				}
 
 

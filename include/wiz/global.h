@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <cmath>
+#include <deque>
 
 #ifdef _MSC_VER 
 #include <conio.h>
@@ -17,13 +19,206 @@
 // C++17 Standard.
 #include <variant>
 
+#define ARRAY_QUEUE std::deque // chk?
+#define VECTOR std::vector
+
 
 ///
 /// GLOBAL_DEBUG
 ///
 
-#define WIZ_STRING_TYPE std::string
+namespace wiz {
+	class DataType {
+	private:
+		std::string str_value;
+		mutable long long int_value;
+		mutable long double float_value;
+		int type = 0;
+		mutable bool change = false;
+	public:
+		DataType() { int_value = 0; float_value = 0; }
+		DataType(const char* cstr);
+		DataType(const std::string& str);
+	public:
+		void SetInt(long long val);
+		void SetFloat(long double val);
+	public:
+		int GetType()const {
+			return type;
+		}
+	public:
+		bool operator==(const DataType& type) const;
+		bool operator==(const char* cstr) const;
+		bool operator==(const std::string& str) const;
 
+		bool operator!=(const DataType& type) const;
+		bool operator!=(const char* cstr) const;
+		bool operator!=(const std::string& str) const;
+
+		DataType operator+(const char* cstr) const;
+		DataType operator+(const std::string& str) const;
+
+		DataType& operator+=(const DataType& type);
+		DataType& operator+=(const char* cstr);
+		DataType& operator+=(const std::string& str);
+
+	public:
+		std::string ToString() const {
+			return str_value;
+		}
+		long long ToInt() const {
+			if (type != 3) {
+				throw "type is not integer";
+			}
+			if (change) {
+				int_value = std::stoll(str_value);
+				change = false;
+			}
+			return int_value;
+		}
+		long double ToFloat() const {
+			if (type != 5) {
+				throw "type is not float";
+			}
+			if (change) {
+				float_value = std::stold(str_value);
+				change = false;
+			}
+			return float_value;
+		}
+	};
+
+	bool operator==(const char* cstr, const DataType& type);
+	bool operator==(const std::string& str, const DataType& type);
+
+	bool operator!=(const char* cstr, const DataType& type);
+	bool operator!=(const std::string& str, const DataType& type);
+
+	DataType operator+(const char* cstr, const DataType& type);
+	DataType operator+(const std::string& str, const DataType& type);
+}
+
+#define WIZ_STRING_TYPE wiz::DataType
+
+namespace wiz {
+	class Token2
+	{
+	public:
+		char* str = nullptr;
+		int len = 0;
+		bool isComment = false;
+	public:
+		Token2(char* str, int len, bool isComment) :
+			str(str), len(len), isComment(isComment) { }
+
+		Token2() { }
+
+		void clear()
+		{
+			str = nullptr;
+			len = 0;
+			isComment = false;
+		}
+	};
+
+	//
+	inline std::string ToString(WIZ_STRING_TYPE&& x) {
+		return x.ToString();
+	}
+	inline std::string ToString(const WIZ_STRING_TYPE& x) {
+		return x.ToString();
+		/*
+		if (x.index() == 0) {
+			return std::get<0>(x);
+		}
+		else {
+			wiz::Token2 temp = std::get<1>(x);
+
+			return std::string(temp.str, temp.len);
+		}
+		*/
+	}
+
+	inline std::string ToString(WIZ_STRING_TYPE& x) {
+		return x.ToString();
+		/*
+		if (x.index() == 0) {
+			return std::get<0>(x);
+		}
+		else {
+			wiz::Token2 temp = std::get<1>(x);
+
+			if (UseConvertToken2ToString) {
+				x = std::string(temp.str, temp.len);
+				return std::get<0>(x);
+			}
+			else {
+				return std::string(temp.str, temp.len);
+			}
+		}
+		*/
+	}
+	/*
+	inline bool operator==(const WIZ_STRING_TYPE& x, const WIZ_STRING_TYPE& y)
+	{
+		return ToString(x) == ToString(y);
+	}
+	inline bool operator!=(const WIZ_STRING_TYPE& x, const WIZ_STRING_TYPE& y)
+	{
+		return ToString(x) != ToString(y);
+	}
+	inline bool operator<(const WIZ_STRING_TYPE& x, const WIZ_STRING_TYPE& y)
+	{
+		return ToString(x) < ToString(y);
+	}
+	*/
+
+	class Token
+	{
+	public:
+		std::string str; // cf) && ?
+		bool isComment;
+	public:
+		Token & operator=(const Token& token) {
+			str = token.str;
+			isComment = token.isComment;
+			return *this;
+		}
+		void operator=(Token&& token) {
+			str = std::move(token.str);
+			isComment = token.isComment;
+		}
+		virtual ~Token() {
+
+		}
+		Token(Token&& token) : str(std::move(token.str)), isComment(token.isComment) { }
+		Token(const Token& token) : str(token.str), isComment(token.isComment) { }
+		explicit Token() : isComment(false) { }
+		explicit Token(std::string&& str, bool isComment = false) : str(std::move(str)), isComment(isComment) { }
+		explicit Token(const std::string& str, bool isComment = false) : str(str), isComment(isComment) { }
+	};
+
+	class LoadDataOption
+	{
+	public:
+		std::vector<std::string> LineComment;	// # 
+		std::vector<std::string> MuitipleLineCommentStart; // ###  // ?
+		std::vector<std::string> MuitipleLineCommentEnd;   // ### // ?
+		std::vector<char> Left, Right;	// { } , [ ] <- json
+		std::vector<std::string> Assignment;	// = , :
+		std::vector<char> Removal;		// ',', empty. 
+	};
+
+	inline int Equal(const std::vector<char>& option, const char ch)
+	{
+		for (int i = 0; i < option.size(); ++i) {
+			if (ch == option[i]) {
+				return i;
+			}
+		}
+		return -1;
+	}
+}
 
 namespace wiz{
     #define COL_BASED
@@ -410,7 +605,7 @@ namespace wiz{
 		return toStr<int>(x);
 	}
 
-	template <typename T> /// 몄텧좊븣 뚯븘泥댄겕쒕떎
+	template <typename T> 
 	inline std::string _toString(const T x)
 	{
 		std::stringstream strs;
@@ -421,7 +616,7 @@ namespace wiz{
 	inline std::string _toString(const long double x)
 	{
 		std::stringstream strs;
-		strs << std::fixed << x;
+		strs << std::fixed << x; // 나타낼수있는자리수 - 1 ?
 		std::string temp = strs.str();
 		std::size_t idx = temp.find('.');
 		if (idx == temp.size()-1) {
