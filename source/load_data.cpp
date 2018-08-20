@@ -14,8 +14,8 @@
 
 namespace wiz {
 	namespace load_data{
-		bool LoadData::operation(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const std::string& str,
-			wiz::ArrayStack<std::string>& operandStack, const ExcuteData& excuteData, wiz::StringBuilder* builder)
+		bool LoadData::operation(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const WIZ_STRING_TYPE& str,
+			wiz::ArrayStack<WIZ_STRING_TYPE>& operandStack, const ExcuteData& excuteData, wiz::StringBuilder* builder)
 		{
 			if (!operandStack.empty() && operandStack.top() == "ERROR") {
 				return false;
@@ -50,12 +50,12 @@ namespace wiz {
 			}
 
 			if ("$EQ" == str) {
-				std::string x, y;
+				WIZ_STRING_TYPE x, y;
 				int idx = -1;
 				x = operandStack.pop();
 				y = operandStack.pop();
 
-				if (wiz::load_data::Utility::Compare(x, y, builder) == "== 0") {
+				if (wiz::load_data::Utility::Compare(x.ToString(), y.ToString(), builder) == "== 0") {
 					operandStack.push("TRUE");
 				}
 				else {
@@ -64,11 +64,11 @@ namespace wiz {
 			}
 			else if ("$NOTEQ" == str)
 			{
-				std::string x, y;
+				WIZ_STRING_TYPE x, y;
 				x = operandStack.pop();
 				y = operandStack.pop();
 
-				if (wiz::load_data::Utility::Compare(x, y, builder) != "== 0") {
+				if (wiz::load_data::Utility::Compare(x.ToString(), y.ToString(), builder) != "== 0") {
 					operandStack.push("TRUE");
 				}
 				else {
@@ -77,7 +77,7 @@ namespace wiz {
 			}
 			else if ("$AND" == str)
 			{
-				std::string x, y;
+				WIZ_STRING_TYPE x, y;
 				x = operandStack.pop();
 				y = operandStack.pop();
 
@@ -89,7 +89,7 @@ namespace wiz {
 				}
 			}
 			else if ("$AND_ALL" == str) {
-				std::vector<std::string> store(operandNum);
+				std::vector<WIZ_STRING_TYPE> store(operandNum);
 				for (int i = 0; i < operandNum; ++i) {
 					store[i] = operandStack.pop();
 				}
@@ -103,7 +103,7 @@ namespace wiz {
 			}
 			else if ("$OR" == str)
 			{
-				std::string x, y;
+				WIZ_STRING_TYPE x, y;
 				x = operandStack.pop();
 				y = operandStack.pop();
 
@@ -116,7 +116,7 @@ namespace wiz {
 			}
 			else if ("$OR_ALL" == str)
 			{
-				std::vector<std::string> store;
+				std::vector<WIZ_STRING_TYPE> store;
 
 				for (int i = 0; i < operandNum; ++i) {
 					store.push_back(operandStack.pop());
@@ -131,7 +131,7 @@ namespace wiz {
 			}
 			else if ("$NOT" == str)
 			{
-				std::string x;
+				WIZ_STRING_TYPE x;
 				x = operandStack.pop();
 
 				if (x == "TRUE") {
@@ -143,11 +143,11 @@ namespace wiz {
 			}
 			else if ("$COMP<" == str)
 			{
-				std::string x, y;
+				WIZ_STRING_TYPE x, y;
 				x = operandStack.pop();
 				y = operandStack.pop();
 
-				if (wiz::load_data::Utility::Compare(x, y, builder) == "< 0") {
+				if (wiz::load_data::Utility::Compare(x.ToString(), y.ToString(), builder) == "< 0") {
 					operandStack.push("TRUE");
 				}
 				else
@@ -157,11 +157,11 @@ namespace wiz {
 			}
 			else if ("$COMP>" == str)
 			{
-				std::string x, y;
+				WIZ_STRING_TYPE x, y;
 				x = operandStack.pop();
 				y = operandStack.pop();
 
-				if (wiz::load_data::Utility::Compare(x, y, builder) == "> 0") {
+				if (wiz::load_data::Utility::Compare(x.ToString(), y.ToString(), builder) == "> 0") {
 					operandStack.push("TRUE");
 				}
 				else
@@ -172,8 +172,8 @@ namespace wiz {
 			else if ("$COMP<EQ" == str)
 			{
 				std::string x, y;
-				x = operandStack.pop();
-				y = operandStack.pop();
+				x = operandStack.pop().ToString();
+				y = operandStack.pop().ToString();
 
 				if (wiz::load_data::Utility::Compare(x, y, builder) == "< 0" || wiz::load_data::Utility::Compare(x, y, builder) == "== 0") {
 					operandStack.push("TRUE");
@@ -186,8 +186,8 @@ namespace wiz {
 			else if ("$COMP>EQ" == str)
 			{
 				std::string x, y;
-				x = operandStack.pop();
-				y = operandStack.pop();
+				x = operandStack.pop().ToString();
+				y = operandStack.pop().ToString();
 
 				if (wiz::load_data::Utility::Compare(x, y, builder) == "> 0" || wiz::load_data::Utility::Compare(x, y, builder) == "== 0") {
 					operandStack.push("TRUE");
@@ -199,103 +199,87 @@ namespace wiz {
 			}
 			else if ("$add" == str) // todo! = int operator double => double operator double!
 			{
-				std::string x, y;
-				x = operandStack.pop();
-				y = operandStack.pop();
+				auto x = operandStack.pop();
+				auto y = operandStack.pop();
 
-				std::string typex, typey; // other *, /, mod, ..
-				typex = wiz::load_data::Utility::GetType(x);
-				typey = wiz::load_data::Utility::GetType(y);
+				if (x.GetType() == 5 && y.GetType() == 5) {
+					DataType temp;
+					temp.SetFloat(x.ToFloat() + y.ToFloat());
+					operandStack.push(temp);
+				}
+				else if (x.GetType() == 3 && y.GetType() == 3) {
+					DataType temp;
+					temp.SetInt(x.ToInt() + y.ToInt());
+					operandStack.push(temp);
+				}
+				else {
 
-				if (x.size() > 2 && x.back() == x.front() && (x.back() == '\"' || x.back() == '\''))
-				{
-					x = x.substr(1, x.size() - 2);
-				}
-				if (y.size() > 2 && y.back() == y.front() && (y.back() == '\"' || y.back() == '\''))
-				{
-					y = y.substr(1, y.size() - 2);
-				}
-
-				if (typex == typey && typey == "INTEGER") { /// only integer -> BigInteger
-					operandStack.push(wiz::toStr(atoll(x.c_str()) + atoll(y.c_str())));
-				}
-				else if (typex == typey && typey == "DOUBLE") {
-					operandStack.push(wiz::_toString(std::stold(x) + std::stold(y)));
-				}
-				else
-				{
 					operandStack.push("ERROR");
 				}
 			}
 			else if ("$multiple" == str) // todo! = int operator double => double operator double!
 			{
-				std::string x, y;
-				x = operandStack.pop();
-				y = operandStack.pop();
+				std::string _x, _y;
+				auto x = operandStack.pop();
+				auto y = operandStack.pop();
 
-				if (x.size() > 2 && x.back() == x.front() && (x.back() == '\"' || x.back() == '\''))
-				{
-					x = x.substr(1, x.size() - 2);
-				}
-				if (y.size() > 2 && y.back() == y.front() && (y.back() == '\"' || y.back() == '\''))
-				{
-					y = y.substr(1, y.size() - 2);
-				}
+				_x = x.ToString();
+				_y = y.ToString();
 
-				if (wiz::load_data::Utility::GetType(x) == wiz::load_data::Utility::GetType(y) && (wiz::load_data::Utility::GetType(y) == "INTEGER")) { /// only integer -> BigInteger
-					operandStack.push(wiz::toStr(atoll(x.c_str()) * atoll(y.c_str())));
+				if (x.GetType() == 5 && y.GetType() == 5) {
+					DataType temp;
+					temp.SetFloat(x.ToFloat() * y.ToFloat());
+					operandStack.push(temp);
 				}
-				else if (wiz::load_data::Utility::GetType(x) == wiz::load_data::Utility::GetType(y) && wiz::load_data::Utility::GetType(y) == "DOUBLE") {
-					operandStack.push(wiz::_toString(std::stold(x) * std::stold(y)));  /// chk?
+				else if (x.GetType() == 3 && y.GetType() == 3) {
+					DataType temp;
+					temp.SetInt(x.ToInt() * y.ToInt());
+					operandStack.push(temp);
 				}
 				else
 				{
+
 					operandStack.push("ERROR");
 				}
 			}
 			else if ("$divide" == str) // todo! = int operator double => double operator double!
 			{
-				std::string x, y;
-				x = operandStack.pop();
-				y = operandStack.pop();
+				std::string _x, _y;
+				auto x = operandStack.pop();
+				auto y = operandStack.pop();
 
-				if (x.size() > 2 && x.back() == x.front() && (x.back() == '\"' || x.back() == '\''))
-				{
-					x = x.substr(1, x.size() - 2);
-				}
-				if (y.size() > 2 && y.back() == y.front() && (y.back() == '\"' || y.back() == '\''))
-				{
-					y = y.substr(1, y.size() - 2);
-				}
+				_x = x.ToString();
+				_y = y.ToString();
 
-				if (wiz::load_data::Utility::GetType(x) == wiz::load_data::Utility::GetType(y) && (wiz::load_data::Utility::GetType(y) == "INTEGER")) { /// only integer -> BigInteger
-					operandStack.push(wiz::toStr(atoll(x.c_str()) / atoll(y.c_str())));
+				if (x.GetType() == 5 && y.GetType() == 5) {
+					DataType temp;
+					temp.SetFloat(x.ToFloat() / y.ToFloat());
+					operandStack.push(temp);
 				}
-				else if (wiz::load_data::Utility::GetType(x) == wiz::load_data::Utility::GetType(y) && wiz::load_data::Utility::GetType(y) == "DOUBLE") {
-					operandStack.push(wiz::_toString(std::stold(x) / std::stold(y)));
+				else if (x.GetType() == 3 && y.GetType() == 3) {
+					DataType temp;
+					temp.SetInt(x.ToInt() / y.ToInt());
+					operandStack.push(temp);
 				}
 				else
 				{
+
 					operandStack.push("ERROR");
 				}
+			
 			}
 			else if ("$modular" == str)
 			{
-				std::string x, y;
+				WIZ_STRING_TYPE x, y;
 				x = operandStack.pop();
 				y = operandStack.pop();
+				std::string _x = x.ToString();
+				std::string _y = y.ToString();
 
-				if (x.size() > 2 && x.back() == x.front() && (x.back() == '\"' || x.back() == '\''))
-				{
-					x = x.substr(1, x.size() - 2);
-				}
-				if (y.size() > 2 && y.back() == y.front() && (y.back() == '\"' || y.back() == '\''))
-				{
-					y = y.substr(1, y.size() - 2);
-				}
-
-				if (wiz::load_data::Utility::GetType(x) == wiz::load_data::Utility::GetType(y) && (wiz::load_data::Utility::GetType(y) == "INTEGER")) { /// only integer -> BigInteger
-					operandStack.push(wiz::toStr(atoll(x.c_str()) % atoll(y.c_str())));
+				if (x.GetType() == 3 && y.GetType() == 3) {
+					DataType temp;
+					temp.SetInt(x.ToInt() % y.ToInt());
+					operandStack.push(temp);
 				}
 				else
 				{
@@ -305,17 +289,8 @@ namespace wiz {
 			else if ("$rand" == str)
 			{
 				std::string x, y;
-				x = operandStack.pop();
-				y = operandStack.pop();
-
-				if (x.size() > 2 && x.back() == x.front() && (x.back() == '\"' || x.back() == '\''))
-				{
-					x = x.substr(1, x.size() - 2);
-				}
-				if (y.size() > 2 && y.back() == y.front() && (y.back() == '\"' || y.back() == '\''))
-				{
-					y = y.substr(1, y.size() - 2);
-				}
+				x = operandStack.pop().ToString();
+				y = operandStack.pop().ToString();
 
 				if (wiz::load_data::Utility::GetType(x) == wiz::load_data::Utility::GetType(y) && (wiz::load_data::Utility::GetType(y) == "INTEGER")) { /// only integer -> BigInteger
 					int _x = atoi(x.c_str());
@@ -342,8 +317,8 @@ namespace wiz {
 					int total_size = 0;
 					for (int i = 0; i < 2; ++i)
 					{
-						total_size += operandStack.top().size();
-						std::string temp = operandStack.pop();
+						total_size += operandStack.top().ToString().size();
+						std::string temp = operandStack.pop().ToString();
 						builder->Append(temp.c_str(), temp.size()); // chk
 					}
 
@@ -351,8 +326,8 @@ namespace wiz {
 				}
 				else {
 					std::string x, y;
-					x = operandStack.pop();
-					y = operandStack.pop();
+					x = operandStack.pop().ToString();
+					y = operandStack.pop().ToString();
 
 					operandStack.push(x + y);
 				}
@@ -360,8 +335,8 @@ namespace wiz {
 			else if ("$concat2" == str) /// with space
 			{
 				std::string x, y;
-				x = operandStack.pop();
-				y = operandStack.pop();
+				x = operandStack.pop().ToString();
+				y = operandStack.pop().ToString();
 
 				operandStack.push(x + " " + y);
 			}
@@ -374,8 +349,8 @@ namespace wiz {
 					int total_size = 0;
 					for (int i = 0; i < operandNum; ++i)
 					{
-						total_size += operandStack.top().size();
-						std::string temp = operandStack.pop();
+						total_size += operandStack.top().ToString().size();
+						std::string temp = operandStack.pop().ToString();
 						builder->Append(temp.c_str(), temp.size()); // chk
 					}
 
@@ -385,7 +360,7 @@ namespace wiz {
 					std::string result;
 
 					for (int i = 0; i < operandNum; ++i) {
-						result = result + operandStack.pop();
+						result = result + operandStack.pop().ToString();
 						//	cout << "test" <<  result << endl;
 					}
 					//cout << "----" << endl;
@@ -394,7 +369,7 @@ namespace wiz {
 			}
 			else if ("$concat_all2" == str)
 			{
-				std::string result;
+				WIZ_STRING_TYPE result;
 
 				for (int i = 0; i < operandNum; ++i) {
 					result += operandStack.pop();
@@ -405,10 +380,10 @@ namespace wiz {
 				operandStack.push(result);
 			}
 			else if ("$concat3" == str) { // for special case? "abc" "def" "ghi" -> "abcdefghi"
-				std::string result;
+				WIZ_STRING_TYPE result;
 
 				for (int i = 0; i < operandNum; ++i) {
-					std::string temp = operandStack.pop();
+					std::string temp = operandStack.pop().ToString();
 					if (temp.size() >= 3 && temp.back() == temp.front() && temp.back() == '\"') {}
 					else {
 						operandStack.push("ERROR in $concat3, 1. must be \" \" ");
@@ -441,9 +416,9 @@ namespace wiz {
 			///ToDo - GetList -> // GetItemListIdxByIListIdx, GetUserTypeLisIdxtByIListIdx ?
 			else if ("$back" == str) // ex) for x  = { 0 1 2 3 .. }, for usertaypelist? and mixed? and need more test!
 			{
-				std::string x = operandStack.pop();
+				WIZ_STRING_TYPE x = operandStack.pop();
 
-				std::string value = wiz::load_data::LoadData::GetItemListData(global, x, "TRUE", excuteData, builder);
+				std::string value = wiz::load_data::LoadData::GetItemListData(global, x.ToString(), "TRUE", excuteData, builder);
 				wiz::load_data::UserType ut;
 				wiz::load_data::LoadData::LoadDataFromString(value, ut);
 
@@ -461,8 +436,8 @@ namespace wiz {
 			// pop_back or front - remove this function?
 			else if ("$pop_back" == str) // and for usertypelist? and mixed?, usertype-> "~"
 			{
-				std::string x = operandStack.pop();
-				std::string name;
+				std::string x = operandStack.pop().ToString();
+				WIZ_STRING_TYPE name;
 				for (int i = x.size() - 1; i >= 0; --i)
 				{
 					if (x[i] == '/' && i != 0) {
@@ -493,7 +468,7 @@ namespace wiz {
 			// todo - $front, pop-front.
 			else if ("$front" == str)
 			{
-				std::string x = operandStack.pop();
+				std::string x = operandStack.pop().ToString();
 
 				std::string value = wiz::load_data::LoadData::GetItemListData(global, x, "TRUE", excuteData, builder);
 				wiz::load_data::UserType ut;
@@ -511,7 +486,7 @@ namespace wiz {
 			}
 			else if ("$pop_front" == str)
 			{
-				std::string x = operandStack.pop();
+				std::string x = operandStack.pop().ToString();
 				std::string name;
 				for (int i = x.size() - 1; i >= 0; --i)
 				{
@@ -542,7 +517,7 @@ namespace wiz {
 			}
 			else if ("$get" == str)
 			{
-				std::string x = operandStack.pop();
+				std::string x = operandStack.pop().ToString();
 
 				if ('@' == x[0]) { // chk..
 					x.erase(x.begin());
@@ -578,7 +553,7 @@ namespace wiz {
 			}
 			else if ("$size" == str)
 			{
-				std::string x = operandStack.pop();
+				std::string x = operandStack.pop().ToString();
 
 				if ('/' == x[0])
 				{
@@ -594,7 +569,7 @@ namespace wiz {
 			}
 			else if ("$size2" == str)
 			{
-				std::string x = operandStack.pop();
+				std::string x = operandStack.pop().ToString();
 
 				if ('/' == x[0])
 				{
@@ -610,9 +585,9 @@ namespace wiz {
 			}
 			else if ("$element" == str) // for list
 			{
-				std::string x = operandStack.pop(); // list_name
-				std::string y = operandStack.pop(); // idx
-				int idx = atoi(y.c_str());
+				std::string x = operandStack.pop().ToString(); // list_name
+				WIZ_STRING_TYPE y = operandStack.pop(); // idx
+				int idx = stoi(y.ToString());
 
 				if ('/' == x[0])
 				{
@@ -628,9 +603,9 @@ namespace wiz {
 			}
 			// it_name
 			else if ("$name" == str) {
-				std::string x = operandStack.pop(); // list_name
-				std::string y = operandStack.pop(); // idx
-				int idx = atoi(y.c_str());
+				std::string x = operandStack.pop().ToString(); // list_name
+				WIZ_STRING_TYPE y = operandStack.pop(); // idx
+				int idx = stoi(y.ToString());
 
 				if ('/' == x[0])
 				{
@@ -646,9 +621,9 @@ namespace wiz {
 			}
 			// ut_name
 			else if ("$name2" == str) {
-				std::string x = operandStack.pop(); // list_name
-				std::string y = operandStack.pop(); // idx
-				int idx = atoi(y.c_str());
+				std::string x = operandStack.pop().ToString(); // list_name
+				WIZ_STRING_TYPE y = operandStack.pop(); // idx
+				int idx = stoi(y.ToString());
 
 				if ('/' == x[0])
 				{
@@ -663,8 +638,8 @@ namespace wiz {
 				operandStack.push(x);
 			}
 			else if ("$regex" == str) {
-				std::string str = operandStack.pop();
-				std::string rgx_str = operandStack.pop();
+				std::string str = operandStack.pop().ToString();
+				std::string rgx_str = operandStack.pop().ToString();
 
 				// " ~ " , "제거?
 				if (rgx_str.size() > 2 && rgx_str[0] == rgx_str.back() && rgx_str[0] == '\"') {
@@ -683,7 +658,7 @@ namespace wiz {
 				}
 			}
 			else if ("$eval" == str) { //// now, no need ?
-				std::string str = operandStack.pop();
+				std::string str = operandStack.pop().ToString();
 
 				bool chk = wiz::load_data::Utility::ChkExist(str);
 				if (chk) {
@@ -694,15 +669,15 @@ namespace wiz {
 				}
 				str = str.substr(1, str.size() - 2);
 				{
-					std::string result = ToBool4(now, global, str, excuteData, builder);
+					WIZ_STRING_TYPE result = ToBool4(now, global, str, excuteData, builder);
 
-					operandStack.push(move(result));
+					operandStack.push(std::move(result));
 				}
 			}
 			// big
 			else if ("$is_quoted_str" == str)
 			{
-				std::string str = operandStack.pop();
+				std::string str = operandStack.pop().ToString();
 				if (str.size() >= 2 && str[0] == str.back() && '\"' == str[0])
 				{
 					operandStack.push("TRUE");
@@ -714,7 +689,7 @@ namespace wiz {
 			// small
 			else if ("$is_quoted_str2" == str)
 			{
-				std::string str = operandStack.pop();
+				std::string str = operandStack.pop().ToString();
 				if (str.size() >= 2 && str[0] == str.back() && '\'' == str[0])
 				{
 					operandStack.push("TRUE");
@@ -724,25 +699,25 @@ namespace wiz {
 				}
 			}
 			else if ("$to_quoted_str" == str) {
-				std::string str = operandStack.pop();
+				std::string str = operandStack.pop().ToString();
 				str.push_back('\"');
 				str.insert(str.begin(), '\"');
 				operandStack.push(str);
 			}
 			else if ("$to_quoted_str2" == str) {
-				std::string str = operandStack.pop();
+				std::string str = operandStack.pop().ToString();
 				str.push_back('\'');
 				str.insert(str.begin(), '\'');
 				operandStack.push(str);
 			}
 			else if ("$add_small_quoted" == str) {
-				std::string str = operandStack.pop();
+				std::string str = operandStack.pop().ToString();
 				str.push_back('\'');
 				str.insert(str.begin(), '\'');
 				operandStack.push(str);
 			}
-			else if ("$remove_quoted" == str) { // chk "" std::string problem?
-				std::string str = operandStack.pop();
+			else if ("$remove_quoted" == str) { // chk "" WIZ_STRING_TYPE problem?
+				std::string str = operandStack.pop().ToString();
 
 				if (str.size() > 0 && str.front() == str.back()
 					&& '\"' == str.back()
@@ -753,8 +728,8 @@ namespace wiz {
 
 				operandStack.push(str);
 			}
-			else if ("$remove_quoted2" == str) { // chk "" std::string problem?
-				std::string str = operandStack.pop();
+			else if ("$remove_quoted2" == str) { // chk "" WIZ_STRING_TYPE problem?
+				std::string str = operandStack.pop().ToString();
 
 				if (str.size() > 0 && str.front() == str.back()
 					&& '\'' == str.back()
@@ -765,8 +740,8 @@ namespace wiz {
 
 				operandStack.push(str);
 			}
-			else if ("$remove_small_quoted" == str) { // chk "" std::string problem?
-				std::string str = operandStack.pop();
+			else if ("$remove_small_quoted" == str) { // chk "" WIZ_STRING_TYPE problem?
+				std::string str = operandStack.pop().ToString();
 
 				if (str.size() > 0 && str.front() == str.back()
 					&& '\'' == str.back()
@@ -778,9 +753,9 @@ namespace wiz {
 				operandStack.push(str);
 			}
 			else if ("$get_object_str" == str) {
-				std::string object_name = operandStack.pop();
+				std::string object_name = operandStack.pop().ToString();
 				object_name = wiz::String::substring(object_name, 1, object_name.size() - 2);
-				std::string event_id = operandStack.pop();
+				std::string event_id = operandStack.pop().ToString();
 
 				wiz::load_data::UserType ut = (*excuteData.pObjectMap)[object_name];
 
@@ -798,12 +773,12 @@ namespace wiz {
 				operandStack.push("ERROR in $getOjbectStr");
 			}
 			else if ("$add_paren" == str) { // removal?
-				std::string temp = operandStack.pop();
+				std::string temp = operandStack.pop().ToString();
 				operandStack.push(" { " + temp + " } ");
 			}
 			/*
 			else if ("$test" == str) { // for lambda test.
-			std::string temp = operandStack.pop();
+			WIZ_STRING_TYPE temp = operandStack.pop();
 
 			temp = wiz::String::replace(temp, "\"", "");
 
@@ -812,19 +787,19 @@ namespace wiz {
 			operandStack.push(temp);
 			}
 			else if ("$test2" == str) { // for lambda test?
-			std::string temp = operandStack.pop();
+			WIZ_STRING_TYPE temp = operandStack.pop();
 
 			temp = wiz::String::substring(temp, 1, temp.size() - 2);
 
 			operandStack.push(temp);
 			}
 			else if ("$test3" == str) { // for lambda test?
-			std::string temp = operandStack.pop();
+			WIZ_STRING_TYPE temp = operandStack.pop();
 
 			operandStack.push(temp);
 			}
 			else if ("$test4" == str) {
-			std::string temp = operandStack.pop();
+			WIZ_STRING_TYPE temp = operandStack.pop();
 
 			if (temp.size() >= 3 && temp.back() == temp.front() && temp.back() == '\"') {
 			temp = wiz::String::substring(temp, 1, temp.size() - 2);
@@ -833,7 +808,7 @@ namespace wiz {
 			operandStack.push(temp);
 			}
 			else if ("$test5" == str) { // chk!!
-			std::string temp = operandStack.pop();
+			WIZ_STRING_TYPE temp = operandStack.pop();
 			int braceNum = 0;
 			bool first = true;
 
@@ -860,7 +835,7 @@ namespace wiz {
 			operandStack.push(temp);
 			}
 			else if ("$test6" == str) { // for lambda test.
-			std::vector<std::string> vec;
+			std::vector<WIZ_STRING_TYPE> vec;
 			for (int i = 0; i < operandNum; ++i) {
 			vec.push_back(operandStack.pop());
 			}
@@ -875,7 +850,7 @@ namespace wiz {
 				std::string statement;
 
 				for (int i = 0; i < operandNum; ++i) {
-					statement = statement + operandStack.pop();
+					statement = statement + operandStack.pop().ToString();
 				}
 				wiz::load_data::LoadData::LoadDataFromString(statement, ut);
 
@@ -887,9 +862,9 @@ namespace wiz {
 				int idx = 0;
 
 				for (int i = 0; i < operandNum - 1; ++i) {
-					statement = statement + operandStack.pop();
+					statement = statement + operandStack.pop().ToString();
 				}
-				idx = stoi(operandStack.pop());
+				idx = stoi(operandStack.pop().ToString());
 
 				wiz::load_data::LoadData::LoadDataFromString(statement, ut);
 
@@ -900,19 +875,19 @@ namespace wiz {
 				std::string statement;
 
 				for (int i = 0; i < operandNum; ++i) {
-					statement = statement + operandStack.pop();
+					statement = statement + operandStack.pop().ToString();
 				}
 				wiz::load_data::LoadData::LoadDataFromString(statement, ut);
 
 				operandStack.push(wiz::_toString(ut.GetItem(wiz::ToString(ut.GetItemList(0).GetName())).size()));
 			}
 			else if ("$is_empty_string" == str) {
-				operandStack.push(operandStack.pop().empty() ? "TRUE" : "FALSE");
+				operandStack.push(operandStack.pop().ToString().empty() ? "TRUE" : "FALSE");
 			}
 			else if ("$event_result" == str) {
 				std::vector<std::string> eventVec;
 				for (int i = 0; i < operandNum; ++i) {
-					eventVec.push_back(operandStack.pop());
+					eventVec.push_back(operandStack.pop().ToString());
 				}
 
 				std::string statements2 = "Event = { id = NONE" + wiz::toStr(excuteData.depth + 1) + " $call = { ";
@@ -945,7 +920,7 @@ namespace wiz {
 				}
 			}
 			else if ("$get_item_value2" == str) {
-				const int i = stoi(operandStack.pop());
+				const int i = stoi(operandStack.pop().ToString());
 
 				if (now) {
 					operandStack.push(ToString(now->GetItemList(i).Get(0))); //chk
@@ -965,10 +940,10 @@ namespace wiz {
 				return true;
 			}
 			else if ("$move_up" == str) {
-				std::string dir;
+			std::string dir;
 
 				for (int i = 0; i < operandNum; ++i) {
-					std::string temp = operandStack.pop();
+					std::string temp = operandStack.pop().ToString();
 					dir = dir + temp;
 					//	cout << "temp is " << temp << endl;
 				}
@@ -996,7 +971,7 @@ namespace wiz {
 			else if ("$lambda" == str) {
 				std::vector<std::string> store;
 				for (int i = 0; i < operandNum; ++i) {
-					store.push_back(operandStack.pop());
+					store.push_back(operandStack.pop().ToString());
 					if (store[i][0] != store[i][store[i].size() - 1] || '\'' != store[i][0])
 					{
 						store[i] = "\'" + store[i] + "\'";
@@ -1011,11 +986,11 @@ namespace wiz {
 					// in order.
 					std::string mainStr = "Main = { $call = { id = NONE } } ";
 					std::string eventStr = "Event = { id = NONE $call = { id = " +
-						ut.GetUserTypeItem("Event")[0]->GetItem("id")[0].Get(0) + " ";
+						ut.GetUserTypeItem("Event")[0]->GetItem("id")[0].Get(0).ToString() + " ";
 
 					// if opeandNum != ut[0].GetUserType("$parameter").size() then push error?
 					for (int i = 0; i < param[0]->GetItemListSize(); ++i) {
-						eventStr += param[0]->GetItemList(i).Get(0) + " = \'" + store[i + 1].substr(1, store[i + 1].size() - 2) + "\' ";
+						eventStr += param[0]->GetItemList(i).Get(0).ToString() + " = \'" + store[i + 1].substr(1, store[i + 1].size() - 2) + "\' ";
 					}
 
 					eventStr += " }  $return = { $return_value = { } } } ";
@@ -1054,7 +1029,7 @@ namespace wiz {
 			}
 			
 			else if ("$to_float_from_integer" == str) { // integer, floating point number -> floating point number(long double)
-				std::string value = operandStack.pop();
+				std::string value = operandStack.pop().ToString();
 				if (wiz::load_data::Utility::IsInteger(value)) {
 					long double x = stoll(value);
 					operandStack.push(wiz::_toString(x));
@@ -1064,7 +1039,7 @@ namespace wiz {
 				}
 			}
 			else if ("$to_integer_from_float" == str) { // integer, floating point number -> floating point number(long double)
-				std::string value = operandStack.pop();
+				std::string value = operandStack.pop().ToString();
 				if (wiz::load_data::Utility::IsDouble(value)) {
 					long long x = std::stold(value);
 					operandStack.push(wiz::_toString(x));
@@ -1075,7 +1050,7 @@ namespace wiz {
 			}
 			//floor, ceiling, round,
 			else if ("$floor" == str) {
-				std::string value = operandStack.pop();
+				std::string value = operandStack.pop().ToString();
 				if (wiz::load_data::Utility::IsDouble) {
 					long double x = std::floor(std::stold(value));
 					operandStack.push(wiz::_toString(x));
@@ -1085,7 +1060,7 @@ namespace wiz {
 				}
 			}
 			else if ("$ceiling" == str) {
-				std::string value = operandStack.pop();
+				std::string value = operandStack.pop().ToString();
 				if (wiz::load_data::Utility::IsDouble) {
 					long double x = std::ceil(std::stold(value));
 					operandStack.push(wiz::_toString(x));
@@ -1095,7 +1070,7 @@ namespace wiz {
 				}
 			}
 			else if ("$round" == str) {
-				std::string value = operandStack.pop();
+				std::string value = operandStack.pop().ToString();
 				if (wiz::load_data::Utility::IsDouble) {
 					long double x = std::round(std::stold(value));
 					operandStack.push(wiz::_toString(x));
@@ -1106,62 +1081,62 @@ namespace wiz {
 			}
 			//contains,
 			else if ("$contains" == str) {
-				std::string str = operandStack.pop();
-				std::string chk_str = operandStack.pop();
+				std::string str = operandStack.pop().ToString();
+				std::string chk_str = operandStack.pop().ToString();
 
 				operandStack.push(std::string::npos != str.find(chk_str) ? "TRUE" : "FALSE");
 			}
 			//starts_with, ends_with,
 			else if ("$starts_with" == str) {
-				std::string str = operandStack.pop();
-				std::string chk_str = operandStack.pop();
+				std::string str = operandStack.pop().ToString();
+				std::string chk_str = operandStack.pop().ToString();
 
 				operandStack.push(wiz::String::startsWith(str, chk_str) ? "TRUE" : "FALSE");
 			}
 			else if ("$ends_with" == str) {
-				std::string str = operandStack.pop();
-				std::string chk_str = operandStack.pop();
+				std::string str = operandStack.pop().ToString();
+				std::string chk_str = operandStack.pop().ToString();
 
 				operandStack.push(wiz::String::endsWith(str, chk_str) ? "TRUE" : "FALSE");
 			}
-			//std::string - length,
+			//WIZ_STRING_TYPE - length,
 			else if ("$string_length" == str) {
-				std::string str = operandStack.pop();
-
+				std::string str = operandStack.pop().ToString();
+	
 				operandStack.push(wiz::_toString(str.size()));
 			}
 			//substring ?
 			else if ("$substring" == str) {
-				std::string str = operandStack.pop();
-				long long begin = stoll(operandStack.pop());
-				long long end = stoll(operandStack.pop());
+				std::string str = operandStack.pop().ToString();
+				long long begin = stoll(operandStack.pop().ToString());
+				long long end = stoll(operandStack.pop().ToString());
 
 				operandStack.push(wiz::String::substring(str, begin, end - 1));
 			}
 
 			// todo - Is~ ?? others ??
 			else if ("$is_integer_type" == str) {
-				operandStack.push(wiz::load_data::Utility::IsInteger(operandStack.pop()) ? "TRUE" : "FALSE");
+				operandStack.push(wiz::load_data::Utility::IsInteger(operandStack.pop().ToString()) ? "TRUE" : "FALSE");
 			}
 			else if ("$is_float_type" == str) {
-				operandStack.push(wiz::load_data::Utility::IsDouble(operandStack.pop()) ? "TRUE" : "FALSE");
+				operandStack.push(wiz::load_data::Utility::IsDouble(operandStack.pop().ToString()) ? "TRUE" : "FALSE");
 			}
 			else if ("$is_pure_string_type" == str) {
-				operandStack.push("STRING" == wiz::load_data::Utility::GetType(operandStack.pop()) ? "TRUE" : "FALSE");
+				operandStack.push("STRING" == wiz::load_data::Utility::GetType(operandStack.pop().ToString()) ? "TRUE" : "FALSE");
 			}
 			else if ("$get_type" == str) {
-				operandStack.push(wiz::load_data::Utility::GetType(operandStack.pop()));
+				operandStack.push(wiz::load_data::Utility::GetType(operandStack.pop().ToString()));
 			}
 			else if ("$is_itemtype_exist" == str) { // 2? - using ToBool4?
-				operandStack.push(wiz::load_data::LoadData::Find(&global, operandStack.pop(), builder).empty() ? "FALSE" : "TRUE");
+				operandStack.push(wiz::load_data::LoadData::Find(&global, operandStack.pop().ToString(), builder).empty() ? "FALSE" : "TRUE");
 			}
 			else if ("$is_usertype_exist" == str) { // 2? - using ToBool4?
-				operandStack.push(wiz::load_data::UserType::Find(&global, operandStack.pop(), builder).first ? "TRUE" : "FALSE");
+				operandStack.push(wiz::load_data::UserType::Find(&global, operandStack.pop().ToString(), builder).first ? "TRUE" : "FALSE");
 			}
 
 			else {
-				if (wiz::String::startsWith(str, "$") && str.size() >= 2) {
-					std::cout << "no exist in load-data " << str << std::endl;
+				if (wiz::String::startsWith(str.ToString(), "$") && str.ToString().size() >= 2) {
+					std::cout << "no exist in load-data " << str.ToString() << std::endl;
 					return false;
 				}
 				return true;
@@ -1324,7 +1299,7 @@ namespace wiz {
 				return result;
 			}
 			//cout << "temp is " << temp << endl;
-			/*set<std::string> utNames; // rename?
+			/*set<WIZ_STRING_TYPE> utNames; // rename?
 			{ // removal??
 			UserType utTemp;
 			LoadData::LoadDataFromString(result, utTemp);
@@ -1404,7 +1379,7 @@ namespace wiz {
 			{
 				//wiz::StringTokenizer tokenizer(std::move(result), { " ", "\n", "\t", "\r" }, builder, 1); // , "{", "=", "}" }); //
 																										  //wiz::StringTokenizer tokenizer2(result, { " ", "\n", "\t", "\r" } ); //
-																											//vector<std::string> tokenVec2;
+																											//vector<WIZ_STRING_TYPE> tokenVec2;
 				int len = 0;
 				for (int i = 0; i < result.size(); ++i) {
 					bool chk = wiz::isWhitespace(result[i]);
@@ -1480,14 +1455,14 @@ namespace wiz {
 			}
 			//cout << "result is " << result << endl;
 			//
-			wiz::ArrayStack<std::string> operandStack;
+			wiz::ArrayStack<WIZ_STRING_TYPE> operandStack;
 			wiz::ArrayStack<std::string> operatorStack;
 
 			operandStack.reserve(tokenVec.size());
 			operatorStack.reserve(tokenVec.size());
 
 			//wiz::StringTokenizer tokenizer(result, { " ", "\n", "\t", "\r" }, builder, 1);
-			//vector<std::string> tokenVec;
+			//vector<WIZ_STRING_TYPE> tokenVec;
 
 			//while (tokenizer.hasMoreTokens()) {
 			//		tokenVec.push_back(tokenizer.nextToken());
@@ -1529,7 +1504,7 @@ namespace wiz {
 				}
 			}
 
-			//std::vector<std::string> strVec;
+			//std::vector<WIZ_STRING_TYPE> strVec;
 			//std::stack<int> chkBrace;
 
 			//chkBrace.push(0);
@@ -1541,7 +1516,7 @@ namespace wiz {
 				chkBrace.top()++;
 				if (chkBrace.top() == 2 && !(i + 4 <= operandStack.size() - 1 && operandStack[i+3] == "=" && operandStack[i+4][0] == '$' && operandStack[i+4].size() > 1))
 				{
-				std::string temp = strVec.back();
+				WIZ_STRING_TYPE temp = strVec.back();
 				strVec.pop_back();
 				strVec.pop_back();
 				strVec.push_back(temp);
@@ -1574,7 +1549,7 @@ namespace wiz {
 			//	builder->Append(strVec[i].c_str(), strVec[i].size());
 			//	builder->Append(" ", 1);
 			//}
-			//result = std::string(builder->Str(), builder->size());
+			//result = WIZ_STRING_TYPE(builder->Str(), builder->size());
 			// todo!  $C = 3 => $C = { 3 } 
 			{
 				//StringTokenizer tokenizer(result, builder, 1);
@@ -1583,7 +1558,7 @@ namespace wiz {
 
 				//while (tokenizer.hasMoreTokens()) {
 				for (int i = operandStack.size() - 1; i >= 0; --i) {
-					//const std::string temp = strVec[i]; // tokenizer.nextToken();
+					//const WIZ_STRING_TYPE temp = strVec[i]; // tokenizer.nextToken();
 					/*
 					// chk!! @$paramter - removal? @$. (for regex)??
 					if (temp.size() >= 3 && String::startsWith(temp, "$.")) { // cf) @$. ?
@@ -1605,7 +1580,7 @@ namespace wiz {
 					(temp.size() >= 3 && temp[0] == '@' && temp[1] == '$')) { // chk - removal??
 					++i; // tokenizer.nextToken(); // =
 					++i;
-					std::string temp2 = strVec[i]; //tokenizer.nextToken(); // " ~~ "
+					WIZ_STRING_TYPE temp2 = strVec[i]; //tokenizer.nextToken(); // " ~~ "
 					//result = result + temp + " = { " + temp2 + " } ";
 
 					builder->Append(temp.c_str() + 1, temp.size());
@@ -1619,7 +1594,7 @@ namespace wiz {
 					{
 						//result = result + temp + " "; 
 						// temp -> strVec
-						builder->Append(operandStack[i].c_str(), operandStack[i].size());
+						builder->Append(operandStack[i].ToString().c_str(), operandStack[i].ToString().size());
 						builder->Append(" ", 1);
 					}
 				}
@@ -1649,12 +1624,12 @@ namespace wiz {
 
 			{ // chk.. - removal?
 			for (auto x = excuteData.info.parameters.rbegin(); x != excuteData.info.parameters.rend(); ++x) {
-			std::string temp;
+			WIZ_STRING_TYPE temp;
 			Utility::ChangeStr(result, { "$parameter." + x->first }, { x->second }, temp);
 			result = move(temp);
 			}
 			for (auto x = excuteData.info.locals.rbegin(); x != excuteData.info.locals.rend(); ++x) {
-			std::string temp;
+			WIZ_STRING_TYPE temp;
 			Utility::ChangeStr(result, { "$local." + x->first }, { x->second }, temp);
 			result = move(temp);
 			}

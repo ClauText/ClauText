@@ -1,5 +1,8 @@
 ﻿
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "wiz/global.h"
+#include "wiz/load_data_utility.h"
 
 namespace wiz {
 
@@ -33,5 +36,139 @@ namespace wiz {
 		return -1;
 	}
 
+	void DataType::SetInt(long long val)
+	{
+		this->type = 3;
+		this->int_value = val;
+		this->str_value = wiz::_toString(val);
+	}
+
+	void DataType::SetFloat(long double val)
+	{
+		this->type = 5;
+		this->float_value = val;
+		str_value = wiz::_toString(val);
+	}
+
+	DataType::DataType(const char* cstr)
+	{
+		this->str_value = std::string(cstr);
+		this->change = true;
+
+		if (wiz::load_data::Utility::IsInteger(this->str_value)) {
+			this->type = 3;
+			this->int_value = ToInt();
+		}
+		else if (wiz::load_data::Utility::IsDouble(this->str_value)) {
+			this->type = 5;
+			this->float_value = ToFloat();
+		}
+		else {
+			this->type = 1;
+		}
+
+		this->change = false;
+	}
+	DataType::DataType(const std::string& str)
+	{
+		this->str_value = str;
+		this->change = true;
+
+		if (wiz::load_data::Utility::IsInteger(this->str_value)) {
+			this->type = 3;
+			this->int_value = ToInt();
+		}
+		else if (wiz::load_data::Utility::IsDouble(this->str_value)) {
+			this->type = 5;
+			this->float_value = ToFloat();
+		}
+		else {
+			this->type = 1;
+		}
+
+		this->change = false;
+	}
+
+
+	bool DataType::operator==(const DataType& type) const
+	{
+		return type.str_value == this->str_value;
+	}
+	bool DataType::operator==(const char* cstr) const
+	{
+		return cstr == this->str_value;
+	}
+	bool DataType::operator==(const std::string& str) const
+	{
+		return str == this->str_value;
+	}
+
+	bool DataType::operator!=(const DataType& type) const
+	{
+		return type.str_value != this->str_value;
+	}
+	bool DataType::operator!=(const char* cstr) const
+	{
+		return cstr != this->str_value;
+	}
+	bool DataType::operator!=(const std::string& str) const
+	{
+		return str != this->str_value;
+	}
+
+	DataType DataType::operator+(const char* cstr) const
+	{
+		return DataType(cstr + this->str_value);
+	}
+	DataType DataType::operator+(const std::string& str) const
+	{
+		return DataType(str + this->str_value);
+	}
+
+	DataType& DataType::operator+=(const DataType& type) 
+	{
+		this->str_value += type.str_value;
+		this->change = true;
+		return *this;
+	}
+	DataType& DataType::operator+=(const char* cstr) 
+	{
+		this->str_value += cstr;
+		this->change = true;
+		return *this;
+	}
+	DataType& DataType::operator+=(const std::string& str)
+	{
+		this->str_value += str;
+		this->change = true;
+		return *this;
+	}
+
+	bool operator==(const char* cstr, const DataType& type)
+	{
+		return type == cstr;
+	}
+	bool operator==(const std::string& str, const DataType& type)
+	{
+		return type == str;
+	}
+
+	bool operator!=(const char* cstr, const DataType& type)
+	{
+		return type != cstr;
+	}
+	bool operator!=(const std::string& str, const DataType& type)
+	{
+		return type != str;
+	}
+
+	DataType operator+(const char* cstr, const DataType& type)
+	{
+		return type + cstr;
+	}
+	DataType operator+(const std::string& str, const DataType& type)
+	{
+		return type + str;
+	}
 }
 

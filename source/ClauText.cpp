@@ -2227,7 +2227,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					wiz::load_data::LoadData::LoadDataFromString(data, dataUT);
 
 					{
-						std::string id = dataUT.GetUserTypeItem("Event")[0]->GetItem("id")[0].Get(0);
+						std::string id = dataUT.GetUserTypeItem("Event")[0]->GetItem("id")[0].Get(0).ToString();
 						{
 							EventInfo info;
 							for (int j = 0; j < val->GetItemListSize(); ++j) {
