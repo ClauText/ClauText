@@ -36,6 +36,21 @@ namespace wiz {
 		return -1;
 	}
 
+	int DataType::GetType()const {
+		if (change) {
+			if (wiz::load_data::Utility::IsInteger(str_value)) {
+				type = 3;
+			}
+			else if (wiz::load_data::Utility::IsDouble(str_value)) {
+				type = 5;
+			}
+			else {
+				throw "error in gettype in datatype";
+			}
+		}
+		return type;
+	}
+
 	void DataType::SetInt(long long val)
 	{
 		this->type = 3;
@@ -53,6 +68,7 @@ namespace wiz {
 	DataType::DataType(const char* cstr)
 	{
 		this->str_value = std::string(cstr);
+		/* // #ifdef DataTypeDebug?
 		this->change = true;
 
 		if (wiz::load_data::Utility::IsInteger(this->str_value)) {
@@ -66,12 +82,14 @@ namespace wiz {
 		else {
 			this->type = 1;
 		}
+		*/
 
-		this->change = false;
+		this->change = true; // false;
 	}
 	DataType::DataType(const std::string& str)
 	{
 		this->str_value = str;
+		/*
 		this->change = true;
 
 		if (wiz::load_data::Utility::IsInteger(this->str_value)) {
@@ -85,8 +103,8 @@ namespace wiz {
 		else {
 			this->type = 1;
 		}
-
-		this->change = false;
+		*/
+		this->change = true; // false;
 	}
 
 
