@@ -60,13 +60,15 @@ namespace wiz {
 		this->type = 3;
 		this->int_value = val;
 		this->str_value = wiz::_toString(val);
+		change = false;
 	}
 
 	void DataType::SetFloat(long double val)
 	{
 		this->type = 5;
 		this->float_value = val;
-		str_value = wiz::_toString(val);
+		this->str_value = wiz::_toString(val);
+		change = false;
 	}
 
 	DataType::DataType(const char* cstr)
