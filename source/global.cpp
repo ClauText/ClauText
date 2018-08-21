@@ -48,7 +48,7 @@ namespace wiz {
 				throw "error in gettype in datatype";
 			}
 		}
-		change = false;
+		
 		return type;
 	}
 
