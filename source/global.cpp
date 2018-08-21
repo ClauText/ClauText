@@ -39,16 +39,19 @@ namespace wiz {
 	int DataType::GetType()const {
 		if (change) {
 			if (wiz::load_data::Utility::IsInteger(str_value)) {
-				type = 3;
+				type = 3; 
+				int_value = ToInt();
 			}
 			else if (wiz::load_data::Utility::IsDouble(str_value)) {
 				type = 5;
+				float_value = ToFloat();
 			}
 			else {
 				throw "error in gettype in datatype";
 			}
 		}
-		
+		change = false;
+
 		return type;
 	}
 
