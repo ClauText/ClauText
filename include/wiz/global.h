@@ -33,7 +33,7 @@ namespace wiz {
 		std::string str_value;
 		mutable long long int_value;
 		mutable long double float_value;
-		int type = 0;
+		mutable int type = 0;
 		mutable bool change = false;
 	public:
 		DataType() { int_value = 0; float_value = 0; }
@@ -43,9 +43,7 @@ namespace wiz {
 		void SetInt(long long val);
 		void SetFloat(long double val);
 	public:
-		int GetType()const {
-			return type;
-		}
+		int GetType()const;
 	public:
 		bool operator==(const DataType& type) const;
 		bool operator==(const char* cstr) const;
@@ -67,9 +65,6 @@ namespace wiz {
 			return str_value;
 		}
 		long long ToInt() const {
-			if (type != 3) {
-				throw "type is not integer";
-			}
 			if (change) {
 				int_value = std::stoll(str_value);
 				change = false;
@@ -77,9 +72,6 @@ namespace wiz {
 			return int_value;
 		}
 		long double ToFloat() const {
-			if (type != 5) {
-				throw "type is not float";
-			}
 			if (change) {
 				float_value = std::stold(str_value);
 				change = false;
