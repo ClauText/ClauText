@@ -1,5 +1,4 @@
-﻿
-#ifndef GLOBAL_H_INCLUDED
+﻿#ifndef GLOBAL_H_INCLUDED
 #define GLOBAL_H_INCLUDED
 
 #include <vector>
