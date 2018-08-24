@@ -1377,9 +1377,9 @@ namespace wiz {
 			tokenVec.reserve(result.size());
 
 			{
-				//wiz::StringTokenizer tokenizer(std::move(result), { " ", "\n", "\t", "\r" }, builder, 1); // , "{", "=", "}" }); //
+				wiz::StringTokenizer tokenizer(std::move(result), { " ", "\n", "\t", "\r" }, builder, 1); // , "{", "=", "}" }); //
 																										  //wiz::StringTokenizer tokenizer2(result, { " ", "\n", "\t", "\r" } ); //
-																											//vector<WIZ_STRING_TYPE> tokenVec2;
+					/*																						//vector<WIZ_STRING_TYPE> tokenVec2;
 				int len = 0;
 				for (int i = 0; i < result.size(); ++i) {
 					bool chk = wiz::isWhitespace(result[i]);
@@ -1398,12 +1398,12 @@ namespace wiz {
 				if (len > 0) {
 					tokenVec.push_back(std::string(result.c_str() + result.size() - len, len));
 				}
-				/*
+				*/
 				tokenVec.reserve(tokenizer.countTokens());
 				while (tokenizer.hasMoreTokens()) {
 					tokenVec.push_back(tokenizer.nextToken());
 				}
-				*/
+				
 
 				for (int i = tokenVec.size() - 1; i >= 0; --i)
 				{
