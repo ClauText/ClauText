@@ -8,7 +8,7 @@
 #include <regex>
 
 #include "global.h"
-#include "newArrays.h"
+#include "newarrays.h"
 #include "queues.h"
 #include "cpp_string.h"
 
