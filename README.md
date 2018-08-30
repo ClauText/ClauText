@@ -22,3 +22,5 @@
         before_value?, get ut ??
   5. DONE - Copy function!
   6. DONE - std::map -> wiz::ArrayMap
+  7. DONE - makefile added!
+  8. TODO - with LGTM, fix warnings. https://lgtm.com/projects/g/ClauText/ClauText/
