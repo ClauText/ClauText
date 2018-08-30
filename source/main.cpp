@@ -156,7 +156,7 @@ int main(int argc, char* argv[])
 		std::cout << e << std::endl;
 		GETCH();
 	}
-	catch (std::exception e) {
+	catch (const std::exception&e) {
 		std::cout << e.what() << std::endl;
 		GETCH();
 	}
