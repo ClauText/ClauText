@@ -3218,7 +3218,7 @@ namespace wiz {
 					}
 					catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
 					catch (const std::string& e) { std::cout << e << std::endl; inFile.close(); return false; }
-					catch (std::exception e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
+					catch (const std::exception&e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
 					catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
 
 					global = std::move(globalTemp);
@@ -3285,7 +3285,7 @@ namespace wiz {
 				}
 				catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
 				catch (const std::string& e) { std::cout << e << std::endl; inFile.close(); return false; }
-				catch (std::exception e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
+				catch (const std::exception&e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
 				catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
 
 				global = std::move(globalTemp);
@@ -3702,10 +3702,10 @@ namespace wiz {
 
 					inFile.close();
 				}
-				catch (Error e) { std::cout << e << std::endl; inFile.close(); return false; }
+				catch (const Error& e) { std::cout << e << std::endl; inFile.close(); return false; }
 				catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
 				catch (const std::string& e) { std::cout << e << std::endl; inFile.close(); return false; }
-				catch (std::exception e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
+				catch (const std::exception&e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
 				catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
 
 				global = std::move(globalTemp);
@@ -3748,10 +3748,10 @@ namespace wiz {
 					inFile.close();
 				}
 				/*
-				catch (Error e) { std::cout << e << std::endl; inFile.close(); return false; }
+				catch (const Error& e) { std::cout << e << std::endl; inFile.close(); return false; }
 				catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
 				catch (const std::string& e) { std::cout << e << std::endl; inFile.close(); return false; }
-				catch (std::exception e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
+				catch (const std::exception&e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
 				catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
 				*/
 				global = std::move(globalTemp);
@@ -3796,10 +3796,10 @@ namespace wiz {
 
 					inFile.close();
 				}
-				catch (Error e) { std::cout << e << std::endl; inFile.close(); return false; }
+				catch (const Error& e) { std::cout << e << std::endl; inFile.close(); return false; }
 				catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
 				catch (const std::string& e) { std::cout << e << std::endl; inFile.close(); return false; }
-				catch (std::exception e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
+				catch (const std::exception&e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
 				catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
 
 				global = std::move(globalTemp);
@@ -3885,10 +3885,10 @@ namespace wiz {
 
 					inFile.close();
 				}
-				catch (Error e) { std::cout << e << std::endl; inFile.close(); return false; }
+				catch (const Error& e) { std::cout << e << std::endl; inFile.close(); return false; }
 				catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
 				catch (const std::string& e) { std::cout << e << std::endl; inFile.close(); return false; }
-				catch (std::exception e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
+				catch (const std::exception&e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
 				catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
 
 				RemoveQuotation(&globalTemp);
@@ -3984,10 +3984,10 @@ namespace wiz {
 
 					inFile.close();
 				}
-				catch (Error e) { std::cout << e << std::endl; inFile.close(); return false; }
+				catch (const Error& e) { std::cout << e << std::endl; inFile.close(); return false; }
 				catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
 				catch (const std::string& e) { std::cout << e << std::endl; inFile.close(); return false; }
-				catch (std::exception e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
+				catch (const std::exception&e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
 				catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
 
 				ConvertHtmlToClau(&globalTemp, &global);
@@ -6327,7 +6327,7 @@ namespace wiz {
 							ut->GetUserTypeList(i)->SetName(_val);
 						}
 						else {
-						//	if (cond.Now().size() != 1 || "ERROR" == cond.Now()[0]) {
+						//	if (cond.Now().size() != 1 || "Error" == cond.Now()[0]) {
 							//	for (int i = 0; i < cond.Now().size(); ++i) {
 							//		std::cout << cond.Now()[i] << " ";
 							//	}

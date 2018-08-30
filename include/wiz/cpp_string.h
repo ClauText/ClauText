@@ -52,7 +52,7 @@ namespace wiz{
 			
 			std::string temp = str;
 			
-			for (std::string::size_type i = temp.size() - str1.size(); i >= 0;) {
+			for (int i = temp.size() - str1.size(); i >= 0;) {
 				i = temp.rfind(str1.c_str(), i);
 
 				if (i == std::string::npos) {
