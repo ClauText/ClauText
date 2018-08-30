@@ -384,7 +384,9 @@ namespace wiz {
 
 				for (int i = 0; i < operandNum; ++i) {
 					std::string temp = operandStack.pop().ToString();
-					if (temp.size() >= 3 && temp.back() == temp.front() && temp.back() == '\"') {}
+					if (temp.size() >= 3 && temp.back() == temp.front() && temp.back() == '\"') {
+						// pass
+					}
 					else {
 						operandStack.push("ERROR in $concat3, 1. must be \" \" ");
 						return false;
@@ -638,14 +640,14 @@ namespace wiz {
 				operandStack.push(x);
 			}
 			else if ("$regex" == str) {
-				std::string str = operandStack.pop().ToString();
+				std::string _str = operandStack.pop().ToString();
 				std::string rgx_str = operandStack.pop().ToString();
 
 				// " ~ " , "제거?
 				if (rgx_str.size() > 2 && rgx_str[0] == rgx_str.back() && rgx_str[0] == '\"') {
 					std::regex rgx(rgx_str.substr(1, rgx_str.size() - 2));
 
-					if (std::regex_match(str, rgx))
+					if (std::regex_match(_str, rgx))
 					{
 						operandStack.push("TRUE");
 					}
@@ -658,18 +660,18 @@ namespace wiz {
 				}
 			}
 			else if ("$eval" == str) { //// now, no need ?
-				std::string str = operandStack.pop().ToString();
+				std::string _str = operandStack.pop().ToString();
 
-				bool chk = wiz::load_data::Utility::ChkExist(str);
+				bool chk = wiz::load_data::Utility::ChkExist(_str);
 				if (chk) {
 				}
 				else {
 					operandStack.push("ERROR in $eval, must be \" \" ");
 					return false;
 				}
-				str = str.substr(1, str.size() - 2);
+				_str = _str.substr(1, _str.size() - 2);
 				{
-					WIZ_STRING_TYPE result = ToBool4(now, global, str, excuteData, builder);
+					WIZ_STRING_TYPE result = ToBool4(now, global, _str, excuteData, builder);
 
 					operandStack.push(std::move(result));
 				}
@@ -677,8 +679,8 @@ namespace wiz {
 			// big
 			else if ("$is_quoted_str" == str)
 			{
-				std::string str = operandStack.pop().ToString();
-				if (str.size() >= 2 && str[0] == str.back() && '\"' == str[0])
+				std::string _str = operandStack.pop().ToString();
+				if (_str.size() >= 2 && _str[0] == _str.back() && '\"' == _str[0])
 				{
 					operandStack.push("TRUE");
 				}
@@ -689,8 +691,8 @@ namespace wiz {
 			// small
 			else if ("$is_quoted_str2" == str)
 			{
-				std::string str = operandStack.pop().ToString();
-				if (str.size() >= 2 && str[0] == str.back() && '\'' == str[0])
+				std::string _str = operandStack.pop().ToString();
+				if (_str.size() >= 2 && _str[0] == _str.back() && '\'' == _str[0])
 				{
 					operandStack.push("TRUE");
 				}
@@ -699,55 +701,55 @@ namespace wiz {
 				}
 			}
 			else if ("$to_quoted_str" == str) {
-				std::string str = operandStack.pop().ToString();
-				str.push_back('\"');
-				str.insert(str.begin(), '\"');
-				operandStack.push(str);
+				std::string _str = operandStack.pop().ToString();
+				_str.push_back('\"');
+				_str.insert(_str.begin(), '\"');
+				operandStack.push(_str);
 			}
 			else if ("$to_quoted_str2" == str) {
-				std::string str = operandStack.pop().ToString();
-				str.push_back('\'');
-				str.insert(str.begin(), '\'');
-				operandStack.push(str);
+				std::string _str = operandStack.pop().ToString();
+				_str.push_back('\'');
+				_str.insert(_str.begin(), '\'');
+				operandStack.push(_str);
 			}
 			else if ("$add_small_quoted" == str) {
-				std::string str = operandStack.pop().ToString();
-				str.push_back('\'');
-				str.insert(str.begin(), '\'');
-				operandStack.push(str);
+				std::string _str = operandStack.pop().ToString();
+				_str.push_back('\'');
+				_str.insert(_str.begin(), '\'');
+				operandStack.push(_str);
 			}
 			else if ("$remove_quoted" == str) { // chk "" WIZ_STRING_TYPE problem?
-				std::string str = operandStack.pop().ToString();
+				std::string _str = operandStack.pop().ToString();
 
-				if (str.size() > 0 && str.front() == str.back()
-					&& '\"' == str.back()
+				if (_str.size() > 0 && _str.front() == _str.back()
+					&& '\"' == _str.back()
 					)
 				{
-					str = wiz::String::substring(str, 1, str.size() - 2);
+					_str = wiz::String::substring(_str, 1, _str.size() - 2);
 				}
 
-				operandStack.push(str);
+				operandStack.push(_str);
 			}
 			else if ("$remove_quoted2" == str) { // chk "" WIZ_STRING_TYPE problem?
-				std::string str = operandStack.pop().ToString();
+				std::string _str = operandStack.pop().ToString();
 
-				if (str.size() > 0 && str.front() == str.back()
-					&& '\'' == str.back()
+				if (_str.size() > 0 && _str.front() == _str.back()
+					&& '\'' == _str.back()
 					)
 				{
-					str = wiz::String::substring(str, 1, str.size() - 2);
+					_str = wiz::String::substring(_str, 1, _str.size() - 2);
 				}
 
 				operandStack.push(str);
 			}
 			else if ("$remove_small_quoted" == str) { // chk "" WIZ_STRING_TYPE problem?
-				std::string str = operandStack.pop().ToString();
+				std::string _str = operandStack.pop().ToString();
 
-				if (str.size() > 0 && str.front() == str.back()
-					&& '\'' == str.back()
+				if (_str.size() > 0 && _str.front() == _str.back()
+					&& '\'' == _str.back()
 					)
 				{
-					str = wiz::String::substring(str, 1, str.size() - 2);
+					_str = wiz::String::substring(_str, 1, _str.size() - 2);
 				}
 
 				operandStack.push(str);
@@ -1081,37 +1083,37 @@ namespace wiz {
 			}
 			//contains,
 			else if ("$contains" == str) {
-				std::string str = operandStack.pop().ToString();
+				std::string _str = operandStack.pop().ToString();
 				std::string chk_str = operandStack.pop().ToString();
 
-				operandStack.push(std::string::npos != str.find(chk_str) ? "TRUE" : "FALSE");
+				operandStack.push(std::string::npos != _str.find(chk_str) ? "TRUE" : "FALSE");
 			}
 			//starts_with, ends_with,
 			else if ("$starts_with" == str) {
-				std::string str = operandStack.pop().ToString();
+				std::string _str = operandStack.pop().ToString();
 				std::string chk_str = operandStack.pop().ToString();
 
-				operandStack.push(wiz::String::startsWith(str, chk_str) ? "TRUE" : "FALSE");
+				operandStack.push(wiz::String::startsWith(_str, chk_str) ? "TRUE" : "FALSE");
 			}
 			else if ("$ends_with" == str) {
-				std::string str = operandStack.pop().ToString();
+				std::string _str = operandStack.pop().ToString();
 				std::string chk_str = operandStack.pop().ToString();
 
-				operandStack.push(wiz::String::endsWith(str, chk_str) ? "TRUE" : "FALSE");
+				operandStack.push(wiz::String::endsWith(_str, chk_str) ? "TRUE" : "FALSE");
 			}
 			//WIZ_STRING_TYPE - length,
 			else if ("$string_length" == str) {
-				std::string str = operandStack.pop().ToString();
+				std::string _str = operandStack.pop().ToString();
 	
-				operandStack.push(wiz::_toString(str.size()));
+				operandStack.push(wiz::_toString(_str.size()));
 			}
 			//substring ?
 			else if ("$substring" == str) {
-				std::string str = operandStack.pop().ToString();
+				std::string _str = operandStack.pop().ToString();
 				long long begin = stoll(operandStack.pop().ToString());
 				long long end = stoll(operandStack.pop().ToString());
 
-				operandStack.push(wiz::String::substring(str, begin, end - 1));
+				operandStack.push(wiz::String::substring(_str, begin, end - 1));
 			}
 
 			// todo - Is~ ?? others ??
@@ -1172,18 +1174,18 @@ namespace wiz {
 					}
 					if (last != -1)
 					{
-						std::string temp = FindParameters(parameters, wiz::String::substring(tokenVec[i], 0, last));
+						std::string _temp = FindParameters(parameters, wiz::String::substring(tokenVec[i], 0, last));
 
-						if (!temp.empty()) {
-							tokenVec[i] = wiz::String::replace(wiz::String::substring(tokenVec[i], 0, last), wiz::String::substring(tokenVec[i], 0, last), std::move(temp))
+						if (!_temp.empty()) {
+							tokenVec[i] = wiz::String::replace(wiz::String::substring(tokenVec[i], 0, last), wiz::String::substring(tokenVec[i], 0, last), std::move(_temp))
 								+ wiz::String::substring(tokenVec[i], last + 1);
 						}
 					}
 					else
 					{
-						std::string temp = FindParameters(parameters, tokenVec[i]);
-						if (!temp.empty()) {
-							tokenVec[i] = std::move(temp);
+						std::string _temp = FindParameters(parameters, tokenVec[i]);
+						if (!_temp.empty()) {
+							tokenVec[i] = std::move(_temp);
 						}
 					}
 				}
@@ -1198,18 +1200,18 @@ namespace wiz {
 					}
 					if (last != -1)
 					{
-						std::string temp = FindLocals(info.locals, wiz::String::substring(tokenVec[i], 0, last));
+						std::string _temp = FindLocals(info.locals, wiz::String::substring(tokenVec[i], 0, last));
 
-						if (!temp.empty()) {
-							tokenVec[i] = wiz::String::replace(wiz::String::substring(tokenVec[i], 0, last), wiz::String::substring(tokenVec[i], 0, last), std::move(temp))
+						if (!_temp.empty()) {
+							tokenVec[i] = wiz::String::replace(wiz::String::substring(tokenVec[i], 0, last), wiz::String::substring(tokenVec[i], 0, last), std::move(_temp))
 								+ wiz::String::substring(tokenVec[i], last + 1);
 						}
 					}
 					else
 					{
-						std::string temp = FindLocals(info.locals, tokenVec[i]);
-						if (!temp.empty()) {
-							tokenVec[i] = std::move(temp);
+						std::string _temp = FindLocals(info.locals, tokenVec[i]);
+						if (!_temp.empty()) {
+							tokenVec[i] = std::move(_temp);
 						}
 					}
 				}
@@ -1244,18 +1246,18 @@ namespace wiz {
 					}
 					if (last != -1)
 					{
-						std::string temp = FindParameters(parameters, wiz::String::substring(tokenVec[i], 0, last));
+						std::string _temp = FindParameters(parameters, wiz::String::substring(tokenVec[i], 0, last));
 
-						if (!temp.empty()) {
-							tokenVec[i] = wiz::String::replace(wiz::String::substring(tokenVec[i], 0, last), wiz::String::substring(tokenVec[i], 0, last), std::move(temp))
+						if (!_temp.empty()) {
+							tokenVec[i] = wiz::String::replace(wiz::String::substring(tokenVec[i], 0, last), wiz::String::substring(tokenVec[i], 0, last), std::move(_temp))
 								+ wiz::String::substring(tokenVec[i], last + 1);
 						}
 					}
 					else
 					{
-						std::string temp = FindParameters(parameters, tokenVec[i]);
-						if (!temp.empty()) {
-							tokenVec[i] = std::move(temp);
+						std::string _temp = FindParameters(parameters, tokenVec[i]);
+						if (!_temp.empty()) {
+							tokenVec[i] = std::move(_temp);
 						}
 					}
 				}
@@ -1270,18 +1272,18 @@ namespace wiz {
 					}
 					if (last != -1)
 					{
-						std::string temp = FindLocals(info.locals, wiz::String::substring(tokenVec[i], 0, last));
+						std::string _temp = FindLocals(info.locals, wiz::String::substring(tokenVec[i], 0, last));
 
-						if (!temp.empty()) {
-							tokenVec[i] = wiz::String::replace(wiz::String::substring(tokenVec[i], 0, last), wiz::String::substring(tokenVec[i], 0, last), std::move(temp))
+						if (!_temp.empty()) {
+							tokenVec[i] = wiz::String::replace(wiz::String::substring(tokenVec[i], 0, last), wiz::String::substring(tokenVec[i], 0, last), std::move(_temp))
 								+ wiz::String::substring(tokenVec[i], last + 1);
 						}
 					}
 					else
 					{
-						std::string temp = FindLocals(info.locals, tokenVec[i]);
-						if (!temp.empty()) {
-							tokenVec[i] = std::move(temp);
+						std::string _temp = FindLocals(info.locals, tokenVec[i]);
+						if (!_temp.empty()) {
+							tokenVec[i] = std::move(_temp);
 						}
 					}
 				}
@@ -1349,10 +1351,10 @@ namespace wiz {
 			if (!flag_B) { // chk
 				if ('/' == result[0] && result.size() > 1)
 				{
-					std::string temp = Find(&global, result, builder);
+					std::string _temp = Find(&global, result, builder);
 
-					if (!temp.empty()) {
-						result = std::move(temp);
+					if (!_temp.empty()) {
+						result = std::move(_temp);
 						return result;
 					}
 				}
