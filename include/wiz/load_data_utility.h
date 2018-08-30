@@ -12,14 +12,12 @@
 #include <thread> // maybe error with C++/CLI?
 #include <algorithm>
 
-
+#include "load_data_types.h"
 #include "cpp_string.h"
 #include "STRINGBUILDER.H"
 
 namespace wiz {
 	namespace load_data {
-		class UserType;
-
 		class Utility
 		{
 		public:

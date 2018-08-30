@@ -1,12 +1,14 @@
 ﻿#ifndef GLOBAL_H_INCLUDED
 #define GLOBAL_H_INCLUDED
 
+
 #include <vector>
 #include <list>
 #include <string>
 #include <iostream>
 #include <cmath>
 #include <deque>
+#include <algorithm>
 
 #ifdef _MSC_VER 
 #include <conio.h>
