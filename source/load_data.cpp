@@ -379,7 +379,7 @@ namespace wiz {
 				}
 				operandStack.push(result);
 			}
-			else if ("$concat3" == str) { // for special case? "abc" "def" "ghi" -> "abcdefghi"
+			else if ("$concat3" == str) { // for special case? "abc" "def" "ghi" -> "abc def ghi"
 				WIZ_STRING_TYPE result;
 
 				for (int i = 0; i < operandNum; ++i) {
