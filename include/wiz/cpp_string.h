@@ -186,17 +186,24 @@ namespace wiz{
 		static const std::vector<std::string> whitespaces;
 		int option;
 	private:
-		int FastFind(const char* str, const int n, const std::string& pat, const std::vector<int>& f) {
+		int FastFind(const char* str, const int n, const std::string& pat, const std::vector<int>& f, int min) {
 			int posP = 0, posS = 0;
 			const int lengthP = pat.size();
 			const int lengthS = n;
 
 			while (posP < lengthP && posS < lengthS) {
+				// optimized!
+				if (posS - lengthP > min) {
+					return -1;
+				}
+				
 				if (pat[posP] == str[posS]) {
-					posP++; posS++;
+					++posP; ++posS;
 				}
 				else {
-					if (0 == posP) { posS++; }
+					if (0 == posP) { 
+						++posS; 
+					}
 					else {
 						posP = f[posP - 1] + 1;
 					}
@@ -313,10 +320,10 @@ namespace wiz{
 						continue;
 					}
 
-					int min, min_idx = -1;
+					int min = INT_MAX, min_idx = -1;
 
 					for (int j = 0; j < sep_size; ++j) {
-						const int idx = FastFind(str.c_str() + i, str.size() - i, separator[j], f[j]);
+						const int idx = FastFind(str.c_str() + i, str.size() - i, separator[j], f[j], min);
 
 						if (-1 < idx) { 
 							pass = true; 
@@ -324,7 +331,7 @@ namespace wiz{
 								min = idx;
 								min_idx = j;
 							}
-							else if (idx > -1 && min > idx) {
+							else if (min > idx) {
 								min = idx;
 								min_idx = j;
 							}
@@ -479,10 +486,10 @@ namespace wiz{
 						continue;
 					}
 
-					int min, min_idx = -1;
+					int min = INT_MAX, min_idx = -1;
 
 					for (int j = 0; j < sep_size; ++j) {
-						const int idx = FastFind(str.c_str() + i, str.size() - i, separator[j], f[j]);
+						const int idx = FastFind(str.c_str() + i, str.size() - i, separator[j], f[j], min);
 
 						if (-1 < idx) {
 							pass = true;
@@ -490,7 +497,7 @@ namespace wiz{
 								min = idx;
 								min_idx = j;
 							}
-							else if (idx > -1 && min > idx) {
+							else if (min > idx) {
 								min = idx;
 								min_idx = j;
 							}

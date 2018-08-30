@@ -315,7 +315,7 @@ public:
     }
 	const T& Top()const { return p[count - 1]; }
 	T& Top() { return p[count - 1]; }
-    const T getTop()const
+    T getTop()const
     {
         if( isEmpty() )
         {

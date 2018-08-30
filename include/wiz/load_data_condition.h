@@ -509,7 +509,7 @@ namespace wiz {
 					}
 				}
 				catch (const char* err) { std::cout << err << std::endl; return false; }
-				catch (std::string err) { std::cout << err << std::endl; return false; }
+				catch (const std::string& err) { std::cout << err << std::endl; return false; }
 				catch (Error& e) { std::cout << e << std::endl; return false; }
 				return true;
 			}

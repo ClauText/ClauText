@@ -66,7 +66,7 @@ public:
 
 //
 public:
-	explicit Array(const long long N, const T reset_val = T()) : N(N)
+	explicit Array(const long long N, const T& reset_val = T()) : N(N)
 	{
 #ifdef ARRAYS_DEBUG
 		wiz::checkUnderError(2, N, 1);

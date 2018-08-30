@@ -4192,7 +4192,7 @@ namespace wiz {
 				catch (Error& e) { std::cout << e << std::endl; return false; }
 				catch (const char* err) { std::cout << err << std::endl; return false; }
 				catch (std::exception& e) { std::cout << e.what() << std::endl; return false; }
-				catch (std::string str) { std::cout << str << std::endl; return false; }
+				catch (const std::string& estr) { std::cout << str << std::endl; return false; }
 				catch (...) { std::cout << "not expected error" << std::endl; return  false; }
 
 				ut = std::move(utTemp);
@@ -4228,7 +4228,7 @@ namespace wiz {
 				catch (Error& e) { std::cout << e << std::endl; return false; }
 				catch (const char* err) { std::cout << err << std::endl; return false; }
 				catch (std::exception& e) { std::cout << e.what() << std::endl; return false; }
-				catch (std::string str) { std::cout << str << std::endl; return false; }
+				catch (const std::string& e) { std::cout << str << std::endl; return false; }
 				catch (...) { std::cout << "not expected error" << std::endl; return  false; }
 
 				{
