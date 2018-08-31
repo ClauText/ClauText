@@ -1,7 +1,7 @@
 ﻿#ifndef GLOBAL_H_INCLUDED
 #define GLOBAL_H_INCLUDED
 
-
+#include <climits>
 #include <vector>
 #include <list>
 #include <string>
