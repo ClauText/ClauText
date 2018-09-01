@@ -1,4 +1,4 @@
-# ClauText
+# ClauText[![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/ClauText/ClauText.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ClauText/ClauText/context:cpp)
   My Own Language for Editing? of Paradox Game(Clausewitz Engine) Data
 # Feature
   1. Parallel Load Data From File (cf JSON Parser)
