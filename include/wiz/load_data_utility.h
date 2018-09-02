@@ -1059,7 +1059,8 @@ namespace wiz {
 						for (int i = 0; i < statement.Size(); ++i) {
 							long long idx;
 
-							if (statement[i] == '\0') {
+							//if (statement[i] == '\0') {
+							if (i == statement.Size() - 1) {
 								if (token_last >= 0 && token_last - token_first + 1 > 0) {
 									statement.Divide(i);
 
@@ -1528,7 +1529,7 @@ namespace wiz {
 								}
 								for (; x < last; ++x) {
 									token_last++;
-									if (*x == '\n' || *x == '\0') // cf) '\r' ? '\0'?
+									if (*x == '\n') //|| *x == '\0') // cf) '\r' ? '\0'?
 									{
 										break;
 									}
@@ -1654,7 +1655,7 @@ namespace wiz {
 
 					builder[(count) % coreNum].Append(temp.c_str(), temp.size());
 					builder[(count) % coreNum].AppendChar('\n');
-					
+
 
 					if ((count2 + 1) % 50000 == 0)
 					{
@@ -1715,7 +1716,7 @@ namespace wiz {
 					const unsigned long long length = inFile.tellg();
 					inFile.seekg(0, inFile.beg);
 
-					buffer = new char[length + 1]; // 
+					buffer = new char[length + 2]; // 
 
 												   // read data as a block:
 					inFile.read(buffer, length);
@@ -1724,6 +1725,7 @@ namespace wiz {
 					inFile >> temp;
 
 					buffer[length] = '\0';
+					buffer[length + 1] = '\0';
 
 					start[0] = 0;
 
@@ -1733,7 +1735,7 @@ namespace wiz {
 						start[i] = length / thr_num * i;
 						for (int x = start[i]; x <= length; ++x) {
 							// here bug is..  " check "
-							if ('\r' == buffer[x] || '\n' == (buffer[x]) || '\0' == buffer[x]) {
+							if ('\r' == buffer[x] || '\n' == (buffer[x]) || x == length) {
 								start[i] = x;
 								//	std::cout << "start " << start[i] << std::endl;
 								break;
@@ -1743,7 +1745,7 @@ namespace wiz {
 					for (int i = 0; i < thr_num - 1; ++i) {
 						last[i] = start[i + 1] - 1;
 						for (int x = last[i]; x <= length; ++x) {
-							if ('\r' == buffer[x] || '\n' == (buffer[x]) || '\0' == buffer[x]) {
+							if ('\r' == buffer[x] || '\n' == (buffer[x]) || x == length) {
 								last[i] = x;
 								//	std::cout << "start " << start[i] << std::endl;
 								break;
@@ -1758,11 +1760,12 @@ namespace wiz {
 					const unsigned long long length = inFile.tellg();
 					inFile.seekg(0, inFile.beg);
 
-					buffer = new char[length + 1]; // 
+					buffer = new char[length + 2]; // 
 
 												   // read data as a block:
 					inFile.read(buffer, length);
 					buffer[length] = '\0';
+					buffer[length + 1] = '\0';
 
 					inFile.seekg(0, inFile.end);
 					char temp;
