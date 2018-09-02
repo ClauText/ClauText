@@ -2864,11 +2864,23 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						if (listName.size() >= 2 && listName[0] == '\"' && listName.back() == '\"')
 						{
 							listName = wiz::String::substring(listName, 1, listName.size() - 2);
-							std::cout << listName;
+							std::string data;
+							int count = 0;
+							for (int _i = 0; _i < listName.size(); ++_i) {
+								data += listName[_i];
+								if (listName[_i] < 0) {
+									count++;
+									if (count == 2) {
+										data += "\0";
+										count = 0;
+									}
+								}
+							}
+							std::cout << data;
 						}
 						else if (listName.size() == 2 && listName[0] == '\\' && listName[1] == 'n')
 						{
-							std::cout << std::endl;
+							std::cout << '\n';
 						}
 						else if (wiz::String::startsWith(listName, "$local.")
 							|| wiz::String::startsWith(listName, "$parameter.")
