@@ -24,3 +24,4 @@
   6. DONE - std::map -> wiz::ArrayMap
   7. DONE - makefile added!
   8. TODO - with LGTM, fix warnings. https://lgtm.com/projects/g/ClauText/ClauText/
+  9. NOTYET - UTF-8 Support?
