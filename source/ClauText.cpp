@@ -2864,7 +2864,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						if (listName.size() >= 2 && listName[0] == '\"' && listName.back() == '\"')
 						{
 							listName = wiz::String::substring(listName, 1, listName.size() - 2);
-							std::string data;
+							/*std::string data;
 							int count = 0;
 							for (int _i = 0; _i < listName.size(); ++_i) {
 								data += listName[_i];
@@ -2876,7 +2876,8 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 									}
 								}
 							}
-							std::cout << data;
+							std::cout << data;*/
+							std::cout << listName;
 						}
 						else if (listName.size() == 2 && listName[0] == '\\' && listName[1] == 'n')
 						{
