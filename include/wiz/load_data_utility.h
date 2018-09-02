@@ -1716,7 +1716,7 @@ namespace wiz {
 					const unsigned long long length = inFile.tellg();
 					inFile.seekg(0, inFile.beg);
 
-					buffer = new char[length + 2]; // 
+					buffer = new char[length +1]; // 
 
 												   // read data as a block:
 					inFile.read(buffer, length);
@@ -1725,7 +1725,7 @@ namespace wiz {
 					inFile >> temp;
 
 					buffer[length] = '\0';
-					buffer[length + 1] = '\0';
+					
 
 					start[0] = 0;
 
@@ -1760,12 +1760,11 @@ namespace wiz {
 					const unsigned long long length = inFile.tellg();
 					inFile.seekg(0, inFile.beg);
 
-					buffer = new char[length + 2]; // 
+					buffer = new char[length + 1]; // 
 
 												   // read data as a block:
 					inFile.read(buffer, length);
 					buffer[length] = '\0';
-					buffer[length + 1] = '\0';
 
 					inFile.seekg(0, inFile.end);
 					char temp;
