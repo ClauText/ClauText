@@ -76,7 +76,7 @@ public:
 		}
 		catch (const std::bad_alloc& e) {
 			std::cout << N << std::endl;
-			std::cout << e.what() << std::endl;
+			std::cout << e.what() << std::endl; 
 			std::cout << "memory alloc error in array" << std::endl;
 		}
 		//reset( reset_val );

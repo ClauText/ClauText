@@ -220,6 +220,7 @@ namespace wiz{
 		}
 		
 		// maybe this function has bug, when separator[idx].size() > 1?
+		//  "abc   ??
 		void Init(const std::string& str, const std::vector<std::string>& separator, StringBuilder* builder) // assumtion : separators are sorted by length?, long -> short
 		{
 			const int sep_size = separator.size();
@@ -259,8 +260,10 @@ namespace wiz{
 					int _select = -1;
 					bool pass = false;
 
-
-					if (1 == option && 0 == state && '\'' == str[i]) {
+					if (1 == option && 0 != state && str.size() - 1 == i) {
+						//
+					}
+					else if (1 == option && 0 == state && '\'' == str[i]) {
 						if (i == 0) {
 							state = 2;
 							continue;
@@ -323,6 +326,7 @@ namespace wiz{
 					else if (1 == option && 1 == state) {
 						continue;
 					}
+					
 
 					int min = INT_MAX, min_idx = -1;
 
@@ -425,8 +429,10 @@ namespace wiz{
 					int _select = -1;
 					bool pass = false;
 
-
-					if (1 == option && 0 == state && '\'' == str[i]) {
+					if (1 == option && 0 != state && str.size() - 1 == i) {
+						//
+					}
+					else if (1 == option && 0 == state && '\'' == str[i]) {
 						if (i == 0) {
 							state = 2;
 							continue;

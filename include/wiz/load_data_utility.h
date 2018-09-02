@@ -710,8 +710,8 @@ namespace wiz {
 						int state = 0;
 						bool isMultipleLineComment = false;
 						std::string token;
-					
-						
+
+
 						for (int i = 0; i < statement.Size(); ++i) {
 							long long idx;
 
@@ -725,12 +725,12 @@ namespace wiz {
 								}
 
 								aq->emplace_back(std::move(token), true);
-								
+
 								i = i + option->MuitipleLineCommentEnd[idx].size() - 1;
 
 								statement.Divide(i);
 								statement.LeftShift(i + 1);
-								
+
 								token.clear();
 
 								token_first = 0;
@@ -741,6 +741,11 @@ namespace wiz {
 							else if (isMultipleLineComment) {
 								token_last = i;
 
+								token.push_back(statement[i]);
+							}
+							else if (0 != state && ('\n' == statement[i])) {
+								state = 0;
+								token_last = i;
 								token.push_back(statement[i]);
 							}
 							else if (0 == state && '\'' == statement[i]) {
@@ -1059,7 +1064,8 @@ namespace wiz {
 						for (int i = 0; i < statement.Size(); ++i) {
 							long long idx;
 
-							//if (statement[i] == '\0') {
+							// has bug?
+							/*
 							if (i == statement.Size() - 1) {
 								if (token_last >= 0 && token_last - token_first + 1 > 0) {
 									statement.Divide(i);
@@ -1084,7 +1090,9 @@ namespace wiz {
 								}
 								aq->emplace_back("", true); // chk!
 							}
-							else if (isMultipleLineComment && -1 != (idx = checkDelimiter(statement, i, option.MuitipleLineCommentEnd)))
+							else 
+								*/
+							if (isMultipleLineComment && -1 != (idx = checkDelimiter(statement, i, option.MuitipleLineCommentEnd)))
 							{
 								isMultipleLineComment = false;
 
@@ -1392,8 +1400,13 @@ namespace wiz {
 						for (char* x = start; x < last; ++x) {
 							int offset = 0;
 							int idx;
-
-							if (0 == state && '\'' == *x) {
+							
+							if (0 != state && ('\n' == *x)) {
+								state = 0;
+								token_last = x;
+								token.push_back(*x);
+							}
+							else if (0 == state && '\'' == *x) {
 								//token_last = x - 1;
 								//if (token_last >= 0 && token_last - token_first + 1 > 0) {
 								//	aq->emplace_back(statement.substr(token_first, token_last - token_first + 1));
