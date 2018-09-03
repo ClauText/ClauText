@@ -745,7 +745,7 @@ namespace wiz {
 							}
 							else if (0 != state && ('\n' == statement[i])) {
 								state = 0;
-								token_last = i;
+								token_last = i - 1;
 							}
 							else if (0 == state && '\'' == statement[i]) {
 								//token_last = i - 1;
@@ -1402,7 +1402,7 @@ namespace wiz {
 							
 							if (0 != state && ('\n' == *x)) {
 								state = 0;
-								token_last = x;
+								token_last = x - 1;
 							}
 							else if (0 == state && '\'' == *x) {
 								//token_last = x - 1;
