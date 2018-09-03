@@ -18,6 +18,29 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\wiz\array_map.h" />
+    <ClInclude Include="..\include\wiz\ClauText.h" />
+    <ClInclude Include="..\include\wiz\cpp_string.h" />
+    <ClInclude Include="..\include\wiz\global.h" />
+    <ClInclude Include="..\include\wiz\load_data.h" />
+    <ClInclude Include="..\include\wiz\load_data_condition.h" />
+    <ClInclude Include="..\include\wiz\load_data_reservers.h" />
+    <ClInclude Include="..\include\wiz\load_data_types.h" />
+    <ClInclude Include="..\include\wiz\load_data_utility.h" />
+    <ClInclude Include="..\include\wiz\newarrays.h" />
+    <ClInclude Include="..\include\wiz\queues.h" />
+    <ClInclude Include="..\include\wiz\stacks.h" />
+    <ClInclude Include="..\include\wiz\STRINGBUILDER.H" />
+    <ClInclude Include="..\include\wiz\wizardError.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\ClauText.cpp" />
+    <ClCompile Include="..\source\global.cpp" />
+    <ClCompile Include="..\source\load_data.cpp" />
+    <ClCompile Include="..\source\main.cpp" />
+    <ClCompile Include="..\source\static_declaration.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{A9A5FF61-E3E3-4943-8051-3F101CC5C977}</ProjectGuid>
@@ -72,17 +95,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)/../include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)/include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(SolutionDir)/include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)/../include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)/include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(SolutionDir)/include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -105,6 +130,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -138,6 +164,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -146,29 +173,6 @@
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\source\ClauText.cpp" />
-    <ClCompile Include="..\..\source\global.cpp" />
-    <ClCompile Include="..\..\source\load_data.cpp" />
-    <ClCompile Include="..\..\source\main.cpp" />
-    <ClCompile Include="..\..\source\static_declaration.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Desktop\Clau\include\wiz\array_map.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\Clau\include\wiz\ClauText.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\Clau\include\wiz\cpp_string.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\Clau\include\wiz\global.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\Clau\include\wiz\load_data.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\Clau\include\wiz\load_data_condition.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\Clau\include\wiz\load_data_reservers.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\Clau\include\wiz\load_data_types.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\Clau\include\wiz\load_data_utility.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\Clau\include\wiz\newarrays.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\Clau\include\wiz\queues.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\Clau\include\wiz\stacks.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\Clau\include\wiz\STRINGBUILDER.H" />
-    <ClInclude Include="..\..\..\..\..\Desktop\Clau\include\wiz\wizardError.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

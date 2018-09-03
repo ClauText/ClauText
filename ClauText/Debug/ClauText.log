@@ -1852,4 +1852,4 @@ c:\users\vztpv\downloads\clautext-master (2)\clautext-master\include\wiz\load_da
 c:\users\vztpv\downloads\clautext-master (2)\clautext-master\include\wiz\load_data_utility.h(1971): warning C4018: '<': signed/unsigned mismatch
 c:\users\vztpv\downloads\clautext-master (2)\clautext-master\include\wiz\load_data_utility.h(1976): warning C4018: '<': signed/unsigned mismatch
   Generating Code...
-  ClauText.vcxproj -> C:\Users\vztpv\Downloads\ClauText-master (2)\ClauText-master\ClauText VS\Debug\ClauText.exe
+  ClauText.vcxproj -> C:\Users\vztpv\Downloads\ClauText-master (2)\ClauText-master\Debug\ClauText.exe

@@ -1,0 +1,11 @@
+﻿  ClauText.cpp
+c1xx : fatal error C1083: Cannot open source file: '..\..\source\ClauText.cpp': No such file or directory
+  global.cpp
+c1xx : fatal error C1083: Cannot open source file: '..\..\source\global.cpp': No such file or directory
+  load_data.cpp
+c1xx : fatal error C1083: Cannot open source file: '..\..\source\load_data.cpp': No such file or directory
+  main.cpp
+c1xx : fatal error C1083: Cannot open source file: '..\..\source\main.cpp': No such file or directory
+  static_declaration.cpp
+c1xx : fatal error C1083: Cannot open source file: '..\..\source\static_declaration.cpp': No such file or directory
+  Generating Code...
