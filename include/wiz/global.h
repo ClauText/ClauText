@@ -31,6 +31,33 @@
 ///
 
 namespace wiz {
+
+	// 0~n-2 : sorted, 
+	// 0~n-1 : not sorted(maybe?)
+	template <class T, class COMPARE>
+	void miniInsertSort(std::vector<T>& vec)
+	{
+		// 0.
+		if (vec.size() <= 1) {
+			return;
+		}
+
+		int idx = vec.size() - 1;
+		T last = vec.back();
+
+		// 1. find position;
+		for (int i = vec.size() - 2; i >= 0; --i) {
+			if (COMPARE()(last, vec[i])) {
+				idx = i;
+			}
+		}
+		// 2. shift and assign
+		for (int i = vec.size() - 1; i > idx; --i) {
+			vec[i] = std::move(vec[i - 1]);
+		}
+		vec[idx] = std::move(last);
+	}
+
 	class DataType {
 	private:
 		std::string str_value;

@@ -3762,7 +3762,7 @@ namespace wiz {
 			{
 				bool success = true;
 				std::ifstream inFile;
-				inFile.open(fileName, std::ios::binary);
+				inFile.open(fileName);
 
 
 				if (true == inFile.fail())
@@ -4366,6 +4366,7 @@ namespace wiz {
 				return SearchUserType(global, var, condition, excuteData, builder);
 			}
 
+			//cf) /$ and /$/ ??
 			static std::string GetRealDir(const std::string& dir, wiz::load_data::UserType* ut, wiz::StringBuilder* builder)
 			{
 				if (dir.find('$') == std::string::npos) {
@@ -4429,12 +4430,16 @@ namespace wiz {
 							_excuteData.noUseOutput = excuteData.noUseOutput;
 							//_excuteData.chkInfo = true;
 
+							
 							auto x = eventsTemp->GetUserTypeList(eventsTemp->GetUserTypeListSize() - 1)->GetUserTypeItem("$call");
 							for (int k = 0; k < x.size() && k + itemCount < ut[i]->GetItemListSize(); ++k) {
 								x[k]->GetItemList(1).Set(0, ut[i]->GetItemList(itemCount + k).GetName());
 								x[k]->GetItemList(2).Set(0, ut[i]->GetItemList(itemCount + k).Get(0));
 								x[k]->GetItemList(3).Set(0, "FALSE");
 								x[k]->GetItemList(4).Set(0, GetRealDir(dir, ut[i], builder));
+								wiz::DataType temp;
+								temp.SetInt(j);
+								x[k]->GetItemList(5).Set(0, temp);
 							}
 							std::string result = pExcuteModule->excute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
 
@@ -4478,6 +4483,10 @@ namespace wiz {
 							x[k]->GetItemList(3).Set(0, "TRUE");
 							const std::string name = ut[i]->GetUserTypeList(utCount)->GetName().ToString();
 							x[k]->GetItemList(4).Set(0, GetRealDir(dir + (name.empty() ? "_" : name) + "/", ut[i]->GetUserTypeList(utCount), builder));
+							
+							wiz::DataType temp;
+							temp.SetInt(j);
+							x[k]->GetItemList(5).Set(0, temp);
 						}
 
 						Option opt;
@@ -4505,16 +4514,16 @@ namespace wiz {
 				}
 			}
 			// new function! - check UserType::Find().second[0] ?
-			static void Iterate(wiz::load_data::UserType& global, const std::string& dir, const std::vector<std::string>& events, const std::string& recursive, const ExcuteData& excuteData, wiz::StringBuilder* builder)
+			static void Iterate(wiz::load_data::UserType& global, const std::string& dir, const std::vector<std::string>& events, const std::string& recursive, const std::string& before_value, const ExcuteData& excuteData, wiz::StringBuilder* builder)
 			{
 				std::vector<wiz::load_data::UserType*> ut = wiz::load_data::UserType::Find(&global, dir, builder).second; // chk first?
-				wiz::load_data::UserType* eventsTemp = excuteData.pEvents;
+				wiz::load_data::UserType eventsTemp = *excuteData.pEvents;
 
 				Option opt;
 				std::string statements2; // = " return_values = { } ";
 					
 				statements2 += " Event = { id = NONE__  $local = { temp } ";
-				statements2 += " $assign = { $local.temp data = { empty } } ";
+				statements2 += " $assign = { $local.temp data = { " + before_value + " } } ";
 
 				//for (int t = 0; t < 100; ++t) {
 					for (int i = 0; i < events.size(); ++i) {
@@ -4527,6 +4536,7 @@ namespace wiz {
 						statements2 += " is_user_type = __is_user_type ";
 						statements2 += " real_dir = __real_dir ";
 						statements2 += " before_value = { $local.temp } ";
+						statements2 += " idx = __idx  ";
 						statements2 += " } ";
 
 						statements2 += " $assign = { $local.temp data = { $return_value = { } } } ";
@@ -4535,11 +4545,11 @@ namespace wiz {
 //}
 				statements2 += " } ";
 
-				wiz::load_data::LoadData::AddData(*eventsTemp, "/root", statements2, "TRUE", ExcuteData(), builder);
+				wiz::load_data::LoadData::AddData(eventsTemp, "/root", statements2, "TRUE", ExcuteData(), builder);
 
-				_Iterate(opt, global, dir, ut, eventsTemp, recursive, excuteData, builder);
+				_Iterate(opt, global, dir, ut, &eventsTemp, recursive, excuteData, builder);
 
-				eventsTemp->RemoveUserTypeList(eventsTemp->GetUserTypeListSize() - 1);
+				eventsTemp.RemoveUserTypeList(eventsTemp.GetUserTypeListSize() - 1);
 			//	eventsTemp->RemoveUserTypeList(eventsTemp->GetUserTypeListSize() - 1);
 			}
 			
@@ -4647,6 +4657,7 @@ namespace wiz {
 				}
 			}
 			// new function! - check UserType::Find().second[0] ?
+			// todo - beforevalue! - as parameter.
 			static void Iterate2(wiz::load_data::UserType& global, const std::string& dir, const std::vector<std::string>& events, const std::string& recursive, const ExcuteData& excuteData, wiz::StringBuilder* builder)
 			{
 				std::vector<wiz::load_data::UserType*> ut = wiz::load_data::UserType::Find(&global, dir, builder).second; // chk first?
@@ -4698,7 +4709,8 @@ namespace wiz {
 							_excuteData.noUseOutput = excuteData.noUseOutput;
 							//_excuteData.chkInfo = true;
 
-							auto x = eventsTemp->GetUserTypeList(eventsTemp->GetUserTypeListSize() - 1)->GetUserTypeItem("$call");
+							auto x = eventsTemp->GetUserTypeList(eventsTemp->GetUserTypeListSize() -
+								(eventsTemp->GetUserTypeListSize() - excuteData.pEvents->GetUserTypeListSize()))->GetUserTypeItem("$call");
 							for (int k = 0; k < x.size(); ++k) {
 								x[k]->GetItemList(1).Set(0, ut[i]->GetItemList(itemCount).GetName());
 								x[k]->GetItemList(2).Set(0, ut[i]->GetItemList(itemCount).Get(0));
@@ -5989,6 +6001,7 @@ namespace wiz {
 					{
 						UserType* ut = temp.second[i];
 						RemoveUserTypeTotal(global, ut_name, start_dir, ut, condition, excuteData, builder, recursive);
+
 					}
 				}
 			}

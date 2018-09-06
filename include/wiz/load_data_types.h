@@ -359,7 +359,7 @@ namespace wiz {
 				sortedItemList = ut.sortedItemList;
 				sortedUserTypeList = ut.sortedUserTypeList;
 
-				useSortedItemList = ut.useSortedItemList;
+				useSortedItemList = false; // ut.useSortedItemList; - fixed!
 				useSortedUserTypeList = ut.useSortedUserTypeList;
 
 				noRemove = ut.noRemove;
@@ -393,7 +393,7 @@ namespace wiz {
 
 				std::swap(this->noRemove, ut.noRemove);
 
-				useSortedItemList = ut.useSortedItemList;
+				useSortedItemList = false; // fixed
 				useSortedUserTypeList = ut.useSortedUserTypeList;
 
 				userTypeList.reserve(ut.userTypeList.size());
@@ -560,7 +560,7 @@ namespace wiz {
 						k = _GetIndex(ilist, 1, k);
 					}
 				}
-				itemList = (tempDic);
+				itemList = std::move(tempDic);
 
 				useSortedItemList = false;
 			}
@@ -892,13 +892,25 @@ namespace wiz {
 				}
 				ilist.push_back(1);
 
-				useSortedItemList = false;
+				if (useSortedItemList) {
+					sortedItemList.push_back(&itemList.back());
+					miniInsertSort<wiz::load_data::ItemType<WIZ_STRING_TYPE>*, ItemTypeStringPtrCompare>(sortedItemList);
+				}
+				else {
+					useSortedItemList = false;
+				}
 			}
 			void AddItem(const WIZ_STRING_TYPE& name, const WIZ_STRING_TYPE& item) {
 				itemList.emplace_back(name, item);
 				ilist.push_back(1);
 
-				useSortedItemList = false;
+				if (useSortedItemList) {
+					sortedItemList.push_back(&itemList.back());
+					miniInsertSort<wiz::load_data::ItemType<WIZ_STRING_TYPE>*, ItemTypeStringPtrCompare>(sortedItemList);
+				}
+				else {
+					useSortedItemList = false;
+				}
 			}
 			void AddUserTypeItem(UserType&& item) {
 				UserType* temp = new UserType(std::move(item));
@@ -909,7 +921,13 @@ namespace wiz {
 
 				userTypeList.push_back(temp);
 
-				useSortedUserTypeList = false;
+				if (useSortedUserTypeList) {
+					sortedUserTypeList.push_back(userTypeList.back());
+					miniInsertSort<wiz::load_data::UserType*, UserTypeCompare>(sortedUserTypeList);
+				}
+				else {
+					useSortedUserTypeList = false;
+				}
 			}
 			void AddUserTypeItem(const UserType& item) {
 				UserType* temp = new UserType(item);
@@ -919,21 +937,39 @@ namespace wiz {
 
 				userTypeList.push_back(temp);
 
-				useSortedUserTypeList = false;
+				if (useSortedUserTypeList) {
+					sortedUserTypeList.push_back(userTypeList.back());
+					miniInsertSort<wiz::load_data::UserType*, UserTypeCompare>(sortedUserTypeList);
+				}
+				else {
+					useSortedUserTypeList = false;
+				}
 			}
 			void AddItemAtFront(WIZ_STRING_TYPE&& name, std::string&& item) {
 				itemList.emplace(itemList.begin(), name, item);
 
 				ilist.insert(ilist.begin(), 1);
 
-				useSortedItemList = false;
+				if (useSortedItemList) {
+					sortedItemList.push_back(&itemList[0]);
+					miniInsertSort<wiz::load_data::ItemType<WIZ_STRING_TYPE>*, ItemTypeStringPtrCompare>(sortedItemList);
+				}
+				else {
+					useSortedItemList = false;
+				}
 			}
 			void AddItemAtFront(const WIZ_STRING_TYPE& name, const WIZ_STRING_TYPE& item) {
 				itemList.emplace(itemList.begin(), name, item);
 
 				ilist.insert(ilist.begin(), 1);
 
-				useSortedItemList = false;
+				if (useSortedItemList) {
+					sortedItemList.push_back(&itemList[0]);
+					miniInsertSort<wiz::load_data::ItemType<WIZ_STRING_TYPE>*, ItemTypeStringPtrCompare>(sortedItemList);
+				}
+				else {
+					useSortedItemList = false;
+				}
 			}
 			void AddUserTypeItemAtFront(const UserType& item) {
 				UserType* temp = new UserType(item);
@@ -943,7 +979,13 @@ namespace wiz {
 
 				userTypeList.insert(userTypeList.begin(), temp);
 
-				useSortedUserTypeList = false;
+				if (useSortedUserTypeList) {
+					sortedUserTypeList.push_back(userTypeList[0]);
+					miniInsertSort<wiz::load_data::UserType*, UserTypeCompare>(sortedUserTypeList);
+				}
+				else {
+					useSortedUserTypeList = false;
+				}
 			}
 			void AddUserTypeItemAtFront(UserType&& item) {
 				UserType* temp = new UserType(item);
@@ -953,7 +995,13 @@ namespace wiz {
 
 				userTypeList.insert(userTypeList.begin(), temp);
 
-				useSortedUserTypeList = false;
+				if (useSortedUserTypeList) {
+					sortedUserTypeList.push_back(userTypeList[0]);
+					miniInsertSort<wiz::load_data::UserType*, UserTypeCompare>(sortedUserTypeList);
+				}
+				else {
+					useSortedUserTypeList = false;
+				}
 			}
 
 

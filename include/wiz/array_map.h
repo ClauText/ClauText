@@ -192,8 +192,9 @@ namespace wiz {
 		}
 	public:
 		// using maybe quick sort, cf) insertion sort?
-		void insert(const std::pair<Key, Data>& value) {
-			if (end() != find(value.first)) { return; }
+		// different point compared by std::map?
+		void insert(std::pair<Key, Data>& value) {
+			if (end() != find(value.first)) { find(value.first)->second = value.second; return; }
 			arr.push_back(value);
 
 			// -sort
@@ -243,7 +244,8 @@ namespace wiz {
 		Data& operator[](const Key& key) {
 			iterator idx;
 			if (end() == (idx = find(key))) {
-				insert(std::pair(key, Data()));
+				std::pair temp(key, Data());
+				insert(temp);
 				return find(key)->second;
 			}
 			else {
