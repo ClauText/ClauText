@@ -883,8 +883,9 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 		EventInfo info;
 		info.eventUT = Main.GetUserTypeList(0);
 		info.userType_idx.push(0);
+		std::pair<std::string, std::string> id_data = std::make_pair<std::string, std::string>("id", wiz::ToString(info.eventUT->GetUserTypeItem("$call")[0]->GetItem("id")[0].Get(0)));
 		info.parameters.insert(
-			make_pair("id", wiz::ToString(info.eventUT->GetUserTypeItem("$call")[0]->GetItem("id")[0].Get(0)))
+			id_data
 		);
 		info.id = info.parameters["id"];
 
@@ -1065,7 +1066,8 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 			auto x = eventPtr->GetUserTypeList(i)->GetItem("id");
 			if (!x.empty()) {
 				//std::cout <<	x[0] << std::endl;
-				convert.insert(std::pair<std::string, int>(wiz::ToString(x[0].Get(0)), i));
+				auto temp = std::pair<std::string, int>(wiz::ToString(x[0].Get(0)), i);
+				convert.insert(temp);
 			}
 			else {
 				// error
@@ -1078,7 +1080,8 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 				for (int j = 0; j < eventPtr->GetUserTypeList(no)->GetUserTypeList(i)->GetItemListSize(); ++j) {
 					std::string name = wiz::ToString(eventPtr->GetUserTypeList(no)->GetUserTypeList(i)->GetItemList(j).Get(0));
 					std::string value = "";
-					info.locals.insert(make_pair(name, value));
+					std::pair<std::string, std::string> temp(name, value);
+					info.locals.insert(temp);
 				}
 				break;
 			}
@@ -1380,7 +1383,13 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						recursive = val->GetUserTypeList(2)->ToString();
 						recursive = wiz::load_data::LoadData::ToBool4(nullptr, global, recursive, _excuteData, &builder);
 					}
-					wiz::load_data::LoadData::Iterate(global, dir, events, recursive, _excuteData, &builder);
+
+					std::string before_value;
+
+					if (val->GetUserTypeListSize() >= 4) {
+						before_value = wiz::load_data::LoadData::ToBool4(nullptr, global, val->GetUserTypeList(3)->ToString(), _excuteData, &builder);
+					}
+					wiz::load_data::LoadData::Iterate(global, dir, events, recursive, before_value, _excuteData, &builder);
 
 
 					eventStack.top().userType_idx.top()++;
@@ -1822,7 +1831,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					wiz::load_data::UserType moduleUT;
 					wiz::load_data::LoadData::LoadDataFromFile(moduleFileName, moduleUT);
 
-					//moduleMapPtr.insert(make_pair(moduleFileName, moduleUT));
+					//moduleMapPtr.insert(std::make_pair(moduleFileName, moduleUT));
 					(*moduleMapPtr)[moduleFileName] = std::move(moduleUT);
 
 					eventStack.top().userType_idx.top()++;
@@ -1915,7 +1924,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					wiz::load_data::UserType objectUT;
 					wiz::load_data::LoadData::LoadDataFromFile(objectFileName, objectUT);
 
-					//objectMapPtr.insert(make_pair(objectFileName, data));
+					//objectMapPtr.insert(std::make_pair(objectFileName, data));
 					(*objectMapPtr)[objectFileName] = std::move(objectUT);
 
 					eventStack.top().userType_idx.top()++;
@@ -1955,7 +1964,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					wiz::load_data::UserType objectUT;
 					wiz::load_data::LoadData::LoadDataFromString(objectData, objectUT); // error chk?
 
-																						//objectMapPtr.insert(make_pair(objectFileName, data));
+																						//objectMapPtr.insert(std::make_pair(objectFileName, data));
 					(*objectMapPtr)[objectName] = std::move(objectUT);
 
 					eventStack.top().userType_idx.top()++;
@@ -2233,7 +2242,8 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 							for (int j = 0; j < val->GetItemListSize(); ++j) {
 								if (val->GetUserTypeList(1)->GetItemListSize() > 0) {
 									std::string temp = wiz::ToString(val->GetUserTypeList(1)->GetItemList(j).Get(0));
-									info.parameters.insert(make_pair(wiz::ToString(val->GetUserTypeList(1)->GetItemList(j).GetName()), temp));
+									std::pair<std::string, std::string> temp2(wiz::ToString(val->GetUserTypeList(1)->GetItemList(j).GetName()), temp);
+									info.parameters.insert(temp2);
 								}
 							}
 
@@ -2247,7 +2257,8 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 							for (int j = 0; j < val->GetUserTypeList(1)->GetUserTypeListSize(); ++j) {
 								if (val->GetUserTypeList(1)->GetUserTypeListSize() > 0) {
 									std::string temp = wiz::load_data::LoadData::ToBool4(nullptr, global, val->GetUserTypeList(1)->GetUserTypeList(j)->ToString(), _excuteData, &builder);
-									info.parameters.insert(make_pair(wiz::ToString(val->GetUserTypeList(1)->GetUserTypeList(j)->GetName()), temp));
+									auto temp2 = std::pair<std::string, std::string>(wiz::ToString(val->GetUserTypeList(1)->GetUserTypeList(j)->GetName()), temp);
+									info.parameters.insert(temp2);
 								}
 							}
 							for (auto& x : info.parameters) {
@@ -2306,14 +2317,17 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 							if (val->GetItemListSize() > 0) {
 								_excuteData.info = info2;
 								std::string temp = wiz::ToString(val->GetItemList(j).Get(0));
-								info.parameters.insert(make_pair(wiz::ToString(val->GetItemList(j).GetName()), temp));
+								auto temp2 = std::pair<std::string, std::string>(wiz::ToString(val->GetItemList(j).GetName()), temp);
+
+								info.parameters.insert(temp2);
 							}
 						}
 						for (int j = 0; j < val->GetUserTypeListSize(); ++j) {
 							if (val->GetUserTypeListSize() > 0) {
 								_excuteData.info = info2;
 								std::string temp = wiz::load_data::LoadData::ToBool4(nullptr, global, val->GetUserTypeList(j)->ToString(), _excuteData, &builder);
-								info.parameters.insert(make_pair(wiz::ToString(val->GetUserTypeList(j)->GetName()), temp));
+								auto temp2 = std::pair<std::string, std::string>(wiz::ToString(val->GetUserTypeList(j)->GetName()), temp);
+								info.parameters.insert(temp2);
 							}
 						}
 						eventStack.top().userType_idx.top()++;
@@ -2370,7 +2384,8 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 							for (int j = 0; j < eventPtr->GetUserTypeList(no)->GetUserTypeList(i)->GetItemListSize(); ++j) {
 								std::string name = wiz::ToString(eventPtr->GetUserTypeList(no)->GetUserTypeList(i)->GetItemList(j).Get(0));
 								std::string value = "";
-								info.locals.insert(make_pair(name, value));
+								std::pair<std::string, std::string> temp(name, value);
+								info.locals.insert(temp);
 							}
 							break;
 						}
@@ -2545,7 +2560,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					wiz::load_data::LoadData::LoadDataFromString(ut_str, ut);
 
 					// check! ExcuteData() ?
-					std::string data = wiz::load_data::LoadData::ToBool4(nullptr, ut, val->GetUserTypeList(1)->ToString(), ExcuteData(), &builder);
+					std::string data = wiz::load_data::LoadData::ToBool4(nullptr, ut, val->GetUserTypeList(1)->ToString(), _excuteData, &builder);
 
 					if (dir.first == "" && wiz::String::startsWith(dir.second, "$local."))
 					{
@@ -3043,7 +3058,8 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 							auto x = eventPtr->GetUserTypeList(i)->GetItem("id");
 							if (!x.empty()) {
 								//std::cout <<	x[0] << std::endl;
-								convert.insert(std::pair<std::string, int>(wiz::ToString(x[0].Get(0)), i));
+								auto temp = std::pair<std::string, int>(wiz::ToString(x[0].Get(0)), i);
+								convert.insert(temp);
 							}
 							else {
 								// error

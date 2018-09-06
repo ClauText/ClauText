@@ -550,7 +550,7 @@ namespace wiz {
 					if (!temp.empty()) { x = temp; operandStack.push(x); return true; }
 				}
 
-				operandStack.push(x);
+				operandStack.push(std::string());
 				return true;
 			}
 			else if ("$size" == str)
