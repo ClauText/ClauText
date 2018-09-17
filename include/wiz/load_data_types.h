@@ -196,16 +196,14 @@ namespace wiz {
 			{
 				if (arr.empty()) { return -1; }
 
-				const std::string _x = x.GetName().ToString();
 				int left = 0, right = arr.size() - 1;
 				int middle = (left + right) / 2;
 
 				while (left <= right) {
-					const std::string middle_value = arr[middle]->GetName().ToString();
-					if (middle_value == _x) {
+					if (arr[middle]->GetName() == x.GetName()) {
 						return middle;
 					}
-					else if (middle_value < _x) {
+					else if (arr[middle]->GetName().ToString() < x.GetName().ToString()) {
 						left = middle + 1;
 					}
 					else {
@@ -218,16 +216,15 @@ namespace wiz {
 			}
 			int binary_find_it(const std::vector<ItemType<WIZ_STRING_TYPE>*>& arr, const ItemType<WIZ_STRING_TYPE>& x) const {
 				if (arr.empty()) { return -1; }
-				const std::string _x = x.GetName().ToString();
+
 				int left = 0, right = arr.size() - 1;
 				int middle = (left + right) / 2;
 
 				while (left <= right) {
-					const std::string middle_value = arr[middle]->GetName().ToString();
-					if (middle_value == _x) {
+					if (arr[middle]->GetName() == x.GetName()) {
 						return middle;
 					}
-					else if (middle_value < _x) {
+					else if (arr[middle]->GetName().ToString() < x.GetName().ToString()) {
 						left = middle + 1;
 					}
 					else {

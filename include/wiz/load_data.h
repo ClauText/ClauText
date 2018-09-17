@@ -32,6 +32,8 @@
 //const std::string RIGHT = "}";
 //const std::string EQ_STR = "="; // EQ 충돌 -> EQ_STR로 변경
 
+#include "array_map.h"
+
 namespace wiz {
 	class EventInfo
 	{
@@ -39,8 +41,8 @@ namespace wiz {
 		wiz::load_data::UserType* eventUT;
 		wiz::ArrayStack< wiz::load_data::UserType* > nowUT; //
 		wiz::ArrayStack<int> userType_idx;
-		std::map<std::string, std::string> parameters;
-		std::map<std::string, std::string> locals;
+		wiz::ArrayMap<std::string, std::string> parameters;
+		wiz::ArrayMap<std::string, std::string> locals;
 		std::string id; //
 		wiz::ArrayStack<std::string> conditionStack;
 		wiz::ArrayStack<int> state;
@@ -59,8 +61,8 @@ namespace wiz {
 		wiz::load_data::UserType* pEvents;
 		EventInfo info; // chk!
 		bool chkInfo;
-		std::map<std::string, wiz::load_data::UserType>* pObjectMap;
-		std::map<std::string, wiz::load_data::UserType>* pModule;
+		wiz::ArrayMap<std::string, wiz::load_data::UserType>* pObjectMap;
+		wiz::ArrayMap<std::string, wiz::load_data::UserType>* pModule;
 
 		long long depth;
 
@@ -158,14 +160,14 @@ namespace wiz {
 	class Option
 	{
 	public:
-		std::map<std::string, std::pair<std::vector<std::string>, bool>>* _map = nullptr; // todo - fixed max size? and rename
+		wiz::ArrayMap<std::string, std::pair<std::vector<std::string>, bool>>* _map = nullptr; // todo - fixed max size? and rename
 		//std::vector<std::thread*> waits;
-		std::map<std::string, wiz::load_data::UserType>* objectMap = nullptr; // std::string -> wiz::load_data::UserType
-		std::map<std::string, wiz::load_data::UserType>* moduleMap = nullptr;
+		wiz::ArrayMap<std::string, wiz::load_data::UserType>* objectMap = nullptr; // std::string -> wiz::load_data::UserType
+		wiz::ArrayMap<std::string, wiz::load_data::UserType>* moduleMap = nullptr;
 		std::string* module_value = nullptr;
 		// data, event load..
 		wiz::ArrayStack<EventInfo>* eventStack = nullptr;
-		std::map<std::string, int>* convert = nullptr;
+		wiz::ArrayMap<std::string, int>* convert = nullptr;
 		std::vector<wiz::load_data::UserType*>* _events = nullptr;
 		wiz::load_data::UserType* events = nullptr;
 		wiz::load_data::UserType* Main = nullptr;
@@ -4659,7 +4661,7 @@ namespace wiz {
 			static void Iterate2(wiz::load_data::UserType& global, const std::string& dir, const std::vector<std::string>& events, const std::string& recursive, const ExcuteData& excuteData, wiz::StringBuilder* builder)
 			{
 				std::vector<wiz::load_data::UserType*> ut = wiz::load_data::UserType::Find(&global, dir, builder).second; // chk first?
-				wiz::load_data::UserType* eventsTemp = excuteData.pEvents;
+				wiz::load_data::UserType eventsTemp = *excuteData.pEvents;
 
 				std::string statements2 = " Event = { id = NONE__  $local = { temp } ";
 				statements2 += " $assign = { $local.temp data = { empty } } ";
@@ -4680,11 +4682,11 @@ namespace wiz {
 				}
 				statements2 += " } ";
 
-				wiz::load_data::LoadData::AddData(*eventsTemp, "/root", statements2, "TRUE", ExcuteData(), builder);
+				wiz::load_data::LoadData::AddData(eventsTemp, "/root", statements2, "TRUE", ExcuteData(), builder);
 
-				_Iterate2(global, dir, ut, eventsTemp, recursive, excuteData, builder);
+				_Iterate2(global, dir, ut, &eventsTemp, recursive, excuteData, builder);
 
-				eventsTemp->RemoveUserTypeList(eventsTemp->GetUserTypeListSize() - 1);
+				eventsTemp.RemoveUserTypeList(eventsTemp.GetUserTypeListSize() - 1);
 
 			}
 			static void _RIterate(UserType& global, const std::string& dir, const std::vector<wiz::load_data::UserType*>& ut, UserType* eventsTemp, const std::string& recursive, const ExcuteData& excuteData, wiz::StringBuilder* builder)
@@ -4785,7 +4787,7 @@ namespace wiz {
 			static void RIterate(wiz::load_data::UserType& global, const std::string& dir, const std::vector<std::string>& events, const std::string& recursive, const ExcuteData& excuteData, wiz::StringBuilder* builder)
 			{
 				std::vector<wiz::load_data::UserType*> ut = wiz::load_data::UserType::Find(&global, dir, builder).second; // chk first?
-				wiz::load_data::UserType* eventsTemp = excuteData.pEvents;
+				wiz::load_data::UserType eventsTemp = *excuteData.pEvents;
 
 				std::string statements2 = " Event = { id = NONE__  $local = { temp } ";
 				statements2 += " $assign = { $local.temp data = { empty } } ";
@@ -4806,11 +4808,11 @@ namespace wiz {
 				}
 				statements2 += " } ";
 
-				wiz::load_data::LoadData::AddData(*eventsTemp, "/root", statements2, "TRUE", ExcuteData(), builder);
+				wiz::load_data::LoadData::AddData(eventsTemp, "/root", statements2, "TRUE", ExcuteData(), builder);
 
-				_RIterate(global, dir, ut, eventsTemp, recursive, excuteData, builder);
+				_RIterate(global, dir, ut, &eventsTemp, recursive, excuteData, builder);
 
-				eventsTemp->RemoveUserTypeList(eventsTemp->GetUserTypeListSize() - 1);
+				eventsTemp.RemoveUserTypeList(eventsTemp.GetUserTypeListSize() - 1);
 			}
 		private:
 			void SearchItem(std::vector<std::string>& positionVec, const std::string& var, const std::string& nowPosition,
@@ -6723,9 +6725,9 @@ namespace wiz {
 				return{ wiz::String::substring(str, 0, idx), wiz::String::substring(str,idx + 1) };
 			}
 
-			static inline std::string FindParameters(const std::map<std::string, std::string>& parameters, const std::string& operand)
+			static inline std::string FindParameters(const wiz::ArrayMap<std::string, std::string>& parameters, const std::string& operand)
 			{
-				std::map<std::string, std::string>::const_iterator x;
+				wiz::ArrayMap<std::string, std::string>::const_iterator x;
 				for (int i = 0; i < parameters.size(); ++i) {
 					if (wiz::String::startsWith(operand, "$parameter.")
 						&& (x = parameters.find(wiz::String::substring(operand, 11))) != parameters.end()) {
@@ -6734,7 +6736,7 @@ namespace wiz {
 				}
 				return "";
 			}
-			static inline std::string FindLocals(const std::map<std::string, std::string>& locals, const std::string& operand)
+			static inline std::string FindLocals(const wiz::ArrayMap<std::string, std::string>& locals, const std::string& operand)
 			{
 				if (wiz::String::startsWith(operand, "$local.") && locals.end() != locals.find(wiz::String::substring(operand, 7)))
 				{
@@ -6748,9 +6750,9 @@ namespace wiz {
 			static bool operation(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const WIZ_STRING_TYPE& str,
 				wiz::ArrayStack<WIZ_STRING_TYPE>& operandStack, const ExcuteData& excuteData, wiz::StringBuilder* builder);
 
-			static std::string ToBool3(wiz::load_data::UserType& global, const std::map<std::string, std::string>& parameters, const std::string& temp,
+			static std::string ToBool3(wiz::load_data::UserType& global, const wiz::ArrayMap<std::string, std::string>& parameters, const std::string& temp,
 				const EventInfo& info, StringBuilder* builder);
-			static std::string ToBool3(wiz::load_data::UserType& global, const std::map<std::string, std::string>& parameters, std::string&& temp,
+			static std::string ToBool3(wiz::load_data::UserType& global, const wiz::ArrayMap<std::string, std::string>& parameters, std::string&& temp,
 				const EventInfo& info, StringBuilder* builder);
 			// remove - 4_A, 4_B ?
 			static std::pair<std::vector<std::string>, bool> ToBool4_A(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const std::string& temp, const ExcuteData& excuteData, wiz::StringBuilder* builder)

@@ -15,7 +15,6 @@ namespace wiz {
 		using const_iterator = typename std::vector<std::pair<Key, Data>>::const_iterator;
 	private:
 		std::vector<std::pair<Key, Data>> arr;
-		mutable bool totalSorted = false;
 	public:
 		explicit ArrayMap(size_t reserve_num = 0) {
 			if (reserve_num > 0) {
@@ -33,7 +32,7 @@ namespace wiz {
 		iterator binary_search(long long left, long long right, const Key& key)
 		{
 			long long middle = (left + right) >> 1; // / 2;
-			
+
 			while (left <= right) {
 				auto& x = arr[middle].first;
 
@@ -104,9 +103,6 @@ namespace wiz {
 			if (arr.size() == 1) {
 				return key == arr[0].first ? begin() + 0 : end();
 			}
-			if (totalSorted) {
-				return binary_search(0, size() - 1, key);
-			}
 
 			// forest binary search
 			{
@@ -130,10 +126,6 @@ namespace wiz {
 					if (1 == len % 2) {
 						auto x = binary_search(left, right, key);
 						if (x != end()) {
-							if (false == totalSorted) {
-								std::sort(arr.begin(), arr.end());
-								totalSorted = true;
-							}
 							return x;
 						}
 						right = left - 1;
@@ -158,10 +150,6 @@ namespace wiz {
 			if (arr.size() == 1) {
 				return key == arr[0].first ? begin() : end();
 			}
-			if (totalSorted) {
-				return binary_search(0, size() - 1, key);
-			}
-
 
 			// forest binary search
 			{
@@ -185,10 +173,6 @@ namespace wiz {
 					if (1 == len % 2) {
 						auto x = binary_search(left, right, key);
 						if (x != end()) {
-							if (false == totalSorted) {
-								std::sort(arr.begin(), arr.end());
-								totalSorted = true;
-							}
 							return x;
 						}
 						right = left - 1;
@@ -212,8 +196,6 @@ namespace wiz {
 		void insert(std::pair<Key, Data>& value) {
 			if (end() != find(value.first)) { find(value.first)->second = value.second; return; }
 			arr.push_back(value);
-
-			totalSorted = false;
 
 			// -sort
 			{

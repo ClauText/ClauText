@@ -32,7 +32,6 @@
 
 namespace wiz {
 
-	// precondtion!!
 	// 0~n-2 : sorted, 
 	// 0~n-1 : not sorted(maybe?)
 	template <class T, class COMPARE>
@@ -119,12 +118,6 @@ namespace wiz {
 
 	DataType operator+(const char* cstr, const DataType& type);
 	DataType operator+(const std::string& str, const DataType& type);
-	
-	inline std::ostream& operator<<(std::ostream& os, const DataType& type)
-	{
-		os << type.ToString();
-		return os;
-	}
 }
 
 #define WIZ_STRING_TYPE wiz::DataType
