@@ -1148,7 +1148,7 @@ namespace wiz {
 			// remove "
 		}
 
-		std::string LoadData::ToBool3(wiz::load_data::UserType& global, const std::map<std::string, std::string>& parameters, const std::string& temp,
+		std::string LoadData::ToBool3(wiz::load_data::UserType& global, const wiz::ArrayMap<std::string, std::string>& parameters, const std::string& temp,
 			const EventInfo& info, wiz::StringBuilder* builder) /// has bug!
 		{
 			wiz::StringTokenizer tokenizer(temp, std::vector<std::string>{ "/" }, builder, 1);
@@ -1220,7 +1220,7 @@ namespace wiz {
 			}
 			return result;
 		}
-		std::string LoadData::ToBool3(wiz::load_data::UserType& global, const std::map<std::string, std::string>& parameters, std::string&& temp,
+		std::string LoadData::ToBool3(wiz::load_data::UserType& global, const wiz::ArrayMap<std::string, std::string>& parameters, std::string&& temp,
 			const EventInfo& info, wiz::StringBuilder* builder) /// has bug!
 		{
 			wiz::StringTokenizer tokenizer(std::move(temp), std::vector<std::string>{ "/" }, builder, 1);

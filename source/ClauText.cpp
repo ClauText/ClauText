@@ -811,22 +811,22 @@ public:
 
 std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::UserType* _global, const ExcuteData& excuteData, Option& opt, int chk)
 {
-	std::map<std::string, std::pair<std::vector<std::string>, bool>>* __map = opt._map;
-	opt._map = Node<std::map<std::string, std::pair<std::vector<std::string>, bool>>>::f(__map);
-	std::map<std::string, std::pair<std::vector<std::string>, bool>>& _map = *opt._map;
+	wiz::ArrayMap<std::string, std::pair<std::vector<std::string>, bool>>* __map = opt._map;
+	opt._map = Node<wiz::ArrayMap<std::string, std::pair<std::vector<std::string>, bool>>>::f(__map);
+	wiz::ArrayMap<std::string, std::pair<std::vector<std::string>, bool>>& _map = *opt._map;
 																		   //
 	wiz::load_data::UserType& global = *_global;
 	//std::vector<std::thread*> waits;
-	std::map<std::string, wiz::load_data::UserType>* _objectMap = opt.objectMap;
-	opt.objectMap = Node<std::map<std::string, wiz::load_data::UserType>>::f(_objectMap);
-	std::map<std::string, wiz::load_data::UserType>& objectMap = *opt.objectMap;
+	wiz::ArrayMap<std::string, wiz::load_data::UserType>* _objectMap = opt.objectMap;
+	opt.objectMap = Node<wiz::ArrayMap<std::string, wiz::load_data::UserType>>::f(_objectMap);
+	wiz::ArrayMap<std::string, wiz::load_data::UserType>& objectMap = *opt.objectMap;
 
-	std::map<std::string, wiz::load_data::UserType>* _moduleMap = opt.moduleMap;
-	opt.moduleMap = Node<std::map<std::string, wiz::load_data::UserType>>::f(_moduleMap);
-	std::map<std::string, wiz::load_data::UserType>& moduleMap = *opt.moduleMap;
+	wiz::ArrayMap<std::string, wiz::load_data::UserType>* _moduleMap = opt.moduleMap;
+	opt.moduleMap = Node<wiz::ArrayMap<std::string, wiz::load_data::UserType>>::f(_moduleMap);
+	wiz::ArrayMap<std::string, wiz::load_data::UserType>& moduleMap = *opt.moduleMap;
 
-	std::map<std::string, wiz::load_data::UserType>* objectMapPtr = nullptr;
-	std::map<std::string, wiz::load_data::UserType>* moduleMapPtr = nullptr;
+	wiz::ArrayMap<std::string, wiz::load_data::UserType>* objectMapPtr = nullptr;
+	wiz::ArrayMap<std::string, wiz::load_data::UserType>* moduleMapPtr = nullptr;
 
 	std::string* _module_value = opt.module_value;
 	opt.module_value = Node<std::string>::f(_module_value);
@@ -837,9 +837,9 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 	opt.eventStack = Node<wiz::ArrayStack<EventInfo>>::f(_eventStack);
 	wiz::ArrayStack<EventInfo>& eventStack = *opt.eventStack;
 
-	std::map<std::string, int>* _convert = opt.convert;
-	opt.convert = Node<std::map<std::string, int>>::f(_convert);
-	std::map<std::string, int>& convert = *opt.convert;
+	wiz::ArrayMap<std::string, int>* _convert = opt.convert;
+	opt.convert = Node<wiz::ArrayMap<std::string, int>>::f(_convert);
+	wiz::ArrayMap<std::string, int>& convert = *opt.convert;
 
 	std::vector<wiz::load_data::UserType*>* __events = opt._events;
 	opt._events = Node<std::vector<wiz::load_data::UserType*>>::f(__events);
@@ -1097,7 +1097,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 		// 
 		EventInfo info = eventStack.top();
 		std::string str;
-		std::map<std::string, std::string>::iterator x;
+		wiz::ArrayMap<std::string, std::string>::iterator x;
 		for (int i = 0; i < info.parameters.size(); ++i) {
 			if ((x = info.parameters.find("id")) != info.parameters.end()) {
 				str = x->second;
@@ -2340,7 +2340,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 
 								std::string temp = wiz::ToString(val->GetItemList(j).Get(0));
 
-								std::map<std::string, std::string>::iterator x;
+								wiz::ArrayMap<std::string, std::string>::iterator x;
 								if ((x = info.parameters.find(wiz::ToString(val->GetItemList(j).GetName()))) != info.parameters.end())
 								{
 									x->second = temp;
@@ -2354,7 +2354,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 
 								std::string temp = wiz::load_data::LoadData::ToBool4(nullptr, global, val->GetUserTypeList(j)->ToString(), _excuteData, &builder);
 
-								std::map<std::string, std::string>::iterator x;
+								wiz::ArrayMap<std::string, std::string>::iterator x;
 								if ((x = info.parameters.find(wiz::ToString(val->GetUserTypeList(j)->GetName()))) != info.parameters.end())
 								{
 									x->second = temp;
