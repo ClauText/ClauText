@@ -6731,7 +6731,7 @@ namespace wiz {
 				for (int i = 0; i < parameters.size(); ++i) {
 					if (wiz::String::startsWith(operand, "$parameter.")
 						&& (x = parameters.find(wiz::String::substring(operand, 11))) != parameters.end()) {
-						return x->second;
+						return x->key.second;
 					}
 				}
 				return "";

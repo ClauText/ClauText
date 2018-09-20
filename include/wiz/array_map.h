@@ -1,77 +1,368 @@
-﻿
-#ifndef BINARY_SEARCH_TREE_H
+﻿#ifndef BINARY_SEARCH_TREE_H
 #define BINARY_SEARCH_TREE_H
 
+#include "global.h"
 #include <vector>
 #include <algorithm>
 #include <utility>
 
 // like set, map,   instead of map!
 namespace wiz {
+
+	template <class Key, class Data>
+	class Pair
+	{
+	public:
+		Key first;
+		Data second;
+		//	std::string second;
+	public:
+		Pair() { }
+
+		Pair(const Key& key, const Data& data) 
+			: first(key), second(data)
+		{
+
+		}
+
+	public:
+		bool operator<(const Pair& other) const {
+			return this->first < other.first;
+		}
+		bool operator!=(const Pair& other) const {
+			return this->first != other.first;
+		}
+		bool operator==(const Pair& other) const {
+			return this->first == other.first;
+		}
+	};
+
+	typedef enum _Color { RED = 0, BLACK = 1 } Color;
+
+	template < class T >
+	class RB_Node // no REMOVE method!
+	{
+	public:
+		long long id = 0; // NULL value? id == -1 ?
+		T key;
+		long long  left = 0;
+		long long  right = 0;
+		long long  p = 0; // parent
+		Color color;
+	public:
+		explicit RB_Node(const T& key = T()) : key(key), color(BLACK) { }
+
+	public:
+		bool operator==(const RB_Node<T>& other)const {
+			return this->id == other.id && other.id != -1;
+		}
+	};
+
+	template < class T, class COMP = ASC<T>, class COMP2 = EQ<T> >
+	class RB_Tree
+	{
+	private:
+		bool IsNULL(const RB_Node<T>& x)const
+		{
+			return x.id <= 0 || x.id > arr.size();
+		}
+		void Clear()
+		{
+			arr.clear();
+			arr.push_back(RB_Node<T>());
+			root = 0;
+			count = 0;
+		}
+	private:
+		std::vector<RB_Node<T>> arr = { RB_Node<T>() };
+		long long root = 0;
+		int count = 0;
+	public:
+		explicit RB_Tree() {  }
+		virtual ~RB_Tree() {
+			//
+		}
+		void reserve(int num) {
+			arr.reserve(num + 1);
+		}
+
+		using iterator = typename std::vector<RB_Node<T>>::iterator;
+		using const_iterator = typename std::vector<RB_Node<T>>::const_iterator;
+
+		iterator begin() {
+			return arr.begin() + 1;
+		}
+		const_iterator begin() const {
+			return arr.cbegin() + 1;
+		}
+		iterator end() {
+			return arr.end();
+		}
+		const_iterator end() const {
+			return arr.cend();
+		}
+	private:// LEFT ROTATE Tree x
+		void LEFT_ROTATE(RB_Tree<T, COMP>* tree, RB_Node<T>*  x) {
+			//if( x !=NIL<T>::Get() || tree.root != NIL<T>::Get() ) { return; }
+			RB_Node <T>*   y;
+			// y = right[x]
+			y = &(tree->arr[x->right]);
+			// right[x] = left[y]
+			x->right = y->left;
+			// if(left[y] != nil[T]
+			if (!IsNULL(tree->arr[y->left])) {
+				//    then p[left[y]] = x
+				tree->arr[y->left].p = x->id;
+			}
+			// p[y] = p[x]
+			y->p = x->p;
+			// if( p[x] = nil[T]
+			if (IsNULL(tree->arr[x->p])) {
+				//  then root[T] = y
+				tree->root = y->id;
+			}
+			//  else if x = left[p[x]]
+			else if (x == &(tree->arr[tree->arr[x->p].left])) {
+				//      then left[p[x]] = y
+				tree->arr[x->p].left = y->id;
+			}
+			//  else right[p[x]] = y
+			else { tree->arr[x->p].right = y->id; }
+			// left[y] = x
+			y->left = x->id;
+			// p[x] = y
+			x->p = y->id;
+		}
+		// Right ROTATE Tree x // left <> right
+		void RIGHT_ROTATE(RB_Tree<T, COMP>* tree, RB_Node<T>*  x) {
+			//if( x !=NIL<T>::Get() || tree.root != NIL<T>::Get() ) { return; }
+
+			RB_Node <T>*  y;
+			// y = right[x]
+			y = &(tree->arr[x->left]);
+			// right[x] = left[y]
+			x->left = y->right;
+			// if(left[y] != nil[T]
+			if (!IsNULL(tree->arr[y->right])) {
+				//    then p[left[y]] = x
+				tree->arr[y->right].p = x->id;
+			}
+			// p[y] = p[x]
+			y->p = x->p;
+			// if( p[x] = nil[T]
+			if (IsNULL(tree->arr[x->p])) {
+				//  then root[T] = y
+				tree->root = y->id;
+			}
+			//  else if x = left[p[x]]
+			else if (x == &(tree->arr[tree->arr[x->p].right])) {
+				//      then left[p[x]] = y
+				tree->arr[x->p].right = y->id;
+			}
+			//  else right[p[x]] = y
+			else { tree->arr[x->p].left = y->id; }
+			// left[y] = x
+			y->right = x->id;
+			// p[x] = y
+			x->p = y->id;
+		}
+		const RB_Node <T>*  SEARCH(const RB_Node <T>*   x, const T& k) const
+		{
+			COMP comp;
+
+			while (!IsNULL(*x) && k != x->key) { // != nil
+				if (comp(k, x->key)) { // k < x.key
+					x = const_cast<RB_Node<T>*>(&arr[x->left]);
+				}
+				else {
+					x = const_cast<RB_Node<T>*>(&arr[x->right]);
+				}
+			}
+			return x;
+		}
+		RB_Node <T>*  SEARCH(RB_Node <T>*   x, const T& k)
+		{
+			COMP comp;
+
+			while (!IsNULL(*x) && k != x->key) { // != nil
+				if (comp(k, x->key)) { // k < x.key
+					x = &arr[x->left];
+				}
+				else {
+					x = &arr[x->right];
+				}
+			}
+			return x;
+		}
+
+		void INSERT_FIXUP(RB_Tree<T, COMP>* tree, RB_Node<T>*  z) /// google ..
+		{
+			RB_Node <T>*   y;
+			while (tree->arr[z->p].color == RED) {
+				if (z->p == tree->arr[tree->arr[z->p].p].left) {
+					y = &(tree->arr[tree->arr[tree->arr[z->p].p].right]);
+					if (y->color == RED) {
+						tree->arr[z->p].color = BLACK;
+						y->color = BLACK;
+						tree->arr[tree->arr[z->p].p].color = RED;
+						z = &(tree->arr[tree->arr[z->p].p]);
+					}
+					else
+					{
+						if (z == &(tree->arr[tree->arr[z->p].right])) {
+							z = &(tree->arr[z->p]);
+							LEFT_ROTATE(tree, z);
+						}
+						tree->arr[z->p].color = BLACK;
+						tree->arr[tree->arr[z->p].p].color = RED;
+						RIGHT_ROTATE(tree, &(tree->arr[tree->arr[z->p].p]));
+					}
+				}
+				else {
+					y = &(tree->arr[arr[tree->arr[z->p].p].left]);
+					if (y->color == RED) {
+						tree->arr[z->p].color = BLACK;
+						y->color = BLACK;
+						tree->arr[tree->arr[z->p].p].color = RED;
+						z = &(tree->arr[tree->arr[z->p].p]);
+					}
+					else {
+						if (z == &(tree->arr[tree->arr[z->p].left])) {
+							z = &(tree->arr[z->p]);
+							RIGHT_ROTATE(tree, z);
+						}
+						tree->arr[z->p].color = BLACK;
+						tree->arr[tree->arr[z->p].p].color = RED;
+						LEFT_ROTATE(tree, &(tree->arr[tree->arr[z->p].p]));
+					}
+				}
+			}
+			tree->arr[tree->root].color = BLACK;
+		}
+		void INSERT(RB_Tree<T, COMP>* tree, const T& key)
+		{
+			COMP comp;
+			COMP2 eq;
+
+			// y= nil<T>?
+			//RB_Node <T>*   y = &arr[0]; 
+			//RB_Node <T>*   x = &arr[tree->root];
+			long long y_idx = 0;
+			long long x_idx = tree->root;
+
+			while (!IsNULL(tree->arr[x_idx]))
+			{
+				y_idx = x_idx;
+				// if( z.key < x.key )
+				if (eq(key, tree->arr[x_idx].key)) {
+					tree->arr[x_idx].key = key;
+					return;
+				}
+				else if (comp(key, tree->arr[x_idx].key))
+				{
+					x_idx = tree->arr[x_idx].left;
+				}
+				else {
+					x_idx = tree->arr[x_idx].right;
+				}
+			}
+
+			long long now = arr.size();
+			arr.push_back(RB_Node<T>());
+			arr.back().id = now;
+			arr.back().key = key;
+			RB_Node<T>* z = &arr.back();
+
+
+			z->p = tree->arr[y_idx].id;
+
+			if (IsNULL(tree->arr[y_idx])) {
+				tree->root = 1;
+			}
+			else if (comp(z->key, tree->arr[y_idx].key)) {
+				tree->arr[y_idx].left = z->id;//
+			}
+			else {
+				tree->arr[y_idx].right = z->id;//
+			}
+
+			z->left = 0; // = nil
+			z->right = 0;
+			z->color = RED; // = RED
+
+			// insert fixup
+			INSERT_FIXUP(tree, z);
+
+			count++;
+		}
+
+	public:
+		// insert, search, remove.
+		void Insert(const T& key)
+		{
+			INSERT(this, key);
+		}
+		bool IsExist(const T& key)
+		{
+			// NULL != ~
+			return !IsNULL(*SEARCH(&arr[root], key));
+		}
+
+		T* Search(const T& key, long long* id = nullptr) {
+			wiz::RB_Node<T>* x = SEARCH(&arr[root], key);
+
+			if (nullptr != id) {
+				*id = x->id;
+			}
+
+			if (x->id == 0) {
+				return nullptr;
+			}
+			return &(x->key);
+		}
+
+		const T* Search(const T& key, long long* id = nullptr) const {
+			const wiz::RB_Node<T>* x = SEARCH(&arr[root], key);
+
+			if (nullptr != id) {
+				*id = x->id;
+			}
+
+			if (x->id == 0) {
+				return nullptr;
+			}
+			return &(x->key);
+		}
+
+		bool IsEmpty() const
+		{
+			return 0 == count;
+		}
+		bool empty() const { return IsEmpty(); }
+		int GetCount() const
+		{
+			return count;
+		}
+		int size() const { return count; }
+		void clear() {
+			Clear();
+		}
+	};
+
 	template <class Key, class Data>
 	class ArrayMap {
 	public:
-		using iterator = typename std::vector<std::pair<Key, Data>>::iterator;
-		using const_iterator = typename std::vector<std::pair<Key, Data>>::const_iterator;
+		using iterator = typename std::vector<RB_Node<wiz::Pair<Key, Data>>>::iterator;
+		using const_iterator = typename std::vector<RB_Node<wiz::Pair<Key, Data>>>::const_iterator;
 	private:
-		std::vector<std::pair<Key, Data>> arr;
+		RB_Tree<wiz::Pair<Key, Data>> arr;
 	public:
 		explicit ArrayMap(size_t reserve_num = 0) {
 			if (reserve_num > 0) {
 				arr.reserve(reserve_num);
 			}
 		}
-	private:
-		void _sort(const size_t last, const size_t num) {
-			size_t count = num >> 1; // two group, count is size of one group.
-
-			std::inplace_merge(arr.begin() + (last - 2 * count + 1), arr.begin() + (last - count + 1), arr.begin() + (last + 1));
-
-			//std::sort(begin() + last - 2 * count + 1, begin() + last + 1);//_merge(last - 2 * count + 1, last - count + 1, count);
-		}
-		iterator binary_search(long long left, long long right, const Key& key)
-		{
-			long long middle = (left + right) >> 1; // / 2;
-
-			while (left <= right) {
-				auto& x = arr[middle].first;
-
-				if (x == key) {
-					return begin() + middle;
-				}
-				else if (x < key) {
-					left = middle + 1;
-				}
-				else {
-					right = middle - 1;
-				}
-				middle = (left + right) >> 1;
-			}
-
-			return end();
-		}
-		const_iterator binary_search(long long left, long long right, const Key& key) const
-		{
-			long long middle = (left + right) >> 1; // / 2;
-
-			while (left <= right) {
-				auto& x = arr[middle].first;
-
-				if (x == key) {
-					return begin() + middle;
-				}
-				else if (x < key) {
-					left = middle + 1;
-				}
-				else {
-					right = middle - 1;
-				}
-				middle = (left + right) >> 1;
-			}
-
-			return end();
-		}
-
+	
 	public:
 		bool empty() const {
 			return arr.empty();
@@ -97,159 +388,44 @@ namespace wiz {
 		}
 
 		iterator find(const Key& key) {
-			if (arr.empty()) {
-				return end();
+			long long id;
+			wiz::Pair<Key, Data>* x = arr.Search(wiz::Pair<Key, Data>(key, Data()), &id);
+			if (nullptr == x) {
+				return arr.end();
 			}
-			if (arr.size() == 1) {
-				return key == arr[0].first ? begin() + 0 : end();
-			}
-
-			// forest binary search
-			{
-				// size_t : unsigned ~?
-				size_t num = 2;
-				size_t len = arr.size();
-
-				if (1 == len % 2) {
-					if (key == arr.back().first) {
-						return begin() + arr.size() - 1;
-					}
-					--len;
-				}
-				const size_t _len = len;
-				long long left = std::max((long long)0, (long long)_len - 2);
-				size_t right = _len - 1;
-
-				len = len >> 1;
-
-				while (len > 0) {
-					if (1 == len % 2) {
-						auto x = binary_search(left, right, key);
-						if (x != end()) {
-							return x;
-						}
-						right = left - 1;
-					}
-					else {
-
-					}
-
-					len = len >> 1;
-					num = num * 2;
-
-					left = right - num + 1;
-				}
-			}
-
-			return end();
+			return arr.begin() + (id - 1);
 		}
 		const_iterator find(const Key& key) const {
-			if (arr.empty()) {
-				return end();
+			long long id;
+			const wiz::Pair<Key, Data>* x = arr.Search(wiz::Pair<Key, Data>(key, Data()), &id);
+			if (nullptr == x) {
+				return arr.end();
 			}
-			if (arr.size() == 1) {
-				return key == arr[0].first ? begin() : end();
-			}
-
-			// forest binary search
-			{
-				// size_t : unsigned ~?
-				size_t num = 2;
-				size_t len = arr.size();
-
-				if (1 == len % 2) {
-					if (key == arr.back().first) {
-						return begin() + arr.size() - 1;
-					}
-					--len;
-				}
-				const size_t _len = len;
-				long long left = std::max((long long)0, (long long)_len - 2);
-				size_t right = _len - 1;
-
-				len = len >> 1;
-
-				while (len > 0) {
-					if (1 == len % 2) {
-						auto x = binary_search(left, right, key);
-						if (x != end()) {
-							return x;
-						}
-						right = left - 1;
-					}
-					else {
-
-					}
-
-					len = len >> 1;
-					num = num * 2;
-
-					left = right - num + 1;
-				}
-			}
-
-			return end();
+			return arr.begin() + (id - 1);
 		}
 	public:
 		// using maybe quick sort, cf) insertion sort?
 		// different point compared by std::map?
 		void insert(std::pair<Key, Data>& value) {
-			if (end() != find(value.first)) { find(value.first)->second = value.second; return; }
-			arr.push_back(value);
-
-			// -sort
-			{
-				// size_t : unsigned ~?
-				size_t num = 2;
-				size_t len = arr.size();
-
-				if (1 == len % 2) {
-					return;
-				}
-
-				len = len - 1;
-				size_t x = arr.size() - 1;
-				size_t temp = arr.size() ^ (arr.size() - 1);
-
-				// when len is even... > 0
-				while (len > 0 && temp > 0) {
-					if (1 == len % 2) {
-						//if (x - num < 0) {
-						//	break;
-						//}
-						_sort(x, num);
-					}
-					len = len >> 1;
-					num = num * 2;
-					temp = temp >> 1;
-				}
-			}
-
-			// debug
-
-			//std::cout << std::endl;
-			//std::cout << std::endl;
-			//for (auto& x : arr) {
-			//	std::cout << x.first << " ";
-			//}
-			//std::cout << std::endl;
-			//std::cout << std::endl;
+			arr.Insert(wiz::Pair<Key, Data>(value.first, value.second));
 		}
+
 		Data& at(const Key& key) {
 			return (*this)[key];
 		}
 		const Data& at(const Key& key) const {
-			return find(key)->second;
+			return find(key)->key.second;
 		}
+
 		Data& operator[](const Key& key) {
 			iterator idx;
 			if (end() == (idx = find(key))) {
 				std::pair temp(key, Data());
 				insert(temp);
-				return find(key)->second;
+				return find(key)->key.second;
 			}
 			else {
-				return idx->second;
+				return idx->key.second;
 			}
 		}
 	};
@@ -257,4 +433,3 @@ namespace wiz {
 
 
 #endif
-
