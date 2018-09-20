@@ -1100,7 +1100,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 		wiz::ArrayMap<std::string, std::string>::iterator x;
 		for (int i = 0; i < info.parameters.size(); ++i) {
 			if ((x = info.parameters.find("id")) != info.parameters.end()) {
-				str = x->second;
+				str = x->key.second;
 				break;
 			}
 		}
@@ -2248,9 +2248,9 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 							}
 
 							for (auto& x : info.parameters) {
-								parameter += x.first;
+								parameter += x.key.first;
 								parameter += " = ";
-								parameter += "^" + x.second;
+								parameter += "^" + x.key.second;
 							}
 						}
 						{
@@ -2262,9 +2262,9 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 								}
 							}
 							for (auto& x : info.parameters) {
-								parameter += x.first;
+								parameter += x.key.first;
 								parameter += " = { ";
-								parameter += "^" + x.second;
+								parameter += "^" + x.key.second;
 								parameter += " } ";
 							}
 						}
@@ -2343,7 +2343,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 								wiz::ArrayMap<std::string, std::string>::iterator x;
 								if ((x = info.parameters.find(wiz::ToString(val->GetItemList(j).GetName()))) != info.parameters.end())
 								{
-									x->second = temp;
+									x->key.second = temp;
 								}
 							}
 						}
@@ -2357,7 +2357,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 								wiz::ArrayMap<std::string, std::string>::iterator x;
 								if ((x = info.parameters.find(wiz::ToString(val->GetUserTypeList(j)->GetName()))) != info.parameters.end())
 								{
-									x->second = temp;
+									x->key.second = temp;
 								}
 							}
 						}
