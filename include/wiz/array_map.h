@@ -26,13 +26,13 @@ namespace wiz {
 		}
 
 	public:
-		bool operator<(const Pair& other) const {
+		bool operator<(const Pair& other) const noexcept {
 			return this->first < other.first;
 		}
-		bool operator!=(const Pair& other) const {
+		bool operator!=(const Pair& other) const noexcept {
 			return this->first != other.first;
 		}
-		bool operator==(const Pair& other) const {
+		bool operator==(const Pair& other) const noexcept {
 			return this->first == other.first;
 		}
 	};
@@ -62,7 +62,7 @@ namespace wiz {
 	class RB_Tree
 	{
 	private:
-		bool IsNULL(const RB_Node<T>& x)const
+		bool IsNULL(const RB_Node<T>& x)const noexcept
 		{
 			return x.id <= 0 || x.id > arr.size();
 		}
@@ -72,17 +72,21 @@ namespace wiz {
 			arr.push_back(RB_Node<T>());
 			root = 0;
 			count = 0;
+			min_idx = 0;
+			max_idx = 0;
 		}
 	private:
 		std::vector<RB_Node<T>> arr = { RB_Node<T>() };
 		long long root = 0;
-		int count = 0;
+		long long count = 0;
+		long long min_idx = 0;
+		long long max_idx = 0;
 	public:
 		explicit RB_Tree() {  }
 		virtual ~RB_Tree() {
 			//
 		}
-		void reserve(int num) {
+		void reserve(size_t num) {
 			arr.reserve(num + 1);
 		}
 
@@ -240,7 +244,7 @@ namespace wiz {
 			tree->arr[tree->root].color = BLACK;
 		}
 		void INSERT(RB_Tree<T, COMP>* tree, const T& key)
-		{
+        {
 			COMP comp;
 			COMP2 eq;
 
@@ -249,22 +253,36 @@ namespace wiz {
 			//RB_Node <T>*   x = &arr[tree->root];
 			long long y_idx = 0;
 			long long x_idx = tree->root;
+			auto& chk = tree->arr;
+			bool pass = false;
 
-			while (!IsNULL(tree->arr[x_idx]))
+			if (comp(key, chk[min_idx].key)) {
+				y_idx = min_idx;
+				min_idx = arr.size();
+				pass = true;
+			}
+			else if (comp(chk[max_idx].key, key)) {
+				y_idx = max_idx;
+				max_idx = arr.size();
+				pass = true;
+			}
+
+			while (!pass && !IsNULL(chk[x_idx]) && key != chk[x_idx].key)
 			{
 				y_idx = x_idx;
 				// if( z.key < x.key )
-				if (eq(key, tree->arr[x_idx].key)) {
-					tree->arr[x_idx].key = key;
-					return;
-				}
-				else if (comp(key, tree->arr[x_idx].key))
+				if (comp(key, tree->arr[x_idx].key))
 				{
 					x_idx = tree->arr[x_idx].left;
 				}
 				else {
 					x_idx = tree->arr[x_idx].right;
 				}
+			}
+
+			if (!pass && eq(key, tree->arr[x_idx].key)) {
+				tree->arr[x_idx].key = key;
+				return;
 			}
 
 			long long now = arr.size();
@@ -278,6 +296,8 @@ namespace wiz {
 
 			if (IsNULL(tree->arr[y_idx])) {
 				tree->root = 1;
+				tree->min_idx = 1;
+				tree->max_idx = 1;
 			}
 			else if (comp(z->key, tree->arr[y_idx].key)) {
 				tree->arr[y_idx].left = z->id;//
@@ -297,6 +317,7 @@ namespace wiz {
 		}
 
 	public:
+	
 		// insert, search, remove.
 		void Insert(const T& key)
 		{
@@ -308,30 +329,24 @@ namespace wiz {
 			return !IsNULL(*SEARCH(&arr[root], key));
 		}
 
-		T* Search(const T& key, long long* id = nullptr) {
+		RB_Node<T>* Search(const T& key, long long* id = nullptr) {
 			wiz::RB_Node<T>* x = SEARCH(&arr[root], key);
 
 			if (nullptr != id) {
 				*id = x->id;
 			}
 
-			if (x->id == 0) {
-				return nullptr;
-			}
-			return &(x->key);
+			return x;
 		}
 
-		const T* Search(const T& key, long long* id = nullptr) const {
+		const RB_Node<T>* Search(const T& key, long long* id = nullptr) const {
 			const wiz::RB_Node<T>* x = SEARCH(&arr[root], key);
 
 			if (nullptr != id) {
 				*id = x->id;
 			}
 
-			if (x->id == 0) {
-				return nullptr;
-			}
-			return &(x->key);
+			return x;
 		}
 
 		bool IsEmpty() const
@@ -373,6 +388,9 @@ namespace wiz {
 		void clear() {
 			arr.clear();
 		}
+		void reserve(long long x) {
+			arr.reserve(x);
+		}
 	public:
 		const_iterator begin() const {
 			return arr.begin();
@@ -389,22 +407,21 @@ namespace wiz {
 
 		iterator find(const Key& key) {
 			long long id;
-			wiz::Pair<Key, Data>* x = arr.Search(wiz::Pair<Key, Data>(key, Data()), &id);
-			if (nullptr == x) {
+			RB_Node<wiz::Pair<Key, Data>>* x = arr.Search(wiz::Pair<Key, Data>(key, Data()), &id);
+			if (0 == x->id) {
 				return arr.end();
 			}
-			return arr.begin() + (id - 1);
+			return arr.begin() + (x->id - 1);
 		}
 		const_iterator find(const Key& key) const {
 			long long id;
-			const wiz::Pair<Key, Data>* x = arr.Search(wiz::Pair<Key, Data>(key, Data()), &id);
-			if (nullptr == x) {
+			const RB_Node<wiz::Pair<Key, Data>>* x = arr.Search(wiz::Pair<Key, Data>(key, Data()), &id);
+			if (0 == x->id) {
 				return arr.end();
 			}
-			return arr.begin() + (id - 1);
+			return arr.begin() + (x->id - 1);
 		}
 	public:
-		// using maybe quick sort, cf) insertion sort?
 		// different point compared by std::map?
 		void insert(std::pair<Key, Data>& value) {
 			arr.Insert(wiz::Pair<Key, Data>(value.first, value.second));
@@ -418,11 +435,11 @@ namespace wiz {
 		}
 
 		Data& operator[](const Key& key) {
-			iterator idx;
-			if (end() == (idx = find(key))) {
-				std::pair temp(key, Data());
-				insert(temp);
-				return find(key)->key.second;
+			RB_Node<wiz::Pair<Key, Data>>* idx = arr.Search(wiz::Pair<Key, Data>(key, Data()));
+			if (0 == idx->id) {
+				arr.Insert(wiz::Pair<Key, Data>(key, Data())); // return positon?
+				idx = arr.Search(wiz::Pair<Key, Data>(key, Data()));
+				return idx->key.second;
 			}
 			else {
 				return idx->key.second;
