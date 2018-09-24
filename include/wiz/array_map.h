@@ -19,7 +19,7 @@ namespace wiz {
 	public:
 		Pair() { }
 
-		Pair(const Key& key, const Data& data) 
+		Pair(const Key& key, const Data& data)
 			: first(key), second(data)
 		{
 
@@ -49,6 +49,20 @@ namespace wiz {
 		long long  right = 0;
 		long long  p = 0; // parent
 		Color color;
+		long long next = 0;
+		bool dead = false; //
+	public:
+		void Clear()
+		{
+			id = 0;
+			key = T();
+			left = 0;
+			right = 0;
+			p = 0;
+			color = RED;
+			next = 0;
+			dead = false;
+		}
 	public:
 		explicit RB_Node(const T& key = T()) : key(key), color(BLACK) { }
 
@@ -66,6 +80,10 @@ namespace wiz {
 		{
 			return x.id <= 0 || x.id > arr.size();
 		}
+		bool IsNULL(const long long id) const noexcept
+		{
+			return id <= 0 || id > arr.size();
+		}
 		void Clear()
 		{
 			arr.clear();
@@ -81,6 +99,7 @@ namespace wiz {
 		long long count = 0;
 		long long min_idx = 0;
 		long long max_idx = 0;
+		long long dead_list = 0;
 	public:
 		explicit RB_Tree() {  }
 		virtual ~RB_Tree() {
@@ -243,8 +262,8 @@ namespace wiz {
 			}
 			tree->arr[tree->root].color = BLACK;
 		}
-		void INSERT(RB_Tree<T, COMP>* tree, const T& key)
-        {
+		long long INSERT(RB_Tree<T, COMP>* tree, const T& key)
+		{
 			COMP comp;
 			COMP2 eq;
 
@@ -254,20 +273,26 @@ namespace wiz {
 			long long y_idx = 0;
 			long long x_idx = tree->root;
 			auto& chk = tree->arr;
-			bool pass = false;
+			int pass = 0;
 
-			if (comp(key, chk[min_idx].key)) {
-				y_idx = min_idx;
-				min_idx = arr.size();
-				pass = true;
+			if (min_idx == 0) {
+				//
+			}
+			else if (comp(key, chk[min_idx].key)) {
+				x_idx = min_idx;
+
+				pass = 1;
+			}
+			else if (max_idx == 0) {
+				//
 			}
 			else if (comp(chk[max_idx].key, key)) {
-				y_idx = max_idx;
-				max_idx = arr.size();
-				pass = true;
+				x_idx = max_idx;
+
+				pass = 2;
 			}
 
-			while (!pass && !IsNULL(chk[x_idx]) && key != chk[x_idx].key)
+			while (!IsNULL(chk[x_idx]) && key != chk[x_idx].key)
 			{
 				y_idx = x_idx;
 				// if( z.key < x.key )
@@ -280,24 +305,56 @@ namespace wiz {
 				}
 			}
 
-			if (!pass && eq(key, tree->arr[x_idx].key)) {
+			if (eq(key, tree->arr[x_idx].key)) {
 				tree->arr[x_idx].key = key;
-				return;
+				return x_idx;
 			}
 
-			long long now = arr.size();
-			arr.push_back(RB_Node<T>());
-			arr.back().id = now;
-			arr.back().key = key;
-			RB_Node<T>* z = &arr.back();
+			long long now = tree->arr.size();
+			RB_Node<T>* z = nullptr;
 
+			if (0 == tree->dead_list) {
+				tree->arr.push_back(RB_Node<T>());
+				tree->arr.back().id = now;
+				tree->arr.back().key = key;
+
+				z = &(tree->arr.back());
+
+				if (1 == pass) {
+					tree->min_idx = now;
+				}
+				else if (2 == pass) {
+					tree->max_idx = now;
+				}
+			}
+			else {
+				now = tree->dead_list;
+				tree->dead_list = tree->arr[now].next;
+				long long id = tree->arr[now].id;
+				long long next = tree->arr[now].next;
+
+				tree->arr[now].Clear();
+				tree->arr[now].id = id;
+				tree->arr[now].key = key;
+				tree->arr[now].next = next;
+				tree->arr[now].dead = false;
+
+				z = &(tree->arr[now]);
+
+				if (1 == pass) {
+					tree->min_idx = now;
+				}
+				else if (2 == pass) {
+					tree->max_idx = now;
+				}
+			}
 
 			z->p = tree->arr[y_idx].id;
 
 			if (IsNULL(tree->arr[y_idx])) {
-				tree->root = 1;
-				tree->min_idx = 1;
-				tree->max_idx = 1;
+				tree->root = z->id;
+				tree->min_idx = z->id;
+				tree->max_idx = z->id;
 			}
 			else if (comp(z->key, tree->arr[y_idx].key)) {
 				tree->arr[y_idx].left = z->id;//
@@ -314,14 +371,143 @@ namespace wiz {
 			INSERT_FIXUP(tree, z);
 
 			count++;
+
+			return z->id;
 		}
 
-	public:
-	
-		// insert, search, remove.
-		void Insert(const T& key)
+		RB_Node<T>* MAXIMUM(RB_Node<T>* x) {
+			while (!IsNULL(x->right)) {
+				x = &arr[x->right];
+			}
+			return x;
+		}
+		RB_Node<T>* MINIMUM(RB_Node<T>* x)
 		{
-			INSERT(this, key);
+			while (!IsNULL(x->left)) { // != nil
+				x = &arr[x->left];
+			}
+			return x;
+		}
+		RB_Node<T>* SUCCESSOR(RB_Node<T>* x)
+		{
+			if (!IsNULL(x->right)) { // nil
+				return MINIMUM(&arr[x->right]);
+			}
+
+			RB_Node<T>* y = &arr[x->p];
+			while (!IsNULL(y->id) && x == &arr[y->right])
+			{
+				x = y; y = &arr[y->p];
+			}
+			return y;
+		}
+
+		void REMOVE_FIXUP(RB_Tree<T, COMP>* tree, RB_Node<T>* x)
+		{
+			RB_Node<T>* w;
+
+			while (x->id != root && x->color == BLACK)
+			{
+				if (x == &(arr[arr[x->p].left])) {
+					w = &(arr[arr[x->p].right]);
+					if (w->color == RED) {
+						w->color = BLACK;
+						arr[x->p].color = RED;
+						LEFT_ROTATE(tree, &arr[x->p]);
+						w = &arr[arr[x->p].right];
+					}
+					if (arr[w->left].color == BLACK && arr[w->right].color == BLACK) {
+						w->color = RED;
+						x = &arr[x->p];
+					}
+					else {
+						if (arr[w->right].color == BLACK) {
+							arr[w->left].color = BLACK;
+							w->color = RED;
+							RIGHT_ROTATE(tree, w);
+							w = &arr[arr[x->p].right];
+						}
+						w->color = arr[x->p].color;
+						arr[x->p].color = BLACK;
+						arr[w->right].color = BLACK;
+						LEFT_ROTATE(tree, &arr[x->p]);
+						x = &arr[root];
+					}
+				}
+				else {
+					w = &arr[arr[x->p].left];
+					if (w->color == RED) {
+						w->color = BLACK;
+						arr[x->p].color = RED;
+						RIGHT_ROTATE(tree, &arr[x->p]);
+						w = &(arr[arr[x->p].left]);
+					}
+					if (arr[w->left].color == BLACK && arr[w->right].color == BLACK) {
+						w->color = RED;
+						x = &arr[x->p];
+					}
+					else {
+						if (arr[w->left].color == BLACK) {
+							arr[w->right].color = BLACK;
+							w->color = RED;
+							LEFT_ROTATE(tree, w);
+							w = &(arr[arr[x->p].left]);
+						}
+						w->color = arr[x->p].color;
+						arr[x->p].color = BLACK;
+						arr[w->left].color = BLACK;
+						RIGHT_ROTATE(tree, &arr[x->p]);
+						x = &arr[root];
+					}
+				}
+			}
+			x->color = BLACK;
+		}
+
+
+		RB_Node<T>* REMOVE(RB_Tree<T, COMP>* tree, RB_Node<T>* z)
+		{
+			RB_Node<T>* x;
+			RB_Node<T>* y;
+
+			if (IsNULL(z->left)
+				|| IsNULL(z->right)) {
+				y = z;
+			}
+			else { y = SUCCESSOR(z); }
+
+			if (!IsNULL(y->left)) {
+				x = &(tree->arr[y->left]);
+			}
+			else { x = &(tree->arr[y->right]); }
+
+			x->p = y->p;
+
+			if (IsNULL(y->p)) {
+				tree->root = x->id;
+			}
+			else if (y == &(arr[arr[y->p].left])) {
+				arr[y->p].left = x->id;
+			}
+			else { arr[y->p].right = x->id; }
+
+			if (y != z) { //important part!
+				z->key = y->key; // chk??
+				//std::swap(z->id, y->id);
+				std::swap(z->dead, y->dead);
+				std::swap(z->next, y->next);
+			}
+			if (y->color == BLACK) {
+				REMOVE_FIXUP(tree, x);
+			}
+			return y;
+		}
+	public:
+
+		// insert, search, remove.
+		long long Insert(const T& key)
+		{
+			return INSERT(this, key);
 		}
 		bool IsExist(const T& key)
 		{
@@ -347,6 +533,48 @@ namespace wiz {
 			}
 
 			return x;
+		}
+
+
+		void Remove(const T& key)
+		{
+			RB_Node<T>* node = SEARCH(&arr[root], key);
+			long long parent = node->p;
+
+			if (!IsNULL(*node))
+			{
+				RB_Node<T>* temp = REMOVE(this, node);
+
+				if (node->id == this->max_idx) {
+					if (parent != 0) {
+						this->max_idx = MAXIMUM(&arr[parent])->id;
+					}
+					else {
+						this->max_idx = root;
+					}
+				}
+				if (node->id == this->min_idx) {
+					if (parent != 0) {
+						this->min_idx = MINIMUM(&arr[parent])->id;
+					}
+					else {
+						this->min_idx = root;
+					}
+				}
+
+
+				temp->dead = true;
+				temp->next = this->dead_list;
+				this->dead_list = temp->id;
+				count--;
+			}
+		}
+
+		T& Idx(long long idx) {
+			return arr[idx].key;
+		}
+		const T& Idx(long long idx) const {
+			return arr[idx].key;
 		}
 
 		bool IsEmpty() const
@@ -377,7 +605,7 @@ namespace wiz {
 				arr.reserve(reserve_num);
 			}
 		}
-	
+
 	public:
 		bool empty() const {
 			return arr.empty();
@@ -423,8 +651,13 @@ namespace wiz {
 		}
 	public:
 		// different point compared by std::map?
-		void insert(std::pair<Key, Data>& value) {
+		void insert(const std::pair<Key, Data>& value) {
 			arr.Insert(wiz::Pair<Key, Data>(value.first, value.second));
+		}
+
+		void remove(const std::pair<Key, Data>& value)
+		{
+			arr.Remove(wiz::Pair<Key, Data>(value.first, value.second));
 		}
 
 		Data& at(const Key& key) {
@@ -437,9 +670,8 @@ namespace wiz {
 		Data& operator[](const Key& key) {
 			RB_Node<wiz::Pair<Key, Data>>* idx = arr.Search(wiz::Pair<Key, Data>(key, Data()));
 			if (0 == idx->id) {
-				arr.Insert(wiz::Pair<Key, Data>(key, Data())); // return positon?
-				idx = arr.Search(wiz::Pair<Key, Data>(key, Data()));
-				return idx->key.second;
+				long long _idx = arr.Insert(wiz::Pair<Key, Data>(key, Data())); //// return positon? - to do
+				return arr.Idx(_idx).second;
 			}
 			else {
 				return idx->key.second;
