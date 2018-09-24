@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/836839ad06e340f2aaa42b32aad03c19)](https://app.codacy.com/app/vztpv/ClauText?utm_source=github.com&utm_medium=referral&utm_content=ClauText/ClauText&utm_campaign=Badge_Grade_Dashboard)
 # ClauText [![Total alerts](https://img.shields.io/lgtm/alerts/g/ClauText/ClauText.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ClauText/ClauText/alerts/)[![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/ClauText/ClauText.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ClauText/ClauText/context:cpp)
   My Own Language for Editing? of Paradox Game(Clausewitz Engine) Data
 # Feature
