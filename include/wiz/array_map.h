@@ -49,7 +49,11 @@ namespace wiz {
 		long long  right = 0;
 		long long  p = 0; // parent
 		Color color;
-		long long next = 0;
+		long long next = 0; // for dead..
+		long long min_next = 0;
+		long long min_before = 0;
+		long long max_next = 0;
+		long long max_before = 0;
 		bool dead = false; //
 	public:
 		void Clear()
@@ -62,6 +66,11 @@ namespace wiz {
 			color = RED;
 			next = 0;
 			dead = false;
+
+			min_next = 0;
+			max_next = 0;
+			min_before = 0;
+			max_before = 0;
 		}
 	public:
 		explicit RB_Node(const T& key = T()) : key(key), color(BLACK) { }
@@ -90,16 +99,18 @@ namespace wiz {
 			arr.push_back(RB_Node<T>());
 			root = 0;
 			count = 0;
-			min_idx = 0;
-			max_idx = 0;
+
+			max_list = 0;
+			min_list = 0;
 		}
 	private:
 		std::vector<RB_Node<T>> arr = { RB_Node<T>() };
 		long long root = 0;
 		long long count = 0;
-		long long min_idx = 0;
-		long long max_idx = 0;
 		long long dead_list = 0;
+
+		long long max_list = 0;
+		long long min_list = 0;
 	public:
 		explicit RB_Tree() {  }
 		virtual ~RB_Tree() {
@@ -267,50 +278,75 @@ namespace wiz {
 			COMP comp;
 			COMP2 eq;
 
-			// y= nil<T>?
-			//RB_Node <T>*   y = &arr[0]; 
-			//RB_Node <T>*   x = &arr[tree->root];
+			long long _count = 0;
+			const long long _count_max = 1;
+
 			long long y_idx = 0;
 			long long x_idx = tree->root;
 			auto& chk = tree->arr;
 			int pass = 0;
 
-			if (min_idx == 0) {
-				//
-			}
-			else if (comp(key, chk[min_idx].key)) {
-				x_idx = min_idx;
+			long long iter_min = 0, iter_min2 = 0;
+			long long iter_max = 0, iter_max2 = 0;
 
-				pass = 1;
-			}
-			else if (max_idx == 0) {
-				//
-			}
-			else if (comp(chk[max_idx].key, key)) {
-				x_idx = max_idx;
+			long long now = tree->arr.size(); //
 
-				pass = 2;
-			}
 
-			while (!IsNULL(chk[x_idx]) && key != chk[x_idx].key)
-			{
-				y_idx = x_idx;
-				// if( z.key < x.key )
-				if (comp(key, tree->arr[x_idx].key))
+			if (!IsNULL(tree->root)) {
+				iter_min = tree->min_list;
+
+				_count = 0;
+				while (true) {
+					_count++;
+					if (_count > _count_max || iter_min == 0) {
+						break;
+					}
+					else if (comp(key, chk[iter_min].key)) {
+						x_idx = iter_min;
+
+						pass = 1;
+					}
+					iter_min2 = iter_min;
+					iter_min = chk[iter_min].min_next;
+				}
+
+				iter_max = tree->max_list;
+
+				_count = 0;
+				while (true) {
+					_count++;
+					if (_count > _count_max || iter_max == 0) {
+						break;
+					}
+					else if (comp(chk[iter_max].key, key)) {
+						x_idx = iter_max;
+
+						pass = 2;
+					}
+					iter_max2 = iter_max;
+					iter_max = chk[iter_max].max_next;
+				}
+
+				
+				while (!IsNULL(chk[x_idx]) && key != chk[x_idx].key)
 				{
-					x_idx = tree->arr[x_idx].left;
+					y_idx = x_idx;
+					// if( z.key < x.key )
+					if (comp(key, tree->arr[x_idx].key))
+					{
+						x_idx = tree->arr[x_idx].left;
+					}
+					else {
+						x_idx = tree->arr[x_idx].right;
+					}
 				}
-				else {
-					x_idx = tree->arr[x_idx].right;
+
+				if (eq(key, tree->arr[x_idx].key)) {
+					tree->arr[x_idx].key = key;
+					return x_idx;
 				}
 			}
 
-			if (eq(key, tree->arr[x_idx].key)) {
-				tree->arr[x_idx].key = key;
-				return x_idx;
-			}
-
-			long long now = tree->arr.size();
 			RB_Node<T>* z = nullptr;
 
 			if (0 == tree->dead_list) {
@@ -321,10 +357,12 @@ namespace wiz {
 				z = &(tree->arr.back());
 
 				if (1 == pass) {
-					tree->min_idx = now;
+					tree->min_list = now;
+					arr[now].min_before = tree->min_list;
 				}
 				else if (2 == pass) {
-					tree->max_idx = now;
+					tree->max_list = now;
+					arr[now].max_before = tree->max_list;
 				}
 			}
 			else {
@@ -342,10 +380,12 @@ namespace wiz {
 				z = &(tree->arr[now]);
 
 				if (1 == pass) {
-					tree->min_idx = now;
+					tree->min_list = now;
+					arr[now].min_before = tree->min_list;
 				}
 				else if (2 == pass) {
-					tree->max_idx = now;
+					tree->max_list = now;
+					arr[now].max_before = tree->max_list;
 				}
 			}
 
@@ -353,8 +393,10 @@ namespace wiz {
 
 			if (IsNULL(tree->arr[y_idx])) {
 				tree->root = z->id;
-				tree->min_idx = z->id;
-				tree->max_idx = z->id;
+				if (tree->empty()) {
+					tree->min_list = z->id;
+					tree->max_list = z->id;
+				}
 			}
 			else if (comp(z->key, tree->arr[y_idx].key)) {
 				tree->arr[y_idx].left = z->id;//
@@ -493,9 +535,12 @@ namespace wiz {
 
 			if (y != z) { //important part!
 				z->key = y->key; // chk??
-				//std::swap(z->id, y->id);
 				std::swap(z->dead, y->dead);
 				std::swap(z->next, y->next);
+				std::swap(z->min_before, y->min_before);
+				std::swap(z->min_next, y->min_next);
+				std::swap(z->max_before, y->max_before);
+				std::swap(z->max_next, y->max_next);
 			}
 			if (y->color == BLACK) {
 				REMOVE_FIXUP(tree, x);
@@ -539,29 +584,17 @@ namespace wiz {
 		void Remove(const T& key)
 		{
 			RB_Node<T>* node = SEARCH(&arr[root], key);
-			long long parent = node->p;
 
 			if (!IsNULL(*node))
 			{
+				if (!IsNULL(node->min_before)) {
+					arr[node->min_before].min_next = node->min_next;
+				}
+				if (!IsNULL(node->max_before)) {
+					arr[node->max_before].max_next = node->max_next;
+				}
+
 				RB_Node<T>* temp = REMOVE(this, node);
-
-				if (node->id == this->max_idx) {
-					if (parent != 0) {
-						this->max_idx = MAXIMUM(&arr[parent])->id;
-					}
-					else {
-						this->max_idx = root;
-					}
-				}
-				if (node->id == this->min_idx) {
-					if (parent != 0) {
-						this->min_idx = MINIMUM(&arr[parent])->id;
-					}
-					else {
-						this->min_idx = root;
-					}
-				}
-
 
 				temp->dead = true;
 				temp->next = this->dead_list;
