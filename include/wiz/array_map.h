@@ -100,6 +100,8 @@ namespace wiz {
 			root = 0;
 			count = 0;
 
+			dead_list = 0;
+
 			max_list = 0;
 			min_list = 0;
 		}
