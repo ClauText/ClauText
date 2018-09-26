@@ -4371,30 +4371,23 @@ namespace wiz {
 			{
 				std::vector<std::string> real_dir;
 				std::string result;
-				wiz::StringTokenizer tokenizer(dir, "/", builder);
-				std::vector<std::string> tokens;
 
-				while (tokenizer.hasMoreTokens()) {
-					tokens.push_back(tokenizer.nextToken());
-				}
 
 				while (nullptr != ut->GetParent()) {
-					real_dir.push_back(wiz::ToString(ut->GetName()));
+					std::string str = wiz::ToString(ut->GetName());
+					
+					if (str.empty()) {
+						str = "_"; // check!
+					}
+					
+					real_dir.push_back(str);
 
 					ut = ut->GetParent();
 				}
 
-				if (real_dir.back() == "root") {
-					result += "/./";
-				}
-				else if (real_dir.back() == ".") {
-					result += "/./";
-				}
-				else {
-					result += "/" + real_dir.back() + "/";
-				}
+				result += "/./";
 
-				for (int i = real_dir.size() - 2; i >= 0; --i) {
+				for (int i = real_dir.size() - 1; i >= 0; --i) {
 					result += real_dir[i] + "/";
 				}
 
