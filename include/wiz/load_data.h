@@ -4367,12 +4367,8 @@ namespace wiz {
 			}
 
 			//cf) /$ and /$/ ??
-			static std::string GetRealDir(const std::string& dir, wiz::load_data::UserType* ut, wiz::StringBuilder* builder)
+			static std::string GetRealDir(const std::string& dir, const wiz::load_data::UserType* ut, wiz::StringBuilder* builder)
 			{
-				if (dir.find('$') == std::string::npos) {
-					return dir;
-				}
-
 				std::vector<std::string> real_dir;
 				std::string result;
 				wiz::StringTokenizer tokenizer(dir, "/", builder);
@@ -4382,16 +4378,10 @@ namespace wiz {
 					tokens.push_back(tokenizer.nextToken());
 				}
 
-				while (nullptr != ut->GetParent() && false == tokens.empty()) {
-					if (tokens.back() == "$") {
-						real_dir.push_back(wiz::ToString(ut->GetName()));
-					}
-					else {
-						real_dir.push_back(tokens.back());
-					}
+				while (nullptr != ut->GetParent()) {
+					real_dir.push_back(wiz::ToString(ut->GetName()));
 
 					ut = ut->GetParent();
-					tokens.pop_back();
 				}
 
 				if (real_dir.back() == "root") {
