@@ -247,7 +247,7 @@ namespace wiz {
 	};
 }
 
-inline wiz::ClauText jsonText;
+inline wiz::ClauText clauText;
 
 namespace wiz {
 
@@ -255,7 +255,7 @@ namespace wiz {
 		class LoadData
 		{
 		public:
-			inline static EXCUTE_MODULE_BASE* pExcuteModule = &jsonText;
+			inline static EXCUTE_MODULE_BASE* pExcuteModule = &clauText;
 		private:
 			static bool isState0(const long long state_reserve)
 			{
