@@ -247,7 +247,7 @@ namespace wiz {
 	};
 }
 
-inline wiz::ClauText clauText;
+inline wiz::ClauText jsonText;
 
 namespace wiz {
 
@@ -255,7 +255,7 @@ namespace wiz {
 		class LoadData
 		{
 		public:
-			inline static EXCUTE_MODULE_BASE* pExcuteModule = &clauText;
+			inline static EXCUTE_MODULE_BASE* pExcuteModule = &jsonText;
 		private:
 			static bool isState0(const long long state_reserve)
 			{
@@ -2793,7 +2793,7 @@ namespace wiz {
 					std::vector<int> pivots;
 					const int last_idx = FindRight(strVec, 0, strVec.size() - 1, option);
 
-					if (pivot_num > 0) {
+					if (pivot_num > 0 && last_idx != -1) {
 						//int c1 = clock();
 						std::vector<int> pivot;
 
@@ -2834,10 +2834,16 @@ namespace wiz {
 						
 						if (first) {
 							int idx = pivots.empty() ? last_idx : pivots[0];
+							if (-1 == last_idx) {
+								idx = strVec.size() - 1;
+							}
 							thr[0] = std::thread(__LoadData3, &strVec, 0, idx, &__global[0], &option, 0, 4, &next[0]);
 						}
 						else {
 							int idx = pivots.empty() ? last_idx : pivots[0];
+							if (-1 == last_idx) {
+								idx = strVec.size() - 1;
+							}
 							thr[0] = std::thread(__LoadData3, &strVec, 0, idx, &__global[0], &option, 4, 4, &next[0]);
 						}
 
@@ -2878,7 +2884,13 @@ namespace wiz {
 						//	strVec.pop_front();
 						//}
 
-						strVec.erase(strVec.begin(), strVec.begin() + last_idx + 1);
+						if (last_idx == -1) {
+							strVec.erase(strVec.begin(), strVec.end());
+						}
+						else {
+							strVec.erase(strVec.begin(), strVec.begin() + last_idx + 1);
+						}
+					
 
 						//std::cout << "pop " << clock() - pop_start << "ms" << std::endl;
 
@@ -3671,7 +3683,7 @@ namespace wiz {
 			{
 				bool success = true;
 				std::ifstream inFile;
-				inFile.open(fileName);
+				inFile.open(fileName, std::ios::binary);
 
 
 				if (true == inFile.fail())
@@ -3717,7 +3729,8 @@ namespace wiz {
 			{
 				bool success = true;
 				std::ifstream inFile;
-				inFile.open(fileName);
+				inFile.open(fileName, std::ios::binary);
+
 
 
 				if (true == inFile.fail())
@@ -3760,10 +3773,23 @@ namespace wiz {
 			}
 			static bool LoadDataFromFileFastJson(const std::string& fileName, UserType& global, int pivot_num, int lex_thread_num) /// global should be empty
 			{
+				if (pivot_num < 0) {
+					pivot_num = std::thread::hardware_concurrency() - 1;
+				}
+				if (lex_thread_num <= 0) {
+					lex_thread_num = std::thread::hardware_concurrency();
+				}
+				if (pivot_num <= -1) {
+					pivot_num = 0;
+				}
+				if (lex_thread_num <= 0) {
+					lex_thread_num = 1;
+				}
+
+
 				bool success = true;
 				std::ifstream inFile;
-				inFile.open(fileName);
-
+				inFile.open(fileName, std::ios::binary);
 
 				if (true == inFile.fail())
 				{
@@ -4002,9 +4028,10 @@ namespace wiz {
 				char LEFT = '{';
 				char RIGHT = '}';
 
+				std::cout << str.size() << " ";
 				UserType utTemp = ut;
 				VECTOR<Token2> strVec;
-				long long thread_num = std::thread::hardware_concurrency();
+				long long thread_num = 1; // std::thread::hardware_concurrency();
 				long long length = str.size();
 				char* buffer = new char[str.size() + 1];
 				strcpy(buffer, str.c_str());
@@ -4030,7 +4057,7 @@ namespace wiz {
 						start[i] = length / thread_num * i;
 						for (int x = start[i]; x <= length; ++x) {
 							// here bug is..  " check "
-							if ('\r' == buffer[x] || '\n' == (buffer[x]) || '\0' == buffer[x]) {
+							if ('\r' == buffer[x] || '\n' == (buffer[x]) || length == x) {
 								start[i] = x;
 								//	std::cout << "start " << start[i] << std::endl;
 								break;
@@ -4040,7 +4067,7 @@ namespace wiz {
 					for (int i = 0; i < thread_num - 1; ++i) {
 						last[i] = start[i + 1] - 1;
 						for (int x = last[i]; x <= length; ++x) {
-							if ('\r' == buffer[x] || '\n' == (buffer[x]) || '\0' == buffer[x]) {
+							if ('\r' == buffer[x] || '\n' == (buffer[x]) || length == x) {
 								last[i] = x;
 								//	std::cout << "start " << start[i] << std::endl;
 								break;
@@ -4196,8 +4223,9 @@ namespace wiz {
 				catch (...) { std::cout << "not expected error" << std::endl; return  false; }
 
 				ut = std::move(utTemp);
+				delete[] buffer;
 				return true;
-				*/
+			*/
 				
 				UserType utTemp;
 				ARRAY_QUEUE<Token> strVec;
