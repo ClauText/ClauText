@@ -266,7 +266,7 @@ namespace wiz {
 
 					operandStack.push("ERROR");
 				}
-			
+
 			}
 			else if ("$modular" == str)
 			{

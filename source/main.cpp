@@ -139,6 +139,8 @@ int main(int argc, char* argv[])
 		std::cout << "fileName is " << fileName << std::endl;
 	
 		//wiz::load_data::LoadData::SaveWizDB(global, "test2.eu4", "3"); // 3 : JSON
+
+		wiz::ClauText clauText;
 		wiz::Option opt;
 		std::string result = clauText.excute_module("", &global, wiz::ExcuteData(), opt, 0);
 		std::cout << "excute result is " << result << std::endl;

@@ -3422,6 +3422,73 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					break;
 
 				}
+				else if ("$load_json2" == val->GetName()) // 
+				{
+				ExcuteData _excuteData; _excuteData.depth = excuteData.depth;
+				_excuteData.chkInfo = true;
+				_excuteData.info = eventStack.top();
+				_excuteData.pObjectMap = objectMapPtr;
+				_excuteData.pEvents = eventPtr;
+				_excuteData.pModule = moduleMapPtr;
+
+				// to do, load data and events from other file!
+				wiz::load_data::UserType ut;
+				std::string fileName = wiz::load_data::LoadData::ToBool4(nullptr, global, val->GetUserTypeList(0)->ToString(), _excuteData, &builder);
+				fileName = wiz::String::substring(fileName, 1, fileName.size() - 2);
+				std::string dirName = val->GetUserTypeList(1)->ToString();
+				wiz::load_data::UserType* utTemp = global.GetUserTypeItem(dirName)[0];
+
+
+				if (dirName == "/./" || dirName == "root") {
+					utTemp = &global;
+				}
+				else {
+					dirName = wiz::load_data::LoadData::ToBool4(nullptr, global, dirName, ExcuteData(), &builder);
+					utTemp = global.GetUserTypeItem(dirName)[0];
+				}
+
+
+				if (wiz::load_data::LoadData::LoadDataFromFileFastJson(fileName, ut, 0, 0)) {
+					{
+						//for (int i = 0; i < ut.GetCommentListSize(); ++i) {
+						//	utTemp->PushComment(move(ut.GetCommentList(i)));
+						//}
+
+						wiz::load_data::UserType* _ut = &ut;
+
+						int item_count = 0;
+						int userType_count = 0;
+
+						for (int i = 0; i < _ut->GetIListSize(); ++i) {
+							if (_ut->IsItemList(i)) {
+								utTemp->AddItem(std::move(_ut->GetItemList(item_count).GetName()),
+									std::move(_ut->GetItemList(item_count).Get(0)));
+								item_count++;
+							}
+							else {
+								utTemp->AddUserTypeItem(std::move(*_ut->GetUserTypeList(userType_count)));
+								userType_count++;
+							}
+						}
+					}
+
+					//	auto _Main = ut.GetUserTypeItem("Main");
+					//	if (!_Main.empty())
+					//	{
+					// error!
+					//		std::cout << "err" << std::endl;
+
+					//			return "ERROR -2"; /// exit?
+					//		}
+				}
+				else {
+					// error!
+				}
+
+				eventStack.top().userType_idx.top()++;
+				break;
+
+				}
 				else if ("$load_html" == val->GetName()) // $load2?
 				{
 					ExcuteData _excuteData; _excuteData.depth = excuteData.depth;
