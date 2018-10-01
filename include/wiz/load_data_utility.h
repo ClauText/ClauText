@@ -465,7 +465,7 @@ namespace wiz {
 				}
 
 				if (1 == state) { return "INTEGER"; }
-				else if (3 == state || 6 == state) { return "DOUBLE"; }
+				else if (3 == state || 6 == state) { return "FLOAT"; }
 				else if (9 == state) { return "DATETIMEB"; }
 				else if (8 == state) { return "DATETIMEA"; }
 				else if (7 == state) { return "DATE"; }
