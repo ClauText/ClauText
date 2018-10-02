@@ -101,12 +101,7 @@ namespace wiz {
 		}
 		void Clear()
 		{
-			root = 0;
-			count = 0;
-			dead_list = 0;
-
-			max_list = 0;
-			min_list = 0;
+			//
 		}
 	private:
 		std::vector<RB_Node<T>> arr = { RB_Node<T>() };
@@ -744,7 +739,7 @@ namespace wiz {
 			RB_Node<wiz::Pair<Key, Data>>* hint;
 			RB_Node<wiz::Pair<Key, Data>>* idx = arr.Search(wiz::Pair<Key, Data>(key, Data()), nullptr, &hint);
 			if (0 == idx->id) {
-				long long _idx = arr.Insert(wiz::Pair<Key, Data>(key, Data()), nullptr); 
+				long long _idx = arr.Insert(wiz::Pair<Key, Data>(key, Data()), hint); 
 				return arr.Idx(_idx).second;
 			}
 			else {
