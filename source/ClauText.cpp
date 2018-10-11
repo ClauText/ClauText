@@ -1992,8 +1992,9 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						ExcuteData _excuteData;
 						_excuteData.noUseInput = excuteData.noUseInput;
 						_excuteData.noUseOutput = excuteData.noUseOutput;
-
-						eventStack.top().return_value = excute_module(" Main = { $call = { id = NONE } } ", &objectUT, _excuteData, opt, 0);
+						Option _opt;
+						
+						eventStack.top().return_value = excute_module(" Main = { $call = { id = NONE } } ", &objectUT, _excuteData, _opt, 0);
 					}
 					eventStack.top().userType_idx.top()++;
 					break;
@@ -2022,7 +2023,8 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						_excuteData.noUseInput = excuteData.noUseInput;
 						_excuteData.noUseOutput = excuteData.noUseOutput;
 
-						eventStack.top().return_value = excute_module(" Main = { $call = { id = NONE } } ", &objectUT, _excuteData, opt, 0);
+						Option _opt;
+						eventStack.top().return_value = excute_module(" Main = { $call = { id = NONE } } ", &objectUT, _excuteData, _opt, 0);
 					}
 					{
 						std::vector<wiz::load_data::UserType*> _events;
@@ -2103,8 +2105,8 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						ExcuteData _excuteData;
 						_excuteData.noUseInput = excuteData.noUseInput;
 						_excuteData.noUseOutput = excuteData.noUseOutput;
-
-						eventStack.top().return_value = excute_module(" Main = { $call = { id = NONE } } ", &objectUT, _excuteData, opt, 0);
+						Option _opt;
+						eventStack.top().return_value = excute_module(" Main = { $call = { id = NONE } } ", &objectUT, _excuteData, _opt, 0);
 					}
 					eventStack.top().userType_idx.top()++;
 					break;
@@ -2435,8 +2437,8 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						ExcuteData _excuteData;
 						_excuteData.noUseInput = excuteData.noUseInput;
 						_excuteData.noUseOutput = excuteData.noUseOutput;
-
-						eventStack.top().return_value = excute_module("", &subGlobal, _excuteData, opt, 0);  // return ?
+						Option _opt;
+						eventStack.top().return_value = excute_module("", &subGlobal, _excuteData, _opt, 0);  // return ?
 					}
 
 					eventStack.top().userType_idx.top()++;
