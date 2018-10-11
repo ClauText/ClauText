@@ -3210,6 +3210,7 @@ namespace wiz {
 					try {
 						InFileReserver3 ifReserver(inFile);
 						wiz::LoadDataOption option;
+
 						option.Assignment.push_back("=");
 						option.Left.push_back('{');
 						option.Right.push_back('}');

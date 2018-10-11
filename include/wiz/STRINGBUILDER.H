@@ -19,7 +19,8 @@ namespace wiz {
 			return buffer_first + capacity;
 		}
 	public:
-		StringBuilder(const int buffer_size = 102400, const char* cstr = "", int len = 0) {
+		StringBuilder(const int buffer_size = 102400, const char* cstr = "", int len = 0)
+		{
 			buffer = (char*)malloc(sizeof(char) * (buffer_size + 1)); // 1 for '\0'
 			this->len = len;
 			capacity = buffer_size;
