@@ -3,8 +3,10 @@
 
 #include "global.h"
 #include <vector>
+#include <queue>
 #include <algorithm>
 #include <utility>
+#include <execution>
 
 // like set, map,   instead of map!
 namespace wiz {
@@ -102,8 +104,11 @@ namespace wiz {
 
 			max_list = 0;
 			min_list = 0;
+
+			remain_list.clear();
 		}
 	private:
+		std::vector<T> remain_list;
 		std::vector<RB_Node<T>> arr = { RB_Node<T>() };
 		long long root = 0;
 		long long count = 0;
@@ -273,7 +278,7 @@ namespace wiz {
 			}
 			tree->arr[tree->root].color = BLACK;
 		}
-		long long INSERT(RB_Tree<T, COMP>* tree, const T& key)
+		long long INSERT(RB_Tree<T, COMP>* tree, const T& key, long long hint = 0)
 		{
 			COMP comp;
 			COMP2 eq;
@@ -284,7 +289,7 @@ namespace wiz {
 			long long y_idx = 0;
 			long long x_idx = tree->root;
 			auto& chk = tree->arr;
-			int pass = 0;
+			long long pass = 0;
 
 			long long iter_min = 0, iter_min2 = 0;
 			long long iter_max = 0, iter_max2 = 0;
@@ -329,23 +334,28 @@ namespace wiz {
 
 
 				while (//!IsNULL(tree->arr[x_idx]) &&
-					key != tree->arr[x_idx].key)
+					!IsNULL(x_idx) && !hint
+					)
 				{
-					if (IsNULL(tree->arr[x_idx])) {
-						break;
-					}
 					y_idx = x_idx;
 					// if( z.key < x.key )
 					if (comp(key, tree->arr[x_idx].key))
 					{
 						x_idx = tree->arr[x_idx].left;
 					}
-					else {
+					else if (comp(tree->arr[x_idx].key, key)) {
 						x_idx = tree->arr[x_idx].right;
+					}
+					else {
+						break;
 					}
 				}
 
-				if (eq(key, tree->arr[x_idx].key)) {
+				if (hint) {
+					y_idx = hint;
+				}
+
+				if (!IsNULL(x_idx) && !hint && eq(key, tree->arr[x_idx].key)) {
 					tree->arr[x_idx].key = key;
 					return x_idx;
 				}
@@ -421,6 +431,24 @@ namespace wiz {
 			return z->id;
 		}
 
+		void LAZYINSERT(RB_Tree<T, COMP>* tree, const T& key) {
+			long long now = tree->arr.size();
+
+			tree->remain_list.push_back(key);
+		}
+
+	private:
+		void REALINSERT(RB_Tree<T, COMP>* tree) {
+			if (tree->remain_list.empty()) {
+				return;
+			}
+
+			std::sort(std::execution::par, tree->remain_list.begin(), tree->remain_list.end());
+			for (const auto& x : tree->remain_list) {
+				INSERT(tree, x);
+			}
+			tree->remain_list.clear();
+		}
 		RB_Node<T>* MAXIMUM(RB_Node<T>* x) {
 			while (!IsNULL(x->right)) {
 				x = &arr[x->right];
@@ -552,7 +580,9 @@ namespace wiz {
 			return y;
 		}
 	public:
-
+		void LazyInsert(RB_Tree<T, COMP>* tree, const T& key) {
+			LAZYINSERT(this, key);
+		}
 		// insert, search, remove.
 		long long Insert(const T& key)
 		{
@@ -584,6 +614,10 @@ namespace wiz {
 			return x;
 		}
 
+		void RealInsert()
+		{
+			REALINSERT(this);
+		}
 
 		void Remove(const T& key)
 		{
@@ -619,11 +653,11 @@ namespace wiz {
 			return 0 == count;
 		}
 		bool empty() const { return IsEmpty(); }
-		int GetCount() const
+		long long GetCount() const
 		{
 			return count;
 		}
-		int size() const { return count; }
+		long long size() const { return count; }
 		void clear() {
 			Clear();
 		}
@@ -635,7 +669,7 @@ namespace wiz {
 		using iterator = typename std::vector<RB_Node<wiz::Pair<Key, Data>>>::iterator;
 		using const_iterator = typename std::vector<RB_Node<wiz::Pair<Key, Data>>>::const_iterator;
 	private:
-		RB_Tree<wiz::Pair<Key, Data>> arr;
+		mutable RB_Tree<wiz::Pair<Key, Data>> arr;
 	public:
 		explicit ArrayMap(size_t reserve_num = 0) {
 			if (reserve_num > 0) {
@@ -645,9 +679,13 @@ namespace wiz {
 
 	public:
 		bool empty() const {
+			arr.RealInsert();
+
 			return arr.empty();
 		}
 		auto size() const {
+			arr.RealInsert();
+
 			return arr.size();
 		}
 		void clear() {
@@ -657,20 +695,21 @@ namespace wiz {
 			arr.reserve(x);
 		}
 	public:
-		const_iterator begin() const {
-			return arr.begin();
-		}
-		const_iterator end() const {
-			return arr.end();
-		}
 		iterator begin() {
 			return arr.begin();
 		}
 		iterator end() {
 			return arr.end();
 		}
-
+		const_iterator begin() const {
+			return arr.begin();
+		}
+		const_iterator end() const {
+			return arr.end();
+		}
 		iterator find(const Key& key) {
+			arr.RealInsert();
+
 			long long id;
 			RB_Node<wiz::Pair<Key, Data>>* x = arr.Search(wiz::Pair<Key, Data>(key, Data()), &id);
 			if (0 == x->id) {
@@ -679,21 +718,36 @@ namespace wiz {
 			return arr.begin() + (x->id - 1);
 		}
 		const_iterator find(const Key& key) const {
+			arr.RealInsert();
+
 			long long id;
-			const RB_Node<wiz::Pair<Key, Data>>* x = arr.Search(wiz::Pair<Key, Data>(key, Data()), &id);
+			RB_Node<wiz::Pair<Key, Data>>* x = arr.Search(wiz::Pair<Key, Data>(key, Data()), &id);
 			if (0 == x->id) {
 				return arr.end();
 			}
 			return arr.begin() + (x->id - 1);
 		}
 	public:
-		// different point compared by std::map?
+		// different polong long compared by std::map?
 		void insert(const std::pair<Key, Data>& value) {
-			arr.Insert(wiz::Pair<Key, Data>(value.first, value.second));
+			lazy_insert(value);
+
+			//	arr.RealInsert();
+
+			//	arr.Insert(wiz::Pair<Key, Data>(value.first, value.second));
+		}
+		void update()
+		{
+			arr.RealInsert();
+		}
+		void lazy_insert(const std::pair<Key, Data>& value) {
+			arr.LazyInsert(&arr, wiz::Pair<Key, Data>(value.first, value.second));
 		}
 
 		void remove(const std::pair<Key, Data>& value)
 		{
+			arr.RealInsert();
+
 			arr.Remove(wiz::Pair<Key, Data>(value.first, value.second));
 		}
 
@@ -705,6 +759,8 @@ namespace wiz {
 		}
 
 		Data& operator[](const Key& key) {
+			arr.RealInsert();
+
 			RB_Node<wiz::Pair<Key, Data>>* idx = arr.Search(wiz::Pair<Key, Data>(key, Data()));
 			if (0 == idx->id) {
 				long long _idx = arr.Insert(wiz::Pair<Key, Data>(key, Data())); //// return positon? - to do
