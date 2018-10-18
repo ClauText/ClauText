@@ -696,15 +696,23 @@ namespace wiz {
 		}
 	public:
 		iterator begin() {
+			arr.RealInsert();
+
 			return arr.begin();
 		}
 		iterator end() {
+			arr.RealInsert();
+
 			return arr.end();
 		}
 		const_iterator begin() const {
+			arr.RealInsert();
+
 			return arr.begin();
 		}
 		const_iterator end() const {
+			arr.RealInsert();
+
 			return arr.end();
 		}
 		iterator find(const Key& key) {
