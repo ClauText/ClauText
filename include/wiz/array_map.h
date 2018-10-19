@@ -997,7 +997,7 @@ namespace wiz {
 
 			RB_Node<wiz::Pair<Key, Data>>* idx = arr.Search(wiz::Pair<Key, Data>(key, Data()));
 			if (0 == idx->id) {
-				long long _idx = arr.Insert(wiz::Pair<Key, Data>(key, Data())); //// return positon? - to do
+				long long _idx = arr.Insert(wiz::Pair<Key, Data>(std::move(key), Data())); //// return positon? - to do
 				return arr.Idx(_idx).second;
 			}
 			else {
