@@ -893,6 +893,27 @@ namespace wiz {
 			}
 			return arr.begin() + (x->id - 1);
 		}
+		iterator find(Key&& key) {
+			arr.RealInsert();
+
+			long long id;
+			RB_Node<wiz::Pair<Key, Data>>* x = arr.Search(wiz::Pair<Key, Data>(std::move(key), Data()), &id);
+			if (0 == x->id) {
+				return arr.end();
+			}
+			return arr.begin() + (x->id - 1);
+		}
+		const_iterator find(Key&& key) const {
+			arr.RealInsert();
+
+			long long id;
+			RB_Node<wiz::Pair<Key, Data>>* x = arr.Search(wiz::Pair<Key, Data>(std::move(key), Data()), &id);
+			if (0 == x->id) {
+				return arr.end();
+			}
+			return arr.begin() + (x->id - 1);
+		}
+
 	public:
 		// different polong long compared by std::map?
 		void insert(const std::pair<Key, Data>& value) {
@@ -926,12 +947,23 @@ namespace wiz {
 
 			arr.Remove(wiz::Pair<Key, Data>(value.first, value.second));
 		}
+		void remove(std::pair<Key, Data>&& value)
+		{
+			arr.RealInsert();
 
+			arr.Remove(wiz::Pair<Key, Data>(std::move(value.first), std::move(value.second)));
+		}
 		Data& at(const Key& key) {
 			return (*this)[key];
 		}
 		const Data& at(const Key& key) const {
 			return find(key)->key.second;
+		}
+		Data& at(Key&& key) {
+			return (*this)[std::move(key)];
+		}
+		const Data& at(Key&& key) const {
+			return find(std::move(key))->key.second;
 		}
 
 		Data& operator[](const Key& key) {
@@ -959,6 +991,33 @@ namespace wiz {
 				return idx->key.second;
 			}
 		}
+		
+		Data& operator[](Key&& key) {
+			arr.RealInsert();
+
+			RB_Node<wiz::Pair<Key, Data>>* idx = arr.Search(wiz::Pair<Key, Data>(key, Data()));
+			if (0 == idx->id) {
+				long long _idx = arr.Insert(wiz::Pair<Key, Data>(key, Data())); //// return positon? - to do
+				return arr.Idx(_idx).second;
+			}
+			else {
+				return idx->key.second;
+			}
+		}
+
+		const Data& operator[](Key&& key) const {
+			arr.RealInsert();
+
+			RB_Node<wiz::Pair<Key, Data>>* idx = arr.Search(wiz::Pair<Key, Data>(key, Data()));
+			if (0 == idx->id) {
+				long long _idx = arr.Insert(wiz::Pair<Key, Data>(std::move(key), Data())); //// return positon? - to do
+				return arr.Idx(_idx).second;
+			}
+			else {
+				return idx->key.second;
+			}
+		}
+
 	};
 }
 
