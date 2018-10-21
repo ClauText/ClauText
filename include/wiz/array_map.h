@@ -123,6 +123,7 @@ namespace wiz {
 		}
 		void reserve(size_t num) {
 			arr.reserve(num + 1);
+			remain_list.reserve(num);
 		}
 
 		using iterator = typename std::vector<RB_Node<T>>::iterator;
