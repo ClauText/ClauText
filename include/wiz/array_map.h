@@ -1,7 +1,7 @@
 ﻿#ifndef BINARY_SEARCH_TREE_H
 #define BINARY_SEARCH_TREE_H
 
-#include "global.h"
+
 #include <vector>
 #include <queue>
 #include <string>
@@ -11,115 +11,15 @@
 
 // like set, map,   instead of map!
 namespace wiz {
-
-	template <class Key, class Data>
-	class Pair
-	{
-	public:
-		Key first;
-		Data second;
-		//	std::string second;
-	public:
-		Pair() { }
-
-		Pair(const Key& key, const Data& data)
-			: first(key), second(data)
-		{
-
-		}
-
-		Pair(Key&& key, Data&& data)
-			: first(key), second(data)
-		{
-
-		}
-	public:
-		long long test(const Pair& other) const noexcept {
-			if (*this < other) {
-				return -1;
-			}
-			else if (*this > other) {
-				return 1;
-			}
-			else {
-				return 0;
-			}
-		}
-
-		bool operator<(const Pair& other) const noexcept {
-			return this->first < other.first;
-		}
-		bool operator<(Pair&& other) const noexcept {
-			return this->first < other.first;
-		}
-		bool operator!=(const Pair& other) const noexcept {
-			return this->first != other.first;
-		}
-		bool operator!=(Pair&& other) const noexcept {
-			return this->first != other.first;
-		}
-		bool operator==(const Pair& other) const noexcept {
-			return this->first == other.first;
-		}
-		bool operator==(Pair&& other) const noexcept {
-			return this->first == other.first;
-		}
-	};
-	template <class Data>
-	class Pair<std::string, Data>
-	{
-	public:
-		using Key = std::string;
-		Key first;
-		Data second;
-		//	std::string second;
-	public:
-		Pair() { }
-
-		Pair(const Key& key, const Data& data)
-			: first(key), second(data)
-		{
-
-		}
-
-		Pair(Key&& key, Data&& data)
-			: first(key), second(data)
-		{
-
-		}
-	public:
-		long long test(const Pair& other) const noexcept {
-			return strcmp(this->first.c_str(), other.first.c_str());
-		}
-
-		bool operator<(const Pair& other) const noexcept {
-			return this->first < other.first;
-		}
-		bool operator<(Pair&& other) const noexcept {
-			return this->first < other.first;
-		}
-		bool operator!=(const Pair& other) const noexcept {
-			return this->first != other.first;
-		}
-		bool operator!=(Pair&& other) const noexcept {
-			return this->first != other.first;
-		}
-		bool operator==(const Pair& other) const noexcept {
-			return this->first == other.first;
-		}
-		bool operator==(Pair&& other) const noexcept {
-			return this->first == other.first;
-		}
-	};
-
 	typedef enum _Color { RED = 0, BLACK = 1 } Color;
 
-	template < class T >
+	template < class Key, class Data >
 	class RB_Node // no REMOVE method!
 	{
 	public:
 		long long id = 0; // NULL value? id == -1 ?
-		T key;
+		Key first;
+		Data second;
 		long long  left = 0;
 		long long  right = 0;
 		long long  p = 0; // parent
@@ -134,7 +34,8 @@ namespace wiz {
 		void Clear()
 		{
 			id = 0;
-			key = T();
+			first = Key();
+			second = Data();
 			left = 0;
 			right = 0;
 			p = 0;
@@ -148,28 +49,47 @@ namespace wiz {
 			max_before = 0;
 		}
 	public:
-		explicit RB_Node(const T& key = T()) : key(key), color(BLACK) { }
+		explicit RB_Node(const Key& key = Key(), const Data& data = Data()) : first(key), second(data), color(BLACK) { }
 
 	public:
-		bool operator==(const RB_Node<T>& other)const {
+		bool operator==(const RB_Node<Key, Data>& other)const {
 			return this->id == other.id && other.id != -1;
 		}
 	};
+
+	template <class T>
+	inline long long test(const T& t1, const T& t2) noexcept {
+		if (t1 < t2) {
+			return -1;
+		}
+		else if (t2 < t1) {
+			return 1;
+		}
+		else {
+			return 0;
+		}
+	}
+
+	template <>
+	inline long long test(const std::string& str1, const std::string & str2) noexcept
+	{
+		return strcmp(str1.c_str(), str2.c_str());
+	}
 
 	template <class T>
 	class TEST // need to rename!
 	{
 	public:
 		long long operator()(const T& t1, const T& t2) const noexcept {
-			return t1.test(t2);
+			return test(t1, t2);
 		}
 	};
 
-	template < class T, class COMP = ASC<T>, class COMP2 = EQ<T>, class COMP3 = TEST<T>>
+	template < class Key, class Data, class COMP = ASC<Key>, class COMP2 = EQ<Key>, class COMP3 = TEST<Key>>
 	class RB_Tree
 	{
 	private:
-		bool IsNULL(const RB_Node<T>& x)const noexcept
+		bool IsNULL(const RB_Node<Key, Data>& x)const noexcept
 		{
 			return x.id <= 0 || x.id > arr.size();
 		}
@@ -180,7 +100,7 @@ namespace wiz {
 		void Clear()
 		{
 			arr.clear();
-			arr.push_back(RB_Node<T>());
+			arr.push_back(RB_Node<Key, Data>());
 			root = 0;
 			count = 0;
 
@@ -190,8 +110,8 @@ namespace wiz {
 			remain_list.clear();
 		}
 	private:
-		std::vector<T> remain_list;
-		std::vector<RB_Node<T>> arr = { RB_Node<T>() };
+		std::vector<std::pair<Key, Data>> remain_list;
+		std::vector<RB_Node<Key, Data>> arr = { RB_Node<Key, Data>() };
 		long long root = 0;
 		long long count = 0;
 		long long dead_list = 0;
@@ -208,8 +128,8 @@ namespace wiz {
 			remain_list.reserve(num);
 		}
 
-		using iterator = typename std::vector<RB_Node<T>>::iterator;
-		using const_iterator = typename std::vector<RB_Node<T>>::const_iterator;
+		using iterator = typename std::vector<RB_Node<Key, Data>>::iterator;
+		using const_iterator = typename std::vector<RB_Node<Key, Data>>::const_iterator;
 
 		iterator begin() {
 			return arr.begin() + 1;
@@ -224,9 +144,9 @@ namespace wiz {
 			return arr.cend();
 		}
 	private:// LEFT ROTATE Tree x
-		void LEFT_ROTATE(RB_Tree<T, COMP>* tree, RB_Node<T>*  x) {
+		void LEFT_ROTATE(RB_Tree<Key, Data, COMP>* tree, RB_Node<Key, Data>*  x) {
 			//if( x !=NIL<T>::Get() || tree.root != NIL<T>::Get() ) { return; }
-			RB_Node <T>*   y;
+			RB_Node<Key, Data>*   y;
 			// y = right[x]
 			y = &(tree->arr[x->right]);
 			// right[x] = left[y]
@@ -256,10 +176,10 @@ namespace wiz {
 			x->p = y->id;
 		}
 		// Right ROTATE Tree x // left <> right
-		void RIGHT_ROTATE(RB_Tree<T, COMP>* tree, RB_Node<T>*  x) {
+		void RIGHT_ROTATE(RB_Tree<Key, Data, COMP>* tree, RB_Node<Key, Data>*  x) {
 			//if( x !=NIL<T>::Get() || tree.root != NIL<T>::Get() ) { return; }
 
-			RB_Node <T>*  y;
+			RB_Node<Key, Data>*  y;
 			// y = right[x]
 			y = &(tree->arr[x->left]);
 			// right[x] = left[y]
@@ -288,13 +208,13 @@ namespace wiz {
 			// p[x] = y
 			x->p = y->id;
 		}
-		const RB_Node <T>*  SEARCH(const RB_Node <T>*   x, const T& k) const
+		const RB_Node<Key, Data>*  SEARCH(const RB_Node<Key, Data>*   x, const Key& k) const
 		{
 			COMP comp;
 			COMP3 comp3;
 
 			while (!IsNULL(*x)) { // != nil
-				long long temp = comp3(k, x->key);
+				long long temp = comp3(k, x->first);
 				if (temp < 0) { // k < x.key
 					x = &arr[x->left];
 				}
@@ -308,13 +228,13 @@ namespace wiz {
 
 			return x;
 		}
-		RB_Node <T>*  SEARCH(RB_Node <T>*   x, const T& k)
+		RB_Node<Key, Data>*  SEARCH(RB_Node<Key, Data>*   x, const Key& k)
 		{
 			COMP comp;
 			COMP3 comp3;
 
 			while (!IsNULL(*x)) { // != nil
-				long long temp = comp3(k, x->key);
+				long long temp = comp3(k, x->first);
 				if (temp < 0) { // k < x.key
 					x = &arr[x->left];
 				}
@@ -327,35 +247,13 @@ namespace wiz {
 			}
 			return x;
 		}
-		const RB_Node <T>*  SEARCH(const RB_Node <T>* x, T&& k, T* temp) const
+		const RB_Node<Key, Data>*  SEARCH(const RB_Node<Key, Data>* x, Key&& k, Key* temp) const
 		{
 			COMP comp;
 			COMP3 comp3;
 
 			while (!IsNULL(*x)) { // != nil
-				long long temp = comp3(k, x->key);
-				if (temp < 0) { // k < x.key
-					x = &arr[x->left];
-				}
-				else if (temp > 0) {
-					x = &arr[x->right];
-				}
-				else {
-					break;
-				}
-			}
-			if (temp) {
-				*temp = std::move(k);
-			}
-			return x;
-		}
-		RB_Node <T>*  SEARCH(RB_Node <T>* x, T&& k, T* temp)
-		{
-			COMP comp;
-			COMP3 comp3;
-
-			while (!IsNULL(*x)) { // != nil
-				long long temp = comp3(k, x->key);
+				long long temp = comp3(k, x->first);
 				if (temp < 0) { // k < x.key
 					x = &arr[x->left];
 				}
@@ -371,9 +269,31 @@ namespace wiz {
 			}
 			return x;
 		}
-		void INSERT_FIXUP(RB_Tree<T, COMP>* tree, RB_Node<T>*  z) /// google ..
+		RB_Node<Key, Data>*  SEARCH(RB_Node<Key, Data>* x, Key&& k, Key* temp)
 		{
-			RB_Node <T>*   y;
+			COMP comp;
+			COMP3 comp3;
+
+			while (!IsNULL(*x)) { // != nil
+				long long temp = comp3(k, x->first);
+				if (temp < 0) { // k < x.key
+					x = &arr[x->left];
+				}
+				else if (temp > 0) {
+					x = &arr[x->right];
+				}
+				else {
+					break;
+				}
+			}
+			if (temp) {
+				*temp = std::move(k);
+			}
+			return x;
+		}
+		void INSERT_FIXUP(RB_Tree<Key, Data, COMP>* tree, RB_Node<Key, Data>*  z) /// google ..
+		{
+			RB_Node<Key, Data>*   y;
 			while (tree->arr[z->p].color == RED) {
 				if (z->p == tree->arr[tree->arr[z->p].p].left) {
 					y = &(tree->arr[tree->arr[tree->arr[z->p].p].right]);
@@ -415,10 +335,11 @@ namespace wiz {
 			}
 			tree->arr[tree->root].color = BLACK;
 		}
-		long long INSERT(RB_Tree<T, COMP>* tree, const T& key, long long hint = 0)
+		long long INSERT(RB_Tree<Key, Data, COMP>* tree, const std::pair<Key, Data>& key, long long hint = 0)
 		{
 			COMP comp;
 			COMP2 eq;
+			COMP3 comp3;
 
 			long long _count = 0;
 			const long long _count_max = 1;
@@ -443,7 +364,7 @@ namespace wiz {
 					if (_count > _count_max || iter_min == 0) {
 						break;
 					}
-					else if (comp(key, chk[iter_min].key)) {
+					else if (comp(key.first, chk[iter_min].first)) {
 						x_idx = iter_min;
 
 						pass += 1;
@@ -461,7 +382,7 @@ namespace wiz {
 					if (_count > _count_max || iter_max == 0) {
 						break;
 					}
-					else if (comp(chk[iter_max].key, key)) {
+					else if (comp(chk[iter_max].first, key.first)) {
 						x_idx = iter_max;
 
 						pass += 2;
@@ -477,12 +398,13 @@ namespace wiz {
 					)
 				{
 					y_idx = x_idx;
-					// if( z.key < x.key )
-					if (comp(key, tree->arr[x_idx].key))
+					long long test = comp3(key.first, tree->arr[x_idx].first);
+
+					if (test < 0)
 					{
 						x_idx = tree->arr[x_idx].left;
 					}
-					else if (comp(tree->arr[x_idx].key, key)) {
+					else if (test > 0) {
 						x_idx = tree->arr[x_idx].right;
 					}
 					else {
@@ -494,26 +416,28 @@ namespace wiz {
 					y_idx = hint;
 				}
 
-				if (!IsNULL(x_idx) && !hint && eq(key, tree->arr[x_idx].key)) {
-					tree->arr[x_idx].key = std::move(key);
+				if (!IsNULL(x_idx) && !hint && eq(key.first, tree->arr[x_idx].first)) {
+					tree->arr[x_idx].first = std::move(key.first);
+					tree->arr[x_idx].second = std::move(key.second);
 					return x_idx;
 				}
 			}
 
-			RB_Node<T>* z = nullptr;
+			RB_Node<Key, Data>* z = nullptr;
 
 			if (0 == tree->dead_list) {
-				tree->arr.push_back(RB_Node<T>());
+				tree->arr.push_back(RB_Node<Key, Data>());
 				tree->arr.back().id = now;
-				tree->arr.back().key = std::move(key);
+				tree->arr.back().first = std::move(key.first);
+				tree->arr.back().second = std::move(key.second);
 
 				z = &(tree->arr.back());
 
-				if (1 == ( pass & 1 )) {
+				if (1 == (pass & 1)) {
 					tree->min_list = now;
 					arr[now].min_before = tree->min_list;
 				}
-				if (2 == ( pass & 2 )) {
+				if (2 == (pass & 2)) {
 					tree->max_list = now;
 					arr[now].max_before = tree->max_list;
 				}
@@ -526,17 +450,18 @@ namespace wiz {
 
 				tree->arr[now].Clear();
 				tree->arr[now].id = id;
-				tree->arr[now].key = std::move(key);
+				tree->arr[now].first = std::move(key.first);
+				tree->arr[now].second = std::move(key.second);
 				tree->arr[now].next = next;
 				tree->arr[now].dead = false;
 
 				z = &(tree->arr[now]);
 
-				if (1 == ( pass & 1 )) {
+				if (1 == (pass & 1)) {
 					tree->min_list = now;
 					arr[now].min_before = tree->min_list;
 				}
-				if (2 == ( pass & 2 )) {
+				if (2 == (pass & 2)) {
 					tree->max_list = now;
 					arr[now].max_before = tree->max_list;
 				}
@@ -551,7 +476,7 @@ namespace wiz {
 					tree->max_list = z->id;
 				}
 			}
-			else if (comp(z->key, tree->arr[y_idx].key)) {
+			else if (comp(z->first, tree->arr[y_idx].first)) {
 				tree->arr[y_idx].left = z->id;//
 			}
 			else {
@@ -569,10 +494,11 @@ namespace wiz {
 
 			return z->id;
 		}
-		long long INSERT(RB_Tree<T, COMP>* tree, T&& key, long long hint = 0)
+		long long INSERT(RB_Tree<Key, Data, COMP>* tree, std::pair<Key, Data>&& key, long long hint = 0)
 		{
 			COMP comp;
 			COMP2 eq;
+			COMP3 comp3;
 
 			long long _count = 0;
 			const long long _count_max = 1;
@@ -597,7 +523,7 @@ namespace wiz {
 					if (_count > _count_max || iter_min == 0) {
 						break;
 					}
-					else if (comp(key, chk[iter_min].key)) {
+					else if (comp(key.first, chk[iter_min].first)) {
 						x_idx = iter_min;
 
 						pass += 1;
@@ -615,7 +541,7 @@ namespace wiz {
 					if (_count > _count_max || iter_max == 0) {
 						break;
 					}
-					else if (comp(chk[iter_max].key, key)) {
+					else if (comp(chk[iter_max].first, key.first)) {
 						x_idx = iter_max;
 
 						pass += 2;
@@ -631,12 +557,13 @@ namespace wiz {
 					)
 				{
 					y_idx = x_idx;
-					// if( z.key < x.key )
-					if (comp(key, tree->arr[x_idx].key))
+					long long test = comp3(key.first, tree->arr[x_idx].first);
+
+					if (test < 0)
 					{
 						x_idx = tree->arr[x_idx].left;
 					}
-					else if (comp(tree->arr[x_idx].key, key)) {
+					else if (test > 0) {
 						x_idx = tree->arr[x_idx].right;
 					}
 					else {
@@ -648,26 +575,28 @@ namespace wiz {
 					y_idx = hint;
 				}
 
-				if (!IsNULL(x_idx) && !hint && eq(key, tree->arr[x_idx].key)) {
-					tree->arr[x_idx].key = std::move(key);
+				if (!IsNULL(x_idx) && !hint && eq(key.first, tree->arr[x_idx].first)) {
+					tree->arr[x_idx].first = std::move(key.first);
+					tree->arr[x_idx].second = std::move(key.second);
 					return x_idx;
 				}
 			}
 
-			RB_Node<T>* z = nullptr;
+			RB_Node<Key, Data>* z = nullptr;
 
 			if (0 == tree->dead_list) {
-				tree->arr.push_back(RB_Node<T>());
+				tree->arr.push_back(RB_Node<Key, Data>());
 				tree->arr.back().id = now;
-				tree->arr.back().key = std::move(key);
+				tree->arr.back().first = std::move(key.first);
+				tree->arr.back().second = std::move(key.second);
 
 				z = &(tree->arr.back());
 
-				if (1 == ( pass & 1 )) {
+				if (1 == (pass & 1)) {
 					tree->min_list = now;
 					arr[now].min_before = tree->min_list;
 				}
-				if (2 == ( pass & 2 )) {
+				if (2 == (pass & 2)) {
 					tree->max_list = now;
 					arr[now].max_before = tree->max_list;
 				}
@@ -680,17 +609,18 @@ namespace wiz {
 
 				tree->arr[now].Clear();
 				tree->arr[now].id = id;
-				tree->arr[now].key = std::move(key);
+				tree->arr[now].first = std::move(key.first);
+				tree->arr[now].second = std::move(key.second);
 				tree->arr[now].next = next;
 				tree->arr[now].dead = false;
 
 				z = &(tree->arr[now]);
 
-				if (1 == ( pass & 1 )) {
+				if (1 == (pass & 1)) {
 					tree->min_list = now;
 					arr[now].min_before = tree->min_list;
 				}
-				if (2 == ( pass & 2 )) {
+				if (2 == (pass & 2)) {
 					tree->max_list = now;
 					arr[now].max_before = tree->max_list;
 				}
@@ -705,7 +635,7 @@ namespace wiz {
 					tree->max_list = z->id;
 				}
 			}
-			else if (comp(z->key, tree->arr[y_idx].key)) {
+			else if (comp(z->first, tree->arr[y_idx].first)) {
 				tree->arr[y_idx].left = z->id;//
 			}
 			else {
@@ -723,19 +653,19 @@ namespace wiz {
 
 			return z->id;
 		}
-		void LAZYINSERT(RB_Tree<T, COMP>* tree, const T& key) {
+		void LAZYINSERT(RB_Tree<Key, Data, COMP>* tree, const std::pair<Key, Data>& key) {
 			long long now = tree->arr.size();
 
 			tree->remain_list.push_back(key);
 		}
-		void LAZYINSERT(RB_Tree<T, COMP>* tree, T&& key) {
+		void LAZYINSERT(RB_Tree<Key, Data, COMP>* tree, std::pair<Key, Data>&& key) {
 			long long now = tree->arr.size();
 
 			tree->remain_list.push_back(std::move(key));
 		}
 
 	private:
-		void REALINSERT(RB_Tree<T, COMP>* tree) {
+		void REALINSERT(RB_Tree<Key, Data, COMP>* tree) {
 			if (tree->remain_list.empty()) {
 				return;
 			}
@@ -743,7 +673,7 @@ namespace wiz {
 			std::sort(std::execution::par, tree->remain_list.begin(), tree->remain_list.end());
 
 			// remove dupplication? but no remove last dup?
-			
+
 			for (long long i = 0; i < tree->remain_list.size(); ++i) {
 				if (i < tree->remain_list.size() - 1 && tree->remain_list[i] == tree->remain_list[i + 1]) {
 					continue;
@@ -754,26 +684,26 @@ namespace wiz {
 			tree->remain_list.clear();
 		}
 
-		RB_Node<T>* MAXIMUM(RB_Node<T>* x) {
+		RB_Node<Key, Data>* MAXIMUM(RB_Node<Key, Data>* x) {
 			while (!IsNULL(x->right)) {
 				x = &arr[x->right];
 			}
 			return x;
 		}
-		RB_Node<T>* MINIMUM(RB_Node<T>* x)
+		RB_Node<Key, Data>* MINIMUM(RB_Node<Key, Data>* x)
 		{
 			while (!IsNULL(x->left)) { // != nil
 				x = &arr[x->left];
 			}
 			return x;
 		}
-		RB_Node<T>* SUCCESSOR(RB_Node<T>* x)
+		RB_Node<Key, Data>* SUCCESSOR(RB_Node<Key, Data>* x)
 		{
 			if (!IsNULL(x->right)) { // nil
 				return MINIMUM(&arr[x->right]);
 			}
 
-			RB_Node<T>* y = &arr[x->p];
+			RB_Node<Key, Data>* y = &arr[x->p];
 			while (!IsNULL(y->id) && x == &arr[y->right])
 			{
 				x = y; y = &arr[y->p];
@@ -781,9 +711,9 @@ namespace wiz {
 			return y;
 		}
 
-		void REMOVE_FIXUP(RB_Tree<T, COMP>* tree, RB_Node<T>* x)
+		void REMOVE_FIXUP(RB_Tree<Key, Data, COMP>* tree, RB_Node<Key, Data>* x)
 		{
-			RB_Node<T>* w;
+			RB_Node<Key, Data>* w;
 
 			while (x->id != root && x->color == BLACK)
 			{
@@ -844,10 +774,10 @@ namespace wiz {
 		}
 
 
-		RB_Node<T>* REMOVE(RB_Tree<T, COMP>* tree, RB_Node<T>* z)
+		RB_Node<Key, Data>* REMOVE(RB_Tree<Key, Data, COMP>* tree, RB_Node<Key, Data>* z)
 		{
-			RB_Node<T>* x;
-			RB_Node<T>* y;
+			RB_Node<Key, Data>* x;
+			RB_Node<Key, Data>* y;
 
 			if (IsNULL(z->left)
 				|| IsNULL(z->right)) {
@@ -871,7 +801,8 @@ namespace wiz {
 			else { arr[y->p].right = x->id; }
 
 			if (y != z) { //important part!
-				z->key = std::move(y->key); // chk??
+				z->first = std::move(y->first); // chk??
+				z->second = std::move(y->second);
 				std::swap(z->dead, y->dead);
 				std::swap(z->next, y->next);
 				std::swap(z->min_before, y->min_before);
@@ -885,35 +816,35 @@ namespace wiz {
 			return y;
 		}
 	public:
-		void LazyInsert(RB_Tree<T, COMP>* tree, const T& key) {
+		void LazyInsert(RB_Tree<Key, Data, COMP>* tree, const std::pair<Key, Data>& key) {
 			LAZYINSERT(this, key);
 		}
-		void LazyInsert(RB_Tree<T, COMP>* tree, T&& key) {
+		void LazyInsert(RB_Tree<Key, Data, COMP>* tree, std::pair<Key, Data>&& key) {
 			LAZYINSERT(this, std::move(key));
-		}		
+		}
 		// insert, search, remove.
-		long long Insert(const T& key)
+		long long Insert(const std::pair<Key, Data>& key)
 		{
 			return INSERT(this, key);
 		}
-		long long Insert(T&& key)
+		long long Insert(std::pair<Key, Data>&& key)
 		{
 			return INSERT(this, key);
 		}
 
-		bool IsExist(const T& key) const
+		bool IsExist(const Key& key) const
 		{
 			// NULL != ~
 			return !IsNULL(*SEARCH(&arr[root], key));
 		}
-		bool IsExist(T&& key) const
+		bool IsExist(Key&& key) const
 		{
 			// NULL != ~
 			return !IsNULL(*SEARCH(&arr[root], key));
 		}
 
-		RB_Node<T>* Search(const T& key, long long* id = nullptr) {
-			wiz::RB_Node<T>* x = SEARCH(&arr[root], key);
+		RB_Node<Key, Data>* Search(const Key& key, long long* id = nullptr) {
+			wiz::RB_Node<Key, Data>* x = SEARCH(&arr[root], key);
 
 			if (nullptr != id) {
 				*id = x->id;
@@ -922,8 +853,8 @@ namespace wiz {
 			return x;
 		}
 
-		const RB_Node<T>* Search(const T& key, long long* id = nullptr) const {
-			const wiz::RB_Node<T>* x = SEARCH(&arr[root], key);
+		const RB_Node<Key, Data>* Search(const Key& key, long long* id = nullptr) const {
+			const wiz::RB_Node<Key, Data>* x = SEARCH(&arr[root], key);
 
 			if (nullptr != id) {
 				*id = x->id;
@@ -932,8 +863,8 @@ namespace wiz {
 			return x;
 		}
 
-		RB_Node<T>* Search(T&& key, long long* id = nullptr, T* temp = nullptr) {
-			wiz::RB_Node<T>* x = SEARCH(&arr[root], std::move(key), temp);
+		RB_Node<Key, Data>* Search(Key&& key, long long* id = nullptr, Key* temp = nullptr) {
+			wiz::RB_Node<Key, Data>* x = SEARCH(&arr[root], std::move(key), temp);
 
 			if (nullptr != id) {
 				*id = x->id;
@@ -942,8 +873,8 @@ namespace wiz {
 			return x;
 		}
 
-		const RB_Node<T>* Search(T&& key, long long* id = nullptr, T* temp = nullptr) const {
-			const wiz::RB_Node<T>* x = SEARCH(&arr[root], std::move(key));
+		const RB_Node<Key, Data>* Search(Key&& key, long long* id = nullptr, Key* temp = nullptr) const {
+			const wiz::RB_Node<Key, Data>* x = SEARCH(&arr[root], std::move(key));
 
 			if (nullptr != id) {
 				*id = x->id;
@@ -957,9 +888,9 @@ namespace wiz {
 			REALINSERT(this);
 		}
 
-		void Remove(const T& key)
+		void Remove(const Key& key)
 		{
-			RB_Node<T>* node = SEARCH(&arr[root], key);
+			RB_Node<Key, Data>* node = SEARCH(&arr[root], key);
 
 			if (!IsNULL(*node))
 			{
@@ -970,7 +901,7 @@ namespace wiz {
 					arr[node->max_before].max_next = node->max_next;
 				}
 
-				RB_Node<T>* temp = REMOVE(this, node);
+				RB_Node<Key, Data>* temp = REMOVE(this, node);
 
 				temp->dead = true;
 				temp->next = this->dead_list;
@@ -979,9 +910,9 @@ namespace wiz {
 			}
 		}
 
-		void Remove(T&& key)
+		void Remove(Key&& key)
 		{
-			RB_Node<T>* node = SEARCH(&arr[root], std::move(key));
+			RB_Node<Key, Data>* node = SEARCH(&arr[root], std::move(key));
 
 			if (!IsNULL(*node))
 			{
@@ -992,7 +923,7 @@ namespace wiz {
 					arr[node->max_before].max_next = node->max_next;
 				}
 
-				RB_Node<T>* temp = REMOVE(this, node);
+				RB_Node<Key, Data>* temp = REMOVE(this, node);
 
 				temp->dead = true;
 				temp->next = this->dead_list;
@@ -1001,11 +932,11 @@ namespace wiz {
 			}
 		}
 
-		T& Idx(long long idx) {
-			return arr[idx].key;
+		Data& DataVal(long long idx) {
+			return arr[idx].second;
 		}
-		const T& Idx(long long idx) const {
-			return arr[idx].key;
+		const Data& DataVal(long long idx) const {
+			return arr[idx].second;
 		}
 
 		bool IsEmpty() const
@@ -1026,10 +957,10 @@ namespace wiz {
 	template <class Key, class Data>
 	class ArrayMap {
 	public:
-		using iterator = typename std::vector<RB_Node<wiz::Pair<Key, Data>>>::iterator;
-		using const_iterator = typename std::vector<RB_Node<wiz::Pair<Key, Data>>>::const_iterator;
+		using iterator = typename std::vector<RB_Node<Key, Data>>::iterator;
+		using const_iterator = typename std::vector<RB_Node<Key, Data>>::const_iterator;
 	private:
-		mutable RB_Tree<wiz::Pair<Key, Data>> arr;
+		mutable RB_Tree<Key, Data> arr;
 	public:
 		explicit ArrayMap(size_t reserve_num = 0) {
 			if (reserve_num > 0) {
@@ -1079,7 +1010,7 @@ namespace wiz {
 			arr.RealInsert();
 
 			long long id;
-			RB_Node<wiz::Pair<Key, Data>>* x = arr.Search(wiz::Pair<Key, Data>(key, Data()), &id);
+			RB_Node<Key, Data>* x = arr.Search(key, &id);
 			if (0 == x->id) {
 				return arr.end();
 			}
@@ -1089,7 +1020,7 @@ namespace wiz {
 			arr.RealInsert();
 
 			long long id;
-			RB_Node<wiz::Pair<Key, Data>>* x = arr.Search(wiz::Pair<Key, Data>(key, Data()), &id);
+			RB_Node<Key, Data>* x = arr.Search(key, &id);
 			if (0 == x->id) {
 				return arr.end();
 			}
@@ -1099,7 +1030,7 @@ namespace wiz {
 			arr.RealInsert();
 
 			long long id;
-			RB_Node<wiz::Pair<Key, Data>>* x = arr.Search(wiz::Pair<Key, Data>(std::move(key), Data()), &id);
+			RB_Node<Key, Data>* x = arr.Search(std::move(key), &id);
 			if (0 == x->id) {
 				return arr.end();
 			}
@@ -1109,7 +1040,7 @@ namespace wiz {
 			arr.RealInsert();
 
 			long long id;
-			RB_Node<wiz::Pair<Key, Data>>* x = arr.Search(wiz::Pair<Key, Data>(std::move(key), Data()), &id);
+			RB_Node<Key, Data>* x = arr.Search(std::move(key), &id);
 			if (0 == x->id) {
 				return arr.end();
 			}
@@ -1127,7 +1058,7 @@ namespace wiz {
 		}
 		void insert(std::pair<Key, Data>&& value) {
 			lazy_insert(value);
-			
+
 			//	arr.RealInsert();
 
 			//	arr.Insert(wiz::Pair<Key, Data>(value.first, value.second));
@@ -1137,93 +1068,93 @@ namespace wiz {
 			arr.RealInsert();
 		}
 		void lazy_insert(const std::pair<Key, Data>& value) {
-			arr.LazyInsert(&arr, wiz::Pair<Key, Data>(value.first, value.second));
+			arr.LazyInsert(&arr, value);
 		}
 		void lazy_insert(std::pair<Key, Data>&& value) {
-			arr.LazyInsert(&arr, wiz::Pair<Key, Data>(std::move(value.first), std::move(value.second)));
+			arr.LazyInsert(&arr, std::move(value));
 		}
 
 		void remove(const std::pair<Key, Data>& value)
 		{
 			arr.RealInsert();
 
-			arr.Remove(wiz::Pair<Key, Data>(value.first, value.second));
+			arr.Remove(value.first);
 		}
 		void remove(std::pair<Key, Data>&& value)
 		{
 			arr.RealInsert();
 
-			arr.Remove(wiz::Pair<Key, Data>(std::move(value.first), std::move(value.second)));
+			arr.Remove(std::move(value.first));
 		}
 		Data& at(const Key& key) {
 			return (*this)[key];
 		}
 		const Data& at(const Key& key) const {
-			return find(key)->key.second;
+			return find(key)->second;
 		}
 		Data& at(Key&& key) {
 			return (*this)[std::move(key)];
 		}
 		const Data& at(Key&& key) const {
-			return find(std::move(key))->key.second;
+			return find(std::move(key))->second;
 		}
 
 		Data& operator[](const Key& key) {
 			arr.RealInsert();
 
-			RB_Node<wiz::Pair<Key, Data>>* idx = arr.Search(wiz::Pair<Key, Data>(key, Data()));
+			RB_Node<Key, Data>* idx = arr.Search(key);
 			if (0 == idx->id) {
-				long long _idx = arr.Insert(wiz::Pair<Key, Data>(key, Data())); //// return positon? - to do
-				return arr.Idx(_idx).second;
+				long long _idx = arr.Insert(std::pair<Key, Data>(key, Data())); //// return positon? - to do
+				return arr.DataVal(_idx);
 			}
 			else {
-				return idx->key.second;
+				return idx->second;
 			}
 		}
 
 		const Data& operator[](const Key& key) const {
 			arr.RealInsert();
 
-			RB_Node<wiz::Pair<Key, Data>>* idx = arr.Search(wiz::Pair<Key, Data>(key, Data()));
+			RB_Node<Key, Data>* idx = arr.Search(wiz::Pair<Key, Data>(key, Data()));
 			if (0 == idx->id) {
-				long long _idx = arr.Insert(wiz::Pair<Key, Data>(key, Data())); //// return positon? - to do
-				return arr.Idx(_idx).second;
+				//long long _idx = arr.Insert(wiz::Pair<Key, Data>(key, Data())); //// return positon? - to do
+				//return arr.DataVal(_idx);
+				throw "do not exist in ArrayMap";
 			}
 			else {
-				return idx->key.second;
+				return idx->second;
 			}
 		}
-		
+
 		Data& operator[](Key&& key) {
 			arr.RealInsert();
-			wiz::Pair<Key, Data> temp;
+			Key temp;
 
-			RB_Node<wiz::Pair<Key, Data>>* idx = arr.Search(wiz::Pair<Key, Data>(std::move(key), Data()), nullptr, &temp);
+			RB_Node<Key, Data>* idx = arr.Search(std::move(key), nullptr, &temp);
 			if (0 == idx->id) {
-				long long _idx = arr.Insert(std::move(temp)); //// return positon? - to do
-				return arr.Idx(_idx).second;
+				long long _idx = arr.Insert(std::pair<Key, Data>(std::move(temp), Data())); //// return positon? - to do
+				return arr.DataVal(_idx);
 			}
 			else {
-				return idx->key.second;
+				return idx->second;
 			}
 		}
 
 		const Data& operator[](Key&& key) const {
 			arr.RealInsert();
 
-			RB_Node<wiz::Pair<Key, Data>>* idx = arr.Search(wiz::Pair<Key, Data>(std::move(key), Data()));
+			RB_Node<Key, Data>* idx = arr.Search(std::move(key));
 			if (0 == idx->id) {
 				//long long _idx = arr.Insert(wiz::Pair<Key, Data>(std::move(key), Data())); //// return positon? - to do
 				//return arr.Idx(_idx).second;
 				throw "do not exist in ArrayMap";
 			}
 			else {
-				return idx->key.second;
+				return idx->second;
 			}
 		}
 
 	};
 }
-
 
 #endif
