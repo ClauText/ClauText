@@ -4,6 +4,7 @@
 #include "global.h"
 #include <vector>
 #include <queue>
+#include <string>
 #include <algorithm>
 #include <utility>
 #include <execution>
@@ -27,14 +28,86 @@ namespace wiz {
 
 		}
 
+		Pair(Key&& key, Data&& data)
+			: first(key), second(data)
+		{
+
+		}
 	public:
+		long long test(const Pair& other) const noexcept {
+			if (*this < other) {
+				return -1;
+			}
+			else if (*this > other) {
+				return 1;
+			}
+			else {
+				return 0;
+			}
+		}
+
 		bool operator<(const Pair& other) const noexcept {
+			return this->first < other.first;
+		}
+		bool operator<(Pair&& other) const noexcept {
 			return this->first < other.first;
 		}
 		bool operator!=(const Pair& other) const noexcept {
 			return this->first != other.first;
 		}
+		bool operator!=(Pair&& other) const noexcept {
+			return this->first != other.first;
+		}
 		bool operator==(const Pair& other) const noexcept {
+			return this->first == other.first;
+		}
+		bool operator==(Pair&& other) const noexcept {
+			return this->first == other.first;
+		}
+	};
+	template <class Data>
+	class Pair<std::string, Data>
+	{
+	public:
+		using Key = std::string;
+		Key first;
+		Data second;
+		//	std::string second;
+	public:
+		Pair() { }
+
+		Pair(const Key& key, const Data& data)
+			: first(key), second(data)
+		{
+
+		}
+
+		Pair(Key&& key, Data&& data)
+			: first(key), second(data)
+		{
+
+		}
+	public:
+		long long test(const Pair& other) const noexcept {
+			return strcmp(this->first.c_str(), other.first.c_str());
+		}
+
+		bool operator<(const Pair& other) const noexcept {
+			return this->first < other.first;
+		}
+		bool operator<(Pair&& other) const noexcept {
+			return this->first < other.first;
+		}
+		bool operator!=(const Pair& other) const noexcept {
+			return this->first != other.first;
+		}
+		bool operator!=(Pair&& other) const noexcept {
+			return this->first != other.first;
+		}
+		bool operator==(const Pair& other) const noexcept {
+			return this->first == other.first;
+		}
+		bool operator==(Pair&& other) const noexcept {
 			return this->first == other.first;
 		}
 	};
@@ -83,7 +156,16 @@ namespace wiz {
 		}
 	};
 
-	template < class T, class COMP = ASC<T>, class COMP2 = EQ<T> >
+	template <class T>
+	class TEST // need to rename!
+	{
+	public:
+		long long operator()(const T& t1, const T& t2) const noexcept {
+			return t1.test(t2);
+		}
+	};
+
+	template < class T, class COMP = ASC<T>, class COMP2 = EQ<T>, class COMP3 = TEST<T>>
 	class RB_Tree
 	{
 	private:
@@ -209,32 +291,86 @@ namespace wiz {
 		const RB_Node <T>*  SEARCH(const RB_Node <T>*   x, const T& k) const
 		{
 			COMP comp;
+			COMP3 comp3;
 
-			while (!IsNULL(*x) && k != x->key) { // != nil
-				if (comp(k, x->key)) { // k < x.key
-					x = const_cast<RB_Node<T>*>(&arr[x->left]);
+			while (!IsNULL(*x)) { // != nil
+				long long temp = comp3(k, x->key);
+				if (temp < 0) { // k < x.key
+					x = &arr[x->left];
+				}
+				else if (temp > 0) {
+					x = &arr[x->right];
 				}
 				else {
-					x = const_cast<RB_Node<T>*>(&arr[x->right]);
+					break;
 				}
 			}
+
 			return x;
 		}
 		RB_Node <T>*  SEARCH(RB_Node <T>*   x, const T& k)
 		{
 			COMP comp;
+			COMP3 comp3;
 
-			while (!IsNULL(*x) && k != x->key) { // != nil
-				if (comp(k, x->key)) { // k < x.key
+			while (!IsNULL(*x)) { // != nil
+				long long temp = comp3(k, x->key);
+				if (temp < 0) { // k < x.key
 					x = &arr[x->left];
 				}
-				else {
+				else if (temp > 0) {
 					x = &arr[x->right];
+				}
+				else {
+					break;
 				}
 			}
 			return x;
 		}
+		const RB_Node <T>*  SEARCH(const RB_Node <T>* x, T&& k, T* temp) const
+		{
+			COMP comp;
+			COMP3 comp3;
 
+			while (!IsNULL(*x)) { // != nil
+				long long temp = comp3(k, x->key);
+				if (temp < 0) { // k < x.key
+					x = &arr[x->left];
+				}
+				else if (temp > 0) {
+					x = &arr[x->right];
+				}
+				else {
+					break;
+				}
+			}
+			if (temp) {
+				*temp = std::move(k);
+			}
+			return x;
+		}
+		RB_Node <T>*  SEARCH(RB_Node <T>* x, T&& k, T* temp)
+		{
+			COMP comp;
+			COMP3 comp3;
+
+			while (!IsNULL(*x)) { // != nil
+				long long temp = comp3(k, x->key);
+				if (temp < 0) { // k < x.key
+					x = &arr[x->left];
+				}
+				else if (temp > 0) {
+					x = &arr[x->right];
+				}
+				else {
+					break;
+				}
+			}
+			if (temp) {
+				*temp = std::move(k);
+			}
+			return x;
+		}
 		void INSERT_FIXUP(RB_Tree<T, COMP>* tree, RB_Node<T>*  z) /// google ..
 		{
 			RB_Node <T>*   y;
@@ -760,7 +896,17 @@ namespace wiz {
 		{
 			return INSERT(this, key);
 		}
-		bool IsExist(const T& key)
+		long long Insert(T&& key)
+		{
+			return INSERT(this, key);
+		}
+
+		bool IsExist(const T& key) const
+		{
+			// NULL != ~
+			return !IsNULL(*SEARCH(&arr[root], key));
+		}
+		bool IsExist(T&& key) const
 		{
 			// NULL != ~
 			return !IsNULL(*SEARCH(&arr[root], key));
@@ -786,6 +932,26 @@ namespace wiz {
 			return x;
 		}
 
+		RB_Node<T>* Search(T&& key, long long* id = nullptr, T* temp = nullptr) {
+			wiz::RB_Node<T>* x = SEARCH(&arr[root], std::move(key), temp);
+
+			if (nullptr != id) {
+				*id = x->id;
+			}
+
+			return x;
+		}
+
+		const RB_Node<T>* Search(T&& key, long long* id = nullptr, T* temp = nullptr) const {
+			const wiz::RB_Node<T>* x = SEARCH(&arr[root], std::move(key));
+
+			if (nullptr != id) {
+				*id = x->id;
+			}
+
+			return x;
+		}
+
 		void RealInsert()
 		{
 			REALINSERT(this);
@@ -794,6 +960,28 @@ namespace wiz {
 		void Remove(const T& key)
 		{
 			RB_Node<T>* node = SEARCH(&arr[root], key);
+
+			if (!IsNULL(*node))
+			{
+				if (!IsNULL(node->min_before)) {
+					arr[node->min_before].min_next = node->min_next;
+				}
+				if (!IsNULL(node->max_before)) {
+					arr[node->max_before].max_next = node->max_next;
+				}
+
+				RB_Node<T>* temp = REMOVE(this, node);
+
+				temp->dead = true;
+				temp->next = this->dead_list;
+				this->dead_list = temp->id;
+				count--;
+			}
+		}
+
+		void Remove(T&& key)
+		{
+			RB_Node<T>* node = SEARCH(&arr[root], std::move(key));
 
 			if (!IsNULL(*node))
 			{
@@ -1008,10 +1196,11 @@ namespace wiz {
 		
 		Data& operator[](Key&& key) {
 			arr.RealInsert();
+			wiz::Pair<Key, Data> temp;
 
-			RB_Node<wiz::Pair<Key, Data>>* idx = arr.Search(wiz::Pair<Key, Data>(key, Data()));
+			RB_Node<wiz::Pair<Key, Data>>* idx = arr.Search(wiz::Pair<Key, Data>(std::move(key), Data()), nullptr, &temp);
 			if (0 == idx->id) {
-				long long _idx = arr.Insert(wiz::Pair<Key, Data>(std::move(key), Data())); //// return positon? - to do
+				long long _idx = arr.Insert(std::move(temp)); //// return positon? - to do
 				return arr.Idx(_idx).second;
 			}
 			else {
@@ -1022,10 +1211,11 @@ namespace wiz {
 		const Data& operator[](Key&& key) const {
 			arr.RealInsert();
 
-			RB_Node<wiz::Pair<Key, Data>>* idx = arr.Search(wiz::Pair<Key, Data>(key, Data()));
+			RB_Node<wiz::Pair<Key, Data>>* idx = arr.Search(wiz::Pair<Key, Data>(std::move(key), Data()));
 			if (0 == idx->id) {
-				long long _idx = arr.Insert(wiz::Pair<Key, Data>(std::move(key), Data())); //// return positon? - to do
-				return arr.Idx(_idx).second;
+				//long long _idx = arr.Insert(wiz::Pair<Key, Data>(std::move(key), Data())); //// return positon? - to do
+				//return arr.Idx(_idx).second;
+				throw "do not exist in ArrayMap";
 			}
 			else {
 				return idx->key.second;
