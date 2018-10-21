@@ -606,10 +606,13 @@ namespace wiz {
 
 			std::sort(std::execution::par, tree->remain_list.begin(), tree->remain_list.end());
 
-			// todo - remove dup? but no remove last dup?
-
-			for (auto&& x : tree->remain_list) {
-				INSERT(tree, std::move(x));
+			// remove dupplication? but no remove last dup?
+			
+			for (long long i = 0; i < tree->remain_list.size(); ++i) {
+				if (i < tree->remain_list.size() - 1 && tree->remain_list[i] == tree->remain_list[i + 1]) {
+					continue;
+				}
+				INSERT(tree, std::move(tree->remain_list[i]));
 			}
 
 			tree->remain_list.clear();
