@@ -3,6 +3,7 @@
 #define LOAD_DATA_TYPES_H
 
 #include <string>
+#include <cstring>
 #include <vector>
 #include <list>
 #include <regex>
@@ -200,10 +201,13 @@ namespace wiz {
 				int middle = (left + right) / 2;
 
 				while (left <= right) {
-					if (arr[middle]->GetName() == x.GetName()) {
+					long long test = strcmp(arr[middle]->GetName().ToString().c_str(),
+						x.GetName().ToString().c_str());
+
+					if (0 == test) {
 						return middle;
 					}
-					else if (arr[middle]->GetName().ToString() < x.GetName().ToString()) {
+					else if (test < 0) {
 						left = middle + 1;
 					}
 					else {
@@ -221,10 +225,12 @@ namespace wiz {
 				int middle = (left + right) / 2;
 
 				while (left <= right) {
-					if (arr[middle]->GetName() == x.GetName()) {
+					long long test = strcmp(arr[middle]->GetName().ToString().c_str(), x.GetName().ToString().c_str());
+
+					if (0 == test) {
 						return middle;
 					}
-					else if (arr[middle]->GetName().ToString() < x.GetName().ToString()) {
+					else if (test < 0) {
 						left = middle + 1;
 					}
 					else {

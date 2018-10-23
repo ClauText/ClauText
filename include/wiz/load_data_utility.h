@@ -21,7 +21,7 @@ namespace wiz {
 		class Utility
 		{
 		public:
-			static bool IsInteger(std::string str) {
+			static bool IsInteger(const std::string& str) {
 				//if (str.size() > 2 && str[0] == str.back() && (str[0] == '\"' || str[0] == '\'')) {
 				//	str = str.substr(1, str.size() - 2);
 				//}
@@ -48,7 +48,7 @@ namespace wiz {
 				}
 				return 1 == state; /// chk..
 			}
-			static bool IsNumberInJson(std::string str)
+			static bool IsNumberInJson(const std::string& str)
 			{
 				//if (str.size() > 2 && str[0] == str.back() && (str[0] == '\"' || str[0] == '\'')) {
 				//	str = str.substr(1, str.size() - 2);
@@ -116,7 +116,7 @@ namespace wiz {
 				}
 				return 3 == state || 6 == state;
 			}
-			static bool IsDouble(std::string str) {
+			static bool IsDouble(const std::string& str) {
 				//if (str.size() > 2 && str[0] == str.back() && (str[0] == '\"' || str[0] == '\'')) {
 				//	str = str.substr(1, str.size() - 2);
 				//}
@@ -181,7 +181,7 @@ namespace wiz {
 				}
 				return 3 == state || 6 == state;
 			}
-			static bool IsDate(std::string str) /// chk!!
+			static bool IsDate(const std::string& str) /// chk!!
 			{
 				//if (str.size() > 2 && str[0] == str.back() && (str[0] == '\"' || str[0] == '\'')) {
 				//	str = str.substr(1, str.size() - 2);
@@ -229,7 +229,7 @@ namespace wiz {
 				}
 				return 5 == state;
 			}
-			static bool IsDateTimeA(std::string str) // yyyy.MM.dd.hh
+			static bool IsDateTimeA(const std::string& str) // yyyy.MM.dd.hh
 			{
 				//if (str.size() > 2 && str[0] == str.back() && (str[0] == '\"' || str[0] == '\'')) {
 				//	str = str.substr(1, str.size() - 2);
@@ -286,7 +286,7 @@ namespace wiz {
 				}
 				return 7 == state;
 			}
-			static bool IsDateTimeB(std::string str) // yyyy.MM.dd.hh.mm
+			static bool IsDateTimeB(const std::string& str) // yyyy.MM.dd.hh.mm
 			{
 			//	if (str.size() > 2 && str[0] == str.back() && (str[0] == '\"' || str[0] == '\'')) {
 			//		str = str.substr(1, str.size() - 2);
@@ -354,7 +354,7 @@ namespace wiz {
 				}
 				return 9 == state;
 			}
-			static bool IsMinus(std::string str)
+			static bool IsMinus(const std::string& str)
 			{
 			//	if (str.size() > 2 && str[0] == str.back() && (str[0] == '\"' || str[0] == '\'')) {
 			//		str = str.substr(1, str.size() - 2);
@@ -366,7 +366,7 @@ namespace wiz {
 				std::reverse(str.begin(), str.end());
 				return str;
 			}
-			static std::string GetType(std::string str) {
+			static std::string GetType(const std::string& str) {
 				//if (str.size() > 2 && str[0] == str.back() && (str[0] == '\"' || str[0] == '\'')) {
 				//	str = str.substr(1, str.size() - 2);
 				//}
@@ -465,7 +465,7 @@ namespace wiz {
 				}
 
 				if (1 == state) { return "INTEGER"; }
-				else if (3 == state || 6 == state) { return "FLOAT"; }
+				else if (3 == state || 6 == state) { return "DOUBLE"; }
 				else if (9 == state) { return "DATETIMEB"; }
 				else if (8 == state) { return "DATETIMEA"; }
 				else if (7 == state) { return "DATE"; }
