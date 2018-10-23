@@ -2,6 +2,7 @@
 #define BINARY_SEARCH_TREE_H
 
 
+#include "queues.h"
 #include <vector>
 #include <queue>
 #include <string>
@@ -392,9 +393,12 @@ namespace wiz {
 					iter_max = chk[iter_max].max_next;
 				}
 
+				if (hint) {
+					x_idx = hint;
+				}
 
 				while (//!IsNULL(tree->arr[x_idx]) &&
-					!IsNULL(x_idx) && !hint
+					!IsNULL(x_idx)
 					)
 				{
 					y_idx = x_idx;
@@ -412,11 +416,9 @@ namespace wiz {
 					}
 				}
 
-				if (hint) {
-					y_idx = hint;
-				}
 
-				if (!IsNULL(x_idx) && !hint && eq(key.first, tree->arr[x_idx].first)) {
+
+				if (!IsNULL(x_idx) && eq(key.first, tree->arr[x_idx].first)) {
 					tree->arr[x_idx].first = std::move(key.first);
 					tree->arr[x_idx].second = std::move(key.second);
 					return x_idx;
@@ -551,9 +553,12 @@ namespace wiz {
 					iter_max = chk[iter_max].max_next;
 				}
 
+				if (hint) {
+					x_idx = hint;
+				}
 
 				while (//!IsNULL(tree->arr[x_idx]) &&
-					!IsNULL(x_idx) && !hint
+					!IsNULL(x_idx)
 					)
 				{
 					y_idx = x_idx;
@@ -571,11 +576,9 @@ namespace wiz {
 					}
 				}
 
-				if (hint) {
-					y_idx = hint;
-				}
+				
 
-				if (!IsNULL(x_idx) && !hint && eq(key.first, tree->arr[x_idx].first)) {
+				if (!IsNULL(x_idx) && eq(key.first, tree->arr[x_idx].first)) {
 					tree->arr[x_idx].first = std::move(key.first);
 					tree->arr[x_idx].second = std::move(key.second);
 					return x_idx;
@@ -665,7 +668,63 @@ namespace wiz {
 		}
 
 	private:
+
+		class _Data
+		{
+		public:
+			long long left, right;
+		public:
+			explicit _Data() { }
+			explicit _Data(long long left, long long right) : left(left), right(right)
+			{
+				//
+			}
+		};
+
 		void REALINSERT(RB_Tree<Key, Data, COMP>* tree) {
+			/*if (tree->remain_list.empty()) {
+				return;
+			}
+
+			std::sort(std::execution::par, tree->remain_list.begin(), tree->remain_list.end());
+
+			long long count = 0;
+			for (long long i = 0; i < tree->remain_list.size(); ++i) {
+				if (i < tree->remain_list.size() - 1 && tree->remain_list[i] == tree->remain_list[i + 1]) {
+					continue;
+				}
+				tree->remain_list[count] = std::move(tree->remain_list[i]);
+				count++;
+			}
+			tree->remain_list.resize(count);
+
+			wiz::ArrayQueue<long long> hint;
+			hint.reserve(count);
+			hint.push(0);
+			wiz::ArrayQueue<_Data> que;
+			que.reserve(count * 2);
+			que.push(_Data(0, count - 1));
+			while (!que.empty()) {
+				_Data x = que.front(); 
+				que.pop();
+				auto k = hint.front();
+				hint.pop();
+				long long middle = (x.left + x.right) / 2;
+
+				k = INSERT(tree, std::move(tree->remain_list[middle]), k);
+			
+				if (x.left <= middle - 1) {
+					que.push(_Data(x.left, middle - 1));
+					hint.push(k);
+				}
+				if (middle + 1 <= x.right) {
+					que.push(_Data(middle + 1, x.right));
+					hint.push(k);
+				}
+			}
+			tree->remain_list.clear();
+			return;
+		*/
 			if (tree->remain_list.empty()) {
 				return;
 			}
@@ -673,7 +732,6 @@ namespace wiz {
 			std::sort(std::execution::par, tree->remain_list.begin(), tree->remain_list.end());
 
 			// remove dupplication? but no remove last dup?
-
 			for (long long i = 0; i < tree->remain_list.size(); ++i) {
 				if (i < tree->remain_list.size() - 1 && tree->remain_list[i] == tree->remain_list[i + 1]) {
 					continue;
@@ -1030,7 +1088,7 @@ namespace wiz {
 			arr.RealInsert();
 
 			long long id;
-			RB_Node<Key, Data>* x = arr.Search(std::move(key), &id);
+			auto* x = arr.Search(std::move(key), &id);
 			if (0 == x->id) {
 				return arr.end();
 			}
@@ -1063,7 +1121,7 @@ namespace wiz {
 
 			//	arr.Insert(wiz::Pair<Key, Data>(value.first, value.second));
 		}
-		void update()
+		void update()  
 		{
 			arr.RealInsert();
 		}
