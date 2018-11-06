@@ -1708,6 +1708,77 @@ namespace wiz {
 				return{ count2 > 0, count2 };
 			}
 			// no enter strings? " abc \n def " and problem - one line!?
+
+			class BomInfo
+			{
+			public:
+				long long bom_size;
+				char seq[5];
+			};
+			
+			const static size_t BOM_COUNT = 1;
+
+			enum BomType { UTF_8, UNDEFINED = -1 }; // ANSI - UNDEFINED
+			
+			inline static const BomInfo bomInfo[1] = {
+				{ 3, { 0xEF, 0xBB, 0xBF } }
+			};
+			static BomType ReadBom(std::ifstream& file) {
+				char btBom[5] = { 0, };
+				file.read(btBom, 5);
+				size_t readSize = file.gcount();
+
+				if (0 == readSize) {
+					return UNDEFINED;
+				}
+
+				BomInfo stBom = { 0, };
+				BomType type = ReadBom(btBom, readSize, stBom);
+				
+				if (type == UNDEFINED) { // ansi
+					file.seekg(0, std::ios_base::beg);
+					return UNDEFINED;
+				}
+
+				file.seekg(stBom.bom_size, std::ios_base::beg);
+				return type;
+			}
+			static BomType ReadBom(const char* contents, size_t length, BomInfo& outInfo) {
+				char btBom[5] = { 0, };
+				size_t testLength = length < 5 ? length : 5;
+				memcpy(btBom, contents, testLength);
+
+				size_t i, j;
+				for (i = 0; i < BOM_COUNT; ++i) {
+					const BomInfo& bom = bomInfo[i];
+					
+					if (bom.bom_size > testLength) {
+						continue;
+					}
+
+					bool matched = true;
+
+					for (j = 0; j < bom.bom_size; ++j) {
+						if (bom.seq[j] == btBom[j]) {
+							continue;
+						}
+
+						matched = false;
+						break;
+					}
+
+					if (!matched) {
+						continue;
+					}
+
+					outInfo = bom;
+
+					return (BomType)i;
+				}
+
+				return UNDEFINED;
+			}
+
 			static std::pair<bool, int> Reserve2_3(std::ifstream& inFile, VECTOR<Token2>* aq, const int num, bool* isFirst, const wiz::LoadDataOption& option, int thr_num, char*& _buffer)
 			{
 				if (inFile.eof()) {
@@ -1724,8 +1795,12 @@ namespace wiz {
 
 				if (thr_num > 1) {
 					inFile.seekg(0, inFile.end);
-					const unsigned long long length = inFile.tellg();
+					unsigned long long length = inFile.tellg();
 					inFile.seekg(0, inFile.beg);
+
+					ReadBom(inFile);
+					length = length - inFile.tellg();
+
 
 					buffer = new char[length +1]; // 
 
@@ -1737,11 +1812,9 @@ namespace wiz {
 
 					buffer[length] = '\0';
 					
-
 					start[0] = 0;
 
-
-					// todo - linear check?
+					
 					for (int i = 1; i < thr_num; ++i) {
 						start[i] = length / thr_num * i;
 						for (int x = start[i]; x <= length; ++x) {

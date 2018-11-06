@@ -1009,7 +1009,7 @@ namespace wiz {
 
 
 			// $it?
-			std::vector<ItemType<WIZ_STRING_TYPE>> GetItem(const std::string& name) const {
+			std::vector<ItemType<WIZ_STRING_TYPE>> GetItem(const std::string& name, bool chk = false) const {
 				std::vector<ItemType<WIZ_STRING_TYPE>> temp;
 				if (String::startsWith(name, "$.") && name.size() >= 5) {
 					// later, change to binary search?
@@ -1074,6 +1074,10 @@ namespace wiz {
 						}
 					}
 					*/
+				}
+
+				if (chk && USE_EMPTY_VECTOR_IN_LOAD_DATA_TYPES && temp.empty()) {
+					temp.push_back(ItemType<DataType>("", ""));
 				}
 				return temp;
 			}
@@ -1150,6 +1154,7 @@ namespace wiz {
 					}
 				}
 				*/
+
 				return temp;
 			}
 

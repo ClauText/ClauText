@@ -31,7 +31,8 @@
 ///
 
 namespace wiz {
-
+	inline bool USE_REMOVE_IN_DATATYPE = false;
+	inline bool USE_EMPTY_VECTOR_IN_LOAD_DATA_TYPES = false;
 	// 0~n-2 : sorted, 
 	// 0~n-1 : not sorted(maybe?)
 	template <class T, class COMPARE>
@@ -539,7 +540,7 @@ namespace wiz{
 		T i = x;
 
 		const int INT_SIZE = sizeof(T) << 3; ///*8
-		char* temp = new char[INT_SIZE + 1 + 1]; /// 1 NULL, 1 minus
+		char* temp = new char[INT_SIZE + 1 + 1]; /// 1 nullptr, 1 minus
 		std::string tempString;
 		int k;
 		bool isMinus = (i < 0);
@@ -581,7 +582,7 @@ namespace wiz{
 		T k2 = 0;
 
 		const int INT_SIZE = sizeof(T) << 3; ///*8
-		char* temp = new char[INT_SIZE + 1 + 1]; /// 1 NULL, 1 minus
+		char* temp = new char[INT_SIZE + 1 + 1]; /// 1 nullptr, 1 minus
 		for(int i=0; i < INT_SIZE+2; ++i ) { temp[i] = '0'; }//
 		std::string tempString;
 		int k;

@@ -3236,9 +3236,9 @@ namespace wiz {
 
 					global = std::move(globalTemp);
 				}
-				std::chrono::steady_clock::time_point b = std::chrono::steady_clock::now();
-				std::cout << (double)std::chrono::steady_clock::duration(b - a).count() 
-					* std::chrono::steady_clock::period().num / std::chrono::steady_clock::period().den << "s" << std::endl;
+				//std::chrono::steady_clock::time_point b = std::chrono::steady_clock::now();
+				//std::cout << (double)std::chrono::steady_clock::duration(b - a).count() 
+				//	* std::chrono::steady_clock::period().num / std::chrono::steady_clock::period().den << "s" << std::endl;
 				return true;
 			}
 			/*
