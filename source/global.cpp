@@ -5,6 +5,13 @@
 #include "wiz/load_data_utility.h"
 
 namespace wiz {
+	inline std::string Remove(const std::string& str)
+	{
+		if (str.size() >= 2 && str.front() == str.back() && str.back() == '\"') {
+			return str.substr(1, str.size() - 2);
+		}
+		return str;
+	}
 
 	long long checkDelimiter(const char* start, const char* last, const std::vector<std::string>& delimiter)
 	{
@@ -74,6 +81,10 @@ namespace wiz {
 	DataType::DataType(const char* cstr)
 	{
 		this->str_value = std::string(cstr);
+		
+		if (USE_REMOVE_IN_DATATYPE) {
+			this->str_value = Remove(str_value);
+		}
 		/* // #ifdef DataTypeDebug?
 		this->change = true;
 
@@ -95,6 +106,11 @@ namespace wiz {
 	DataType::DataType(const std::string& str)
 	{
 		this->str_value = str;
+
+		if (USE_REMOVE_IN_DATATYPE) {
+			this->str_value = Remove(str_value);
+		}
+
 		/*
 		this->change = true;
 
@@ -152,19 +168,18 @@ namespace wiz {
 	DataType& DataType::operator+=(const DataType& type) 
 	{
 		this->str_value += type.str_value;
+
 		this->change = true;
 		return *this;
 	}
 	DataType& DataType::operator+=(const char* cstr) 
 	{
-		this->str_value += cstr;
-		this->change = true;
+		(*this) += DataType(cstr);
 		return *this;
 	}
 	DataType& DataType::operator+=(const std::string& str)
 	{
-		this->str_value += str;
-		this->change = true;
+		(*this) += DataType(str);
 		return *this;
 	}
 

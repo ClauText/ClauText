@@ -72,19 +72,38 @@ namespace wiz
 int main(int argc, char* argv[])
 {
 	/*
-	// Test for string tokenizer.
+	{
+		wiz::load_data::UserType ut;
+
+		wiz::load_data::LoadData::LoadDataFromFile3("C:/Users/vztpv/Documents/Paradox Interactive/Europa Universalis IV/save games/save1.eu4",
+			ut, -1, 0);
+
+		ut.clear();
+
+		wiz::load_data::LoadData::LoadDataFromFile3("C:/Users/vztpv/Documents/Paradox Interactive/Europa Universalis IV/save games/save1.eu4",
+			ut, -1, 0);
+
+		return 0;
+	}
+	
+	*/
+	/*
+	// Test for string tokenizer2.
 	{
 		wiz::StringBuilder builder(1024);
 		std::vector<std::string> delim{ "fg", "aa" };
 		// chk const char* str?
-		wiz::StringTokenizer tokenizer("aacdefghijkabx", delim, &builder);
+		wiz::StringTokenizer2 tokenizer("aacdefgfghijkabx", delim, &builder);
 		
 		while (tokenizer.hasMoreTokens()) {
-			std::cout << tokenizer.nextToken() << std::endl;
+			static int count = 0;
+			count++;
+			std::cout << count << " th " << tokenizer.nextToken() << std::endl;
 		} 
 	}	
-	*/
+	
 
+	*/
 	srand(time(nullptr)); // 
 
 	std::string fileName;
