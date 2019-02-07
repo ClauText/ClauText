@@ -229,13 +229,23 @@ namespace wiz {
 		std::vector<std::string> MuitipleLineCommentEnd;   // ### // ?
 		std::vector<char> Left, Right;	// { } , [ ] <- json
 		std::vector<std::string> Assignment;	// = , :
-		std::vector<char> Removal;		// ',', empty. 
+		std::vector<char> Removal;		// ',', empty.
+		std::vector<char> Delimiter; // 
 	};
 
 	inline int Equal(const std::vector<char>& option, const char ch)
 	{
 		for (int i = 0; i < option.size(); ++i) {
 			if (ch == option[i]) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	inline int Equal(const std::vector<std::string>& option, const char ch)
+	{
+		for (int i = 0; i < option.size(); ++i) {
+			if (option[i].size() == 1 && ch == option[i][0]) {
 				return i;
 			}
 		}

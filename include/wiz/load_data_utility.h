@@ -1459,6 +1459,25 @@ namespace wiz {
 								}
 								continue;
 							}
+							else if (0 == state && -1 != (idx = Equal(option->Delimiter, *x)))
+							{
+								token_last = x - 1;
+
+								if (token_last >= 0 && token_last - token_first + 1 > 0) {
+									aq->emplace_back(token_first, token_last - token_first + 1, false);
+									token.clear();
+
+									aq->emplace_back(x, 1, false);
+									token_first = x + 1;
+								}
+								else {
+									token.clear();
+
+									aq->emplace_back(x, 1, false);
+									token_first = token_first + 1;
+								}
+								continue;
+							}
 							else if (0 == state && -1 != (idx = checkDelimiter(x, last, option->Assignment))) {
 								token_last = x - 1;
 

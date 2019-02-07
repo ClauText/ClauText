@@ -29,174 +29,174 @@ public:
 template <class T>
 class Stack
 {
-    class Element
-    {
-    public:
-        Element* next;
-        T data;
-    public:
-        //
-        explicit Element( const T& d=T() )
-        {  // 湲곕낯 ??? // ?뺤? 蹂듭궗.
-            data = d; // why this?
-            next = nullptr;
-        }
-    };
+	class Element
+	{
+	public:
+		Element* next;
+		T data;
+	public:
+		//
+		explicit Element(const T& d = T())
+		{  // 湲곕낯 ??? // ?뺤? 蹂듭궗.
+			data = d; // why this?
+			next = nullptr;
+		}
+	};
 private:
-    void copy( const Stack<T>& s )
-    {
-        /// this->clear();
-        Element* pE = s.Rear;
-        Stack<T> temp;
-        while( nullptr != pE )
-        {
-            temp.push( pE->data );
-            pE = pE->next;
-        }
-        pE = temp.Rear;
-        while( nullptr != pE )
-        {
-            this->push( pE->data );
-            pE = pE->next;
-        }
-    }
+	void copy(const Stack<T>& s)
+	{
+		/// this->clear();
+		Element* pE = s.Rear;
+		Stack<T> temp;
+		while (nullptr != pE)
+		{
+			temp.push(pE->data);
+			pE = pE->next;
+		}
+		pE = temp.Rear;
+		while (nullptr != pE)
+		{
+			this->push(pE->data);
+			pE = pE->next;
+		}
+	}
 public:
-    Stack( const Stack<T>& s )
-    {
-        num = 0;
-        Rear = nullptr;
-        copy( s );
-    }
-    Stack<T>& operator=( const Stack<T>& s )
-    {
-        if( this->Rear == s.Rear ) { return *this; }
-        clear();
-        copy( s );
+	Stack(const Stack<T>& s)
+	{
+		num = 0;
+		Rear = nullptr;
+		copy(s);
+	}
+	Stack<T>& operator=(const Stack<T>& s)
+	{
+		if (this->Rear == s.Rear) { return *this; }
+		clear();
+		copy(s);
 		num = s.num;
-        return *this;
-    }
-    Stack( Stack<T>&& s )
-    {
-        Rear = s.Rear;
-        num = s.num;
+		return *this;
+	}
+	Stack(Stack<T>&& s)
+	{
+		Rear = s.Rear;
+		num = s.num;
 
-        s.Rear = nullptr;
-        s.num = 0;
-    }
-    Stack<T>& operator=( Stack<T>&& s )
-    {
-        if( Rear == s.Rear ) { return *this; }
-        clear();
-        Rear = s.Rear;
-        num = s.num;
+		s.Rear = nullptr;
+		s.num = 0;
+	}
+	Stack<T>& operator=(Stack<T>&& s)
+	{
+		if (Rear == s.Rear) { return *this; }
+		clear();
+		Rear = s.Rear;
+		num = s.num;
 
-        s.Rear = nullptr;
-        s.num = 0;
-        return *this;
-    }
+		s.Rear = nullptr;
+		s.num = 0;
+		return *this;
+	}
 private:
-    Element* Rear;// 瑗щ━???곗씠?곕? ?ｋ뒗??
-    int num;  // for toArray
+	Element* Rear;// 瑗щ━???곗씠?곕? ?ｋ뒗??
+	int num;  // for toArray
 public:
-    explicit Stack() : Rear( nullptr ), num( 0 ) { }
-    ~Stack(){
-        clear();
-    }
-    void clear() {
-        while( !isEmpty() ){
-            pop();
-        }
-    }
-    bool isEmpty()const{ // 鍮꾩뿀?? //
-        return nullptr == Rear; // num <= 0
-    }
-    bool empty() const{ return isEmpty(); }
-    //
-    void push( const T& p ){ // ?ｊ린
-        Element* temp = new Element(p); //
-        //Rear
-        temp->next = Rear; // Rear媛 媛瑜댄궎??媛믪쓣 媛瑜댄궎寃??쒕떎.
-        Rear = temp; //?덈줈 ?ㅼ뼱?ㅻ뒗 寃껋쓣 湲곗??쇰줈 ?쒕떎
-        //
-        num++;
-    }
-    //
-    T pop(){ // 鍮쇨린... cf  Rear媛 怨좎젙, ?곗씠?곌? ?대룞?섎뒗 寃?泥섎읆 ?됰룞.
-        // ?덉쇅 ?뚯뒪??.
-        if( isEmpty() )
-        {
-            throw StackEmptyError();
-        }
-        //
-        Element* temp = Rear; // ?꾩옱 媛瑜댄궎??寃?
-        Rear = Rear->next; // Rear?먮뒗 ..
-        T returnTemp = (temp->data);
-        delete temp;
-        //
-        num--;
-        //
-        return returnTemp; //return???놁뼱??而댄뙆?쇱씠 ?섎떎??;; - in CodeBlocks.
-    }
-    T getTop()const
-    {
-        if( isEmpty() )
-        {
-            throw StackEmptyError();
-        }
-        return (Rear->data);
-    }
-    void setTop( const T& val )
-    {
-        if( isEmpty() )
-        {
-            throw StackEmptyError();
-        }
-        Rear->data = val;
-    }
-    T& top()
-    {
-        if( isEmpty() )
-        {
-            throw StackEmptyError();
-        }
-        else
-        {
-            return Rear->data;
-        }
-    }
-    const T& top() const
-    {
-        if( isEmpty() )
-        {
-            throw StackEmptyError();
-        }
-        else
-        {
-            return Rear->data;
-        }
-    }
+	explicit Stack() : Rear(nullptr), num(0) { }
+	~Stack() {
+		clear();
+	}
+	void clear() {
+		while (!isEmpty()) {
+			pop();
+		}
+	}
+	bool isEmpty()const { // 鍮꾩뿀?? //
+		return nullptr == Rear; // num <= 0
+	}
+	bool empty() const { return isEmpty(); }
+	//
+	void push(const T& p) { // ?ｊ린
+		Element* temp = new Element(p); //
+		//Rear
+		temp->next = Rear; // Rear媛 媛瑜댄궎??媛믪쓣 媛瑜댄궎寃??쒕떎.
+		Rear = temp; //?덈줈 ?ㅼ뼱?ㅻ뒗 寃껋쓣 湲곗??쇰줈 ?쒕떎
+		//
+		num++;
+	}
+	//
+	T pop() { // 鍮쇨린... cf  Rear媛 怨좎젙, ?곗씠?곌? ?대룞?섎뒗 寃?泥섎읆 ?됰룞.
+		// ?덉쇅 ?뚯뒪??.
+		if (isEmpty())
+		{
+			throw StackEmptyError();
+		}
+		//
+		Element* temp = Rear; // ?꾩옱 媛瑜댄궎??寃?
+		Rear = Rear->next; // Rear?먮뒗 ..
+		T returnTemp = (temp->data);
+		delete temp;
+		//
+		num--;
+		//
+		return returnTemp; //return???놁뼱??而댄뙆?쇱씠 ?섎떎??;; - in CodeBlocks.
+	}
+	T getTop()const
+	{
+		if (isEmpty())
+		{
+			throw StackEmptyError();
+		}
+		return (Rear->data);
+	}
+	void setTop(const T& val)
+	{
+		if (isEmpty())
+		{
+			throw StackEmptyError();
+		}
+		Rear->data = val;
+	}
+	T& top()
+	{
+		if (isEmpty())
+		{
+			throw StackEmptyError();
+		}
+		else
+		{
+			return Rear->data;
+		}
+	}
+	const T& top() const
+	{
+		if (isEmpty())
+		{
+			throw StackEmptyError();
+		}
+		else
+		{
+			return Rear->data;
+		}
+	}
 
-    // ?ㅽ깮???ｋ뒗??
-    Stack<T>& operator<<( const T& p ){
-        push(p);
-        return *this;
-    }
+	// ?ㅽ깮???ｋ뒗??
+	Stack<T>& operator<<(const T& p) {
+		push(p);
+		return *this;
+	}
 
-    Array<T> toArray()const
-    {
-        if( isEmpty() ) { return Array<T>(); }
-        Array<T> arrayTemp( num );
-        Element* eTemp = Rear; // ElementTemp
-        for( int i=0; i < arrayTemp.size(); i++ )
-        {
-            arrayTemp[i] = eTemp->data;
-            eTemp = eTemp->next;
-        }
+	Array<T> toArray()const
+	{
+		if (isEmpty()) { return Array<T>(); }
+		Array<T> arrayTemp(num);
+		Element* eTemp = Rear; // ElementTemp
+		for (int i = 0; i < arrayTemp.size(); i++)
+		{
+			arrayTemp[i] = eTemp->data;
+			eTemp = eTemp->next;
+		}
 
-        return arrayTemp;
-    }
+		return arrayTemp;
+	}
 
-    int getNum()const { return num; }
+	int getNum() const { return num; }
 };
 
 template <class T>
