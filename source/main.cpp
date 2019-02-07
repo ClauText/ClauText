@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
 	try {
 		int a = clock();
 		{
-		//	wiz::load_data::LoadData::LoadDataFromFile(fileName, global);
+			//	wiz::load_data::LoadData::LoadDataFromFile(fileName, global);
 		}
 		int b = clock();
 		//std::cout << "time " << b - a << "ms" << std::endl;
@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
 
 		for (int i = 4; i <= 4; ++i) { // i : pivot_num, thread num <= pivot_num + 1
 			global.Remove();
-			
+
 			a = clock();
 			{
 				auto thr_num = std::thread::hardware_concurrency();
@@ -148,7 +148,7 @@ int main(int argc, char* argv[])
 		}
 		//global.Remove();
 
-		a = clock(); 
+		a = clock();
 		{
 			//wiz::load_data::LoadData::LoadDataFromFile4(fileName, global); // parallel lexing + parallel parsing
 		}
@@ -156,12 +156,17 @@ int main(int argc, char* argv[])
 		//std::cout << "time " << b - a << "ms" << std::endl;
 
 		std::cout << "fileName is " << fileName << std::endl;
-	
+
 		//wiz::load_data::LoadData::SaveWizDB(global, "test2.eu4", "3"); // 3 : JSON
 
 		wiz::Option opt;
-		std::string result = clauText.excute_module("", &global, wiz::ExcuteData(), opt, 0);
-		std::cout << "excute result is " << result << std::endl;
+		{
+			int a = clock();
+			std::string result = clauText.excute_module("", &global, wiz::ExcuteData(), opt, 0);
+			int b = clock();
+			std::cout << "excute result is " << result << "\n";
+			std::cout << b - a << "ms" << "\n"; //
+		}
 	}
 	catch (const char* str) {
 		std::cout << str << std::endl;
