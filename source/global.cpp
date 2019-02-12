@@ -156,13 +156,17 @@ namespace wiz {
 		return str != this->str_value;
 	}
 
+	DataType DataType::operator+(const DataType& type)const
+	{
+		return DataType(this->str_value + type.str_value);
+	}
 	DataType DataType::operator+(const char* cstr) const
 	{
-		return DataType(cstr + this->str_value);
+		return DataType(this->str_value + std::string(cstr));
 	}
 	DataType DataType::operator+(const std::string& str) const
 	{
-		return DataType(str + this->str_value);
+		return DataType(this->str_value + str);
 	}
 
 	DataType& DataType::operator+=(const DataType& type) 
@@ -203,11 +207,11 @@ namespace wiz {
 
 	DataType operator+(const char* cstr, const DataType& type)
 	{
-		return type + cstr;
+		return DataType(cstr) + type;
 	}
 	DataType operator+(const std::string& str, const DataType& type)
 	{
-		return type + str;
+		return DataType(str) + type;
 	}
 }
 
