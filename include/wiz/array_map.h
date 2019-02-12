@@ -1,7 +1,7 @@
 ﻿#ifndef BINARY_SEARCH_TREE_H
 #define BINARY_SEARCH_TREE_H
 
-
+#include <unordered_map>
 #include "queues.h"
 #include <vector>
 #include <queue>
@@ -14,10 +14,10 @@ namespace wiz {
 	class ArrayMap
 	{
 	private:
-		std::map<Key, Data> _map;
+		std::unordered_map<Key, Data> _map;
 	public:
-		using iterator = typename std::map<Key, Data>::iterator;
-		using const_iterator = typename std::map<Key, Data>::const_iterator;
+		using iterator = typename std::unordered_map<Key, Data>::iterator;
+		using const_iterator = typename std::unordered_map<Key, Data>::const_iterator;
 	public:
 		void insert(std::pair<Key, Data>&& item) {
 			_map[std::move(item.first)] = std::move(item.second);

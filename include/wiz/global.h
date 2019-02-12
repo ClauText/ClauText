@@ -76,6 +76,10 @@ namespace wiz {
 	public:
 		int GetType()const;
 	public:
+		bool empty()const {
+			return str_value.empty();
+		}
+	public:
 		bool operator==(const DataType& type) const;
 		bool operator==(const char* cstr) const;
 		bool operator==(const std::string& str) const;
@@ -84,6 +88,7 @@ namespace wiz {
 		bool operator!=(const char* cstr) const;
 		bool operator!=(const std::string& str) const;
 
+		DataType operator+(const DataType& type)const;
 		DataType operator+(const char* cstr) const;
 		DataType operator+(const std::string& str) const;
 
@@ -108,6 +113,11 @@ namespace wiz {
 				change = false;
 			}
 			return float_value;
+		}
+		friend std::ostream& operator<<(std::ostream& stream, const DataType& x)
+		{
+			stream << x.ToString();
+			return stream;
 		}
 	};
 
