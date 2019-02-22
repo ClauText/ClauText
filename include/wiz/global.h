@@ -60,6 +60,8 @@ namespace wiz {
 	}
 
 	class DataType {
+	public:
+		int before_pos;
 	private:
 		std::string str_value;
 		mutable long long int_value;
@@ -75,6 +77,7 @@ namespace wiz {
 		void SetFloat(long double val);
 	public:
 		int GetType()const;
+		std::string GetTypeString()const;
 	public:
 		bool empty()const {
 			return str_value.empty();

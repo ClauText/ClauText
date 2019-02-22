@@ -299,6 +299,8 @@ namespace wiz {
 				useSortedUserTypeList = false;
 			}
 		private:
+			int before_pos;
+
 			UserType* parent = nullptr;
 			std::vector<std::string> commentList; // WIZ_STRING_TYPE?
 			std::vector<int> ilist;
@@ -1081,6 +1083,84 @@ namespace wiz {
 				}
 				return temp;
 			}
+
+			// rename..
+			std::vector<int> GetItemPtr(const std::string& name, bool chk = false) {
+				std::vector<int> temp;
+				if (String::startsWith(name, "$.") && name.size() >= 5) {
+					// later, change to binary search?
+					std::string str = name.substr(3, name.size() - 4);
+					std::regex rgx(str);
+
+					for (int i = 0; i < itemList.size(); ++i) {
+						if (regex_match(wiz::ToString(itemList[i].GetName()), rgx)) {
+							temp.push_back(i);
+						}
+					}
+				}
+				else {
+					if (false == useSortedItemList) {
+						sortedItemList.clear();
+						for (int i = 0; i < itemList.size(); ++i) {
+							sortedItemList.push_back((ItemType<WIZ_STRING_TYPE>*)&itemList[i]);
+						}
+
+						std::sort(sortedItemList.begin(), sortedItemList.end(), ItemTypeStringPtrCompare());
+
+						useSortedItemList = true;
+					}
+					// binary search
+					{
+						ItemType<WIZ_STRING_TYPE> x = ItemType<WIZ_STRING_TYPE>(name, "");
+						for (int i = 0; i < itemList.size(); ++i) {
+							itemList[i].Get(0).before_pos = i;
+						}
+						int idx = binary_find_it(sortedItemList, x);
+						if (idx >= 0) {
+							int start = idx;
+							int last = idx;
+
+							for (int i = idx - 1; i >= 0; --i) {
+								if (name == sortedItemList[i]->GetName()) {
+									start--;
+								}
+								else {
+									break;
+								}
+							}
+							for (int i = idx + 1; i < sortedItemList.size(); ++i) {
+								if (name == sortedItemList[i]->GetName()) {
+									last++;
+								}
+								else {
+									break;
+								}
+							}
+
+							for (int i = start; i <= last; ++i) {
+								temp.push_back(sortedItemList[i]->Get(0).before_pos);
+							}
+						}
+						else {
+							//std::cout << "no found" << std::endl;
+						}
+					}
+
+					/*
+					for (int i = 0; i < itemList.size(); ++i) {
+						if (itemList[i].GetName() == name) {
+							temp.push_back(itemList[i]);
+						}
+					}
+					*/
+				}
+
+				if (chk && USE_EMPTY_VECTOR_IN_LOAD_DATA_TYPES && temp.empty()) {
+					//temp.push_back(-1); // ItemType<DataType>("", ""));
+				}
+				return temp;
+			}
+
 			// regex to SetItem?
 			bool SetItem(const WIZ_STRING_TYPE& name, const WIZ_STRING_TYPE& value) {
 				int index = -1;
@@ -1158,6 +1238,65 @@ namespace wiz {
 				return temp;
 			}
 
+			// rename...
+			std::vector<int> GetUserTypeItemPtr(const WIZ_STRING_TYPE& name) { /// chk...
+				std::vector<int> temp;
+
+				if (false == useSortedUserTypeList) {
+					// make sortedUserTypeList.
+					sortedUserTypeList = userTypeList;
+
+					std::sort(sortedUserTypeList.begin(), sortedUserTypeList.end(), UserTypeCompare());
+
+					useSortedUserTypeList = true;
+				}
+				// binary search
+				{
+					UserType x = UserType(name);
+					for (int i = 0; i < userTypeList.size(); ++i) {
+						userTypeList[i]->before_pos = i;
+					}
+					int idx = binary_find_ut(sortedUserTypeList, x);
+					if (idx >= 0) {
+						int start = idx;
+						int last = idx;
+
+						for (int i = idx - 1; i >= 0; --i) {
+							if (name == sortedUserTypeList[i]->GetName()) {
+								start--;
+							}
+							else {
+								break;
+							}
+						}
+						for (int i = idx + 1; i < sortedUserTypeList.size(); ++i) {
+							if (name == sortedUserTypeList[i]->GetName()) {
+								last++;
+							}
+							else {
+								break;
+							}
+						}
+
+						for (int i = start; i <= last; ++i) {
+							temp.push_back(sortedUserTypeList[i]->before_pos);
+						}
+					}
+					else {
+						//std::cout << "no found" << std::endl;
+					}
+				}
+
+				/*
+				for (int i = 0; i < userTypeList.size(); ++i) {
+					if (userTypeList[i]->GetName() == name) {
+						temp.push_back(userTypeList[i]);
+					}
+				}
+				*/
+
+				return temp;
+			}
 			// deep copy.
 			std::vector<UserType*> GetCopyUserTypeItem(const WIZ_STRING_TYPE& name) const { /// chk...
 				std::vector<UserType*> temp;
