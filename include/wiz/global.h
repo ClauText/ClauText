@@ -146,7 +146,7 @@ namespace wiz {
 	public:
 		Token2(char* str, int len, bool isComment) :
 			str(str), len(len), isComment(isComment) { }
-		
+
 		Token2() { }
 
 		void clear()
@@ -154,47 +154,6 @@ namespace wiz {
 			str = nullptr;
 			len = 0;
 			isComment = false;
-		}
-
-		int compare(const Token2&  other) const {
-			if (len == 0 && other.len == 0) { return 0; }
-			for (int i = 0, j = 0; i < len && j < other.len; ++i, ++j) {
-				if (str[i] > other.str[j]) {
-					return 1;
-				}
-				else if (str[i] == other.str[j]) {
-					//
-				}
-				else {
-					return -1;
-				}
-			}
-			if (len > other.len) {
-				return 1;
-			}
-			else if (len < other.len) {
-				return -1;
-			}
-			return 0;
-		}
-
-		bool operator==(const Token2& other) const {
-			return this->compare(other) == 0;
-		}
-		bool operator==(char* c_str) const {
-			Token2 other;
-			other.str = c_str;
-			other.len = strlen(c_str);
-			return this->compare(other) == 0;
-		}
-		bool operator==(const std::string& str) const {
-			Token2 other;
-			other.str = (char*)str.c_str();
-			other.len = str.size();
-			return this->compare(other) == 0;
-		}
-		std::string ToString() const {
-			return std::string(this->str, this->len);
 		}
 	};
 
@@ -278,11 +237,11 @@ namespace wiz {
 	class LoadDataOption
 	{
 	public:
-		char LineComment;	// # 
+		std::vector<std::string> LineComment;	// # 
 		std::vector<std::string> MuitipleLineCommentStart; // ###  // ?
 		std::vector<std::string> MuitipleLineCommentEnd;   // ### // ?
 		std::vector<char> Left, Right;	// { } , [ ] <- json
-		std::vector<char> Assignment;	// = , :
+		std::vector<std::string> Assignment;	// = , :
 		std::vector<char> Removal;		// ',', empty.
 		std::vector<char> Delimiter; // 
 	};

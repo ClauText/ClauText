@@ -142,7 +142,7 @@ namespace wiz{
 			char* pTemp = new char[str.size() + 1];
 			std::vector<std::string> result;
 
-			strcpy_s(pTemp, str.size() + 1, str.c_str());
+			strncpy(pTemp, str.c_str(), str.size() + 1);
 
 			for (int i = 0; i <= str.size() - filter.size(); i++) {
 				if (strlen(pStr + i) >= filter.size()

@@ -12,6 +12,48 @@
 
 namespace wiz {
 	namespace load_data {
+		class InFileReserver
+		{
+		private:
+			std::ifstream* pInFile;
+		public:
+			int Num;
+		public:
+			explicit InFileReserver(std::ifstream& inFile)
+			{
+				pInFile = &inFile;
+				Num = 1;
+			}
+			bool end()const { return pInFile->eof(); }
+		public:
+			bool operator() (ARRAY_QUEUE<Token>& strVec, const wiz::LoadDataOption& option)
+			{
+				return Utility::Reserve2(*pInFile, strVec, Num, option).second > 0;
+			}
+		};
+
+		class InFileReserver2
+		{
+		private:
+			std::ifstream* pInFile;
+		public:
+			int Num;
+			int CoreNum;
+		public:
+			explicit InFileReserver2(std::ifstream& inFile, int num_of_core)
+			{
+				pInFile = &inFile;
+				Num = 1;
+				CoreNum = num_of_core;
+			}
+			bool end()const { return pInFile->eof(); }
+		public:
+			bool operator() (std::vector<ARRAY_QUEUE<Token>>& strVec, const wiz::LoadDataOption& option, const int offset)
+			{
+				return Utility::Reserve2_2(*pInFile, strVec, Num, option, CoreNum, offset).second > 0;
+			}
+		};
+
 		class InFileReserver3
 		{
 		private:

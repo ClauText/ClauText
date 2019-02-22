@@ -210,12 +210,52 @@ namespace wiz {
 	};
 }
 
+namespace wiz {
+	namespace load_data {
+		class EXCUTE_MODULE_BASE
+		{
+		public:
+			virtual std::string excute_module(const std::string& MainStr,
+				wiz::load_data::UserType* _global, const ExcuteData& excuteData, Option& opt, int chk)
+			{
+				return ""; // error!
+			}
+		};
+	}
+
+	class ClauText : public wiz::load_data::EXCUTE_MODULE_BASE {
+	public:
+		ClauText(const ClauText&) = delete;
+		ClauText& operator=(const ClauText&) = delete;
+
+		ClauText()
+		{
+			//
+		}
+		virtual ~ClauText()
+		{
+			//
+		}
+
+	public:
+		// ToDo - with wiz::load_data::LoadData::ToBool4
+		void MStyleTest(wiz::load_data::UserType* pUt);
+
+		void ShellMode(wiz::load_data::UserType& global);
+
+		virtual std::string excute_module(const std::string& MainStr, wiz::load_data::UserType* _global, const ExcuteData& excuteData, Option& option, int chk);
+	};
+}
+
+inline wiz::ClauText clauText;
 
 namespace wiz {
 
 	namespace load_data {
 		class LoadData
 		{
+		public:
+			inline static EXCUTE_MODULE_BASE* pExcuteModule = &clauText;
 		private:
 			static bool isState0(const long long state_reserve)
 			{
@@ -271,7 +311,8 @@ namespace wiz {
 						else {
 							std::pair<bool, std::string> bsPair = Utility::LookUp(strVec, nestedUT[braceNum], reserver, option);
 							if (bsPair.first) {
-								if (bsPair.second[0] == option.Assignment[0]) {
+								if (-1 != checkDelimiter(bsPair.second.c_str(), 
+														bsPair.second.c_str() + bsPair.second.size() - 1, option.Assignment)) {
 									Utility::Pop(strVec, &var2, nestedUT[braceNum], reserver, option);
 									Utility::Pop(strVec, nullptr, nestedUT[braceNum], reserver, option);
 									state = 2;
@@ -409,7 +450,8 @@ namespace wiz {
 						else {
 							std::pair<bool, std::string> bsPair = Utility::LookUp(strVec, nestedUT[braceNum], reserver, option);
 							if (bsPair.first) {
-								if (bsPair.second[0] == option.Assignment[0]) {
+								if (-1 != checkDelimiter(bsPair.second.c_str(),
+														bsPair.second.c_str() + bsPair.second.size() - 1, option.Assignment)) {
 									// var2
 									Utility::Pop(strVec, &var2, nestedUT[braceNum], reserver, option);
 									Utility::Pop(strVec, nullptr, nestedUT[braceNum], reserver, option); // pass EQ_STR
@@ -697,7 +739,8 @@ namespace wiz {
 						else {
 							std::pair<bool, std::string> bsPair = Utility::LookUp(strVec, nestedUT[braceNum], reserver, option, &now_thread);
 							if (bsPair.first) {
-								if (bsPair.second[0] == option.Assignment[0]) {
+								if (-1 != checkDelimiter(bsPair.second.c_str(),
+													bsPair.second.c_str() + bsPair.second.size() - 1, option.Assignment)) {
 									Utility::Pop(strVec, &var2, nestedUT[braceNum], reserver, option, &now_thread);
 									Utility::Pop(strVec, nullptr, nestedUT[braceNum], reserver, option, &now_thread);
 									state = 2;
@@ -827,7 +870,8 @@ namespace wiz {
 						else {
 							std::pair<bool, std::string> bsPair = Utility::LookUp(strVec, nestedUT[braceNum], reserver, option, &now_thread);
 							if (bsPair.first) {
-								if (bsPair.second[0] == option.Assignment[0]) {
+								if (-1 != checkDelimiter(bsPair.second.c_str(),
+															bsPair.second.c_str() + bsPair.second.size() - 1, option.Assignment)) {
 									// var2
 									Utility::Pop(strVec, &var2, nestedUT[braceNum], reserver, option, &now_thread);
 									Utility::Pop(strVec, nullptr, nestedUT[braceNum], reserver, option, &now_thread); // pass EQ_STR
@@ -1083,7 +1127,9 @@ namespace wiz {
 
 									if (bsPair.first) {
 										long long idx = -1;
-										if (bsPair.second.str[0] == option.Assignment[0]) {										
+										if (-1 != (idx = checkDelimiter(bsPair.second.str, 
+																				bsPair.second.str + bsPair.second.len - 1, option.Assignment))) {
+											
 											var2 = std::string(strVec[i].str, strVec[i].len); // Utility::Pop(strVec, &var2, nestedUT[braceNum], option);
 																			 //Utility::Pop(strVec, nullptr, nestedUT[braceNum], option);
 											state = 2;
@@ -1456,7 +1502,8 @@ namespace wiz {
 									if (bsPair.first) {
 										long long idx = -1;
 
-										if (bsPair.second.str[0] == option.Assignment[0]) {
+										if (-1 != (idx = checkDelimiter(bsPair.second.str,
+															bsPair.second.str + bsPair.second.len - 1, option.Assignment))) {
 											// var2
 											//Utility::Pop(strVec, &var2, nestedUT[braceNum], option);
 											//Utility::Pop(strVec, nullptr, nestedUT[braceNum], option); // pass EQ_STR
@@ -3067,6 +3114,194 @@ namespace wiz {
 			static bool __LoadData4(VECTOR<Token2>* _strVec, int start_idx, int last_idx, UserType* _global, const wiz::LoadDataOption* _option,
 				int start_state, int last_state, UserType** next) // first, strVec.empty() must be true!!
 			{
+				if (start_idx > last_idx) {
+					return false;
+				}
+
+				VECTOR<Token2>& strVec = *_strVec;
+				UserType& global = *_global;
+				const wiz::LoadDataOption& option = *_option;
+
+				int state = start_state;
+				int braceNum = 0;
+				std::vector< UserType* > nestedUT(1);
+				std::string var, val;
+
+
+				nestedUT[0] = &global;
+
+				int i = start_idx;
+
+				while (false == strVec.empty() && i <= last_idx) {
+					switch (state)
+					{
+					case 0:
+					{
+						if (strVec[i].len == 1 && -1 != Equal(option.Left, strVec[i].str[0])) {
+							i += 1;
+							UserType temp("");
+
+							nestedUT[braceNum]->AddUserTypeItem(temp);
+							UserType* pTemp = nullptr;
+							nestedUT[braceNum]->GetLastUserTypeItemRef("", pTemp);
+
+							braceNum++;
+
+							/// new nestedUT
+							if (nestedUT.size() == braceNum) { /// changed 2014.01.23..
+								nestedUT.push_back(nullptr);
+							}
+
+							/// initial new nestedUT.
+							nestedUT[braceNum] = pTemp;
+							///
+
+							state = 0;
+						}
+						else if (strVec[i].len == 1 && -1 != Equal(option.Right, strVec[i].str[0])) {
+							i += 1;
+
+							state = 0;
+
+							if (braceNum == 0) {
+								UserType ut;
+								ut.AddUserTypeItem(UserType("#")); // json -> "var_name" = val  // clautext, # is line comment delimiter.
+								UserType* pTemp = nullptr;
+								ut.GetLastUserTypeItemRef("#", pTemp);
+								int utCount = 0;
+								int itCount = 0;
+								auto max = nestedUT[braceNum]->GetIListSize();
+								for (auto i = 0; i < max; ++i) {
+									if (nestedUT[braceNum]->IsUserTypeList(i)) {
+										ut.GetUserTypeList(0)->AddUserTypeItem(std::move(*(nestedUT[braceNum]->GetUserTypeList(utCount))));
+										utCount++;
+									}
+									else {
+										ut.GetUserTypeList(0)->AddItemList(std::move(nestedUT[braceNum]->GetItemList(itCount)));
+										itCount++;
+									}
+								}
+
+								nestedUT[braceNum]->Remove();
+								nestedUT[braceNum]->AddUserTypeItem(std::move(*(ut.GetUserTypeList(0))));
+
+								braceNum++;
+							}
+
+							{
+								if (braceNum < nestedUT.size()) {
+									nestedUT[braceNum] = nullptr;
+								}
+								braceNum--;
+							}
+						}
+						else {
+							std::pair<bool, Token2> bsPair;
+
+							if (i < last_idx)
+							{
+								bsPair = std::make_pair(true, strVec[i + 1]);
+							}
+							else {
+								bsPair = std::make_pair(false, Token2());
+							}
+
+							if (bsPair.first) {
+								if (bsPair.second.len == 1 && -1 != Equal(option.Assignment, bsPair.second.str[0])) {
+									// var2
+									var = std::string(strVec[i].str, strVec[i].len);
+									state = 1;
+									i += 1;
+									i += 1;
+								}
+								else {
+									// var1
+									if (i <= last_idx) {
+										val = std::string(strVec[i].str, strVec[i].len);
+
+										nestedUT[braceNum]->AddItem("", std::move(val));
+										val = "";
+
+										state = 0;
+										i += 1;
+									}
+								}
+							}
+							else
+							{
+								// var1
+								if (i <= last_idx)
+								{
+									val = std::string(strVec[i].str, strVec[i].len);
+									nestedUT[braceNum]->AddItem("", std::move(val));
+									val = "";
+
+									state = 0;
+									i += 1;
+								}
+							}
+						}
+					}
+					break;
+					case 1:
+					{
+						if (strVec[i].len == 1 && -1 != Equal(option.Left, strVec[i].str[0])) {
+							i += 1;
+							///
+							{
+								nestedUT[braceNum]->AddUserTypeItem(UserType(var));
+								UserType* pTemp = nullptr;
+								nestedUT[braceNum]->GetLastUserTypeItemRef(var, pTemp);
+								var = "";
+								braceNum++;
+
+								/// new nestedUT
+								if (nestedUT.size() == braceNum) {
+									nestedUT.push_back(nullptr);
+								}
+
+								/// initial new nestedUT.
+								nestedUT[braceNum] = pTemp;
+							}
+							///
+							state = 0;
+						}
+						else {
+							if (i <= last_idx) {
+								val = std::string(strVec[i].str, strVec[i].len);
+
+								i += 1;
+								nestedUT[braceNum]->AddItem(std::move(var), std::move(val));
+								var = ""; val = "";
+
+								state = 0;
+							}
+						}
+					}
+					break;
+					default:
+						// syntax err!!
+						throw "syntax error ";
+						break;
+					}
+				}
+
+				if (next) {
+					*next = nestedUT[braceNum];
+				}
+
+				if (state != last_state) {
+					throw std::string("error final state is not last_state!  : ") + toStr(state);
+				}
+				if (i > last_idx + 1) {
+					throw std::string("error i > last_idx + 1: " + toStr(i) + " , " + toStr(last_idx));
+				}
+				return true;
+			}
+		
+			static bool __LoadData5(VECTOR<Token2>* _strVec, int start_idx, int last_idx, UserType* _global, const wiz::LoadDataOption* _option,
+				int start_state, int last_state, UserType** next) // first, strVec.empty() must be true!!
+			{
 				std::vector<std::string> varVec;
 				std::vector<std::string> valVec;
 
@@ -3282,7 +3517,7 @@ namespace wiz {
 				if (next) {
 					*next = nestedUT[braceNum];
 				}
-				
+
 				if (varVec.empty() == false) {
 					nestedUT[braceNum]->ReserveIList(nestedUT[braceNum]->GetIListSize() + varVec.size());
 					nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
@@ -3302,7 +3537,7 @@ namespace wiz {
 				}
 				return true;
 			}
-		private:
+	private:
 		// [must] option.Assignment[i].size() == 1  - chk!
 			inline int FindRight2(VECTOR<Token2>& strVec, int start, int last, const wiz::LoadDataOption& option)
 			{
@@ -3381,15 +3616,16 @@ namespace wiz {
 
 						{
 							int idx = pivots.empty() ? last_idx : pivots[0];
-							thr[0] = std::thread(__LoadData4, &strVec, 0, idx, &__global[0], &option, 0, 0, &next[0]);
+							thr[0] = std::thread(__LoadData5, &strVec, 0, idx, &__global[0], &option, 0, 0, &next[0]);
+											// __LoadData4 -> __LoadData5
 						}
 
 						for (int i = 1; i < pivots.size(); ++i) {
-							thr[i] = std::thread(__LoadData4, &strVec, pivots[i - 1] + 1, pivots[i], &__global[i], &option, 0, 0, &next[i]);
+							thr[i] = std::thread(__LoadData5, &strVec, pivots[i - 1] + 1, pivots[i], &__global[i], &option, 0, 0, &next[i]);
 						}
 
 						if (pivots.size() >= 1) {
-							thr[pivots.size()] = std::thread(__LoadData4, &strVec, pivots.back() + 1, last_idx, &__global[pivots.size()],
+							thr[pivots.size()] = std::thread(__LoadData5, &strVec, pivots.back() + 1, last_idx, &__global[pivots.size()],
 								&option, 0, 0, &next[pivots.size()]);
 						}
 
@@ -3467,7 +3703,7 @@ namespace wiz {
 				try {
 					InFileReserver3 ifReserver(inFile);
 					wiz::LoadDataOption option;
-					option.Assignment.push_back('=');
+					option.Assignment.push_back("=");
 					option.Left.push_back('{');
 					option.Right.push_back('}');
 					//option.LineComment.push_back("#");
@@ -3593,12 +3829,12 @@ namespace wiz {
 						InFileReserver3 ifReserver(inFile);
 						wiz::LoadDataOption option;
 
-						option.Assignment.push_back('=');
+						option.Assignment.push_back("=");
 						option.Left.push_back('{');
 						option.Right.push_back('}');
 						//option.MuitipleLineCommentStart.push_back("###");
 						//option.MuitipleLineCommentEnd.push_back("###");
-						option.LineComment = '#';
+						option.LineComment.push_back("#");
 
 						ifReserver.Num = 1 << 19;
 						//	strVec.reserve(ifReserver.Num);
@@ -3623,6 +3859,74 @@ namespace wiz {
 				//	* std::chrono::steady_clock::period().num / std::chrono::steady_clock::period().den << "s" << std::endl;
 				return true;
 			}
+			/*
+			static bool LoadDataFromFile3_2(char*& buffer, const std::string& fileName, UserType& global, int pivot_num, int lex_thread_num) /// global should be empty
+			{
+				if (pivot_num < 0) {
+					pivot_num = std::thread::hardware_concurrency() - 1;
+				}
+				if (lex_thread_num <= 0) {
+					lex_thread_num = std::thread::hardware_concurrency();
+				}
+				if (pivot_num <= -1) {
+					pivot_num = 0;
+				}
+				if (lex_thread_num <= 0) {
+					lex_thread_num = 1;
+				}
+
+				std::chrono::steady_clock::time_point a = std::chrono::steady_clock::now();
+
+				bool success = true;
+				std::ifstream inFile;
+				inFile.open(fileName, std::ios::binary);
+
+
+				if (true == inFile.fail())
+				{
+					inFile.close(); return false;
+				}
+				UserType globalTemp;
+				static VECTOR<Token2> strVec;
+
+
+				try {
+					InFileReserver3 ifReserver(inFile);
+					wiz::LoadDataOption option;
+					option.Assignment.push_back("=");
+
+					//option.Assignment.push_back("<-"); // test 
+
+					option.Left.push_back('{');
+					option.Right.push_back('}');
+					//option.MuitipleLineCommentStart.push_back("###");
+					//option.MuitipleLineCommentEnd.push_back("###");
+					option.LineComment.push_back("#"); // always #! - now... - todo! for json -> # + other? otherwise -> LineComment[0]?
+
+					ifReserver.Num = 1 << 19;
+					//	strVec.reserve(ifReserver.Num);
+					// cf) empty file..
+					if (false == _LoadData3_2(buffer, strVec, ifReserver, globalTemp, option, pivot_num, lex_thread_num))
+					{
+						inFile.close();
+						return false; // return true?
+					}
+
+					inFile.close();
+				}
+				catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
+				catch (const std::string& e) { std::cout << e << std::endl; inFile.close(); return false; }
+				catch (const std::exception&e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
+				catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
+
+				global = std::move(globalTemp);
+
+				std::chrono::steady_clock::time_point b = std::chrono::steady_clock::now();
+				std::cout << (double)std::chrono::steady_clock::duration(b - a).count()
+					* std::chrono::steady_clock::period().num / std::chrono::steady_clock::period().den << "s" << std::endl;
+				return true;
+			}
+			*/
 		private:
 			static bool isOpenTagStart(const std::string& word) {
 				return wiz::String::startsWith(word, "<") && !wiz::String::startsWith(word, "</");
@@ -3994,7 +4298,98 @@ namespace wiz {
 			}
 #endif
 		public:
-		
+			static bool LoadDataFromFile(const std::string& fileName, UserType& global) /// global should be empty
+			{
+				bool success = true;
+				std::ifstream inFile;
+				inFile.open(fileName, std::ios::binary);
+
+
+				if (true == inFile.fail())
+				{
+					inFile.close(); return false;
+				}
+				UserType globalTemp = global;
+				ARRAY_QUEUE<Token> strVec;
+
+				try {
+					InFileReserver ifReserver(inFile);
+					wiz::LoadDataOption option;
+					option.Assignment.push_back("=");
+					option.Left.push_back('{');
+					option.Right.push_back('}');
+					//option.MuitipleLineCommentStart.push_back("###");
+					//option.MuitipleLineCommentEnd.push_back("###");
+					option.LineComment.push_back("#");  
+					
+					ifReserver.Num = 1 << 19;
+					//strVec.reserve(ifReserver.Num);
+					// cf) empty file..
+					if (false == _LoadData(strVec, ifReserver, globalTemp, option))
+					{
+						inFile.close();
+						return false; // return true?
+					}
+
+					inFile.close();
+				}
+				catch (const Error& e) { std::cout << e << std::endl; inFile.close(); return false; }
+				catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
+				catch (const std::string& e) { std::cout << e << std::endl; inFile.close(); return false; }
+				catch (const std::exception&e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
+				catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
+
+				global = std::move(globalTemp);
+				return true;
+			}
+
+			// no multiple line comment, no multiple line string!, removal??
+			static bool LoadDataFromFile2(const std::string& fileName, UserType& global) /// global should be empty
+			{
+				bool success = true;
+				std::ifstream inFile;
+				inFile.open(fileName, std::ios::binary);
+
+
+
+				if (true == inFile.fail())
+				{
+					inFile.close(); return false;
+				}
+				UserType globalTemp = global;
+				std::vector<ARRAY_QUEUE<Token>> strVec(4);
+
+				//try 
+				{
+					InFileReserver2 ifReserver(inFile, 4);
+					wiz::LoadDataOption option;
+					option.Assignment.push_back("=");
+					option.Left.push_back('{');
+					option.LineComment.push_back("#");
+					option.Right.push_back('}');
+
+					ifReserver.Num = 1 << 20;
+					strVec.reserve(ifReserver.Num);
+					// cf) empty file..
+					if (false == _LoadData2(strVec, ifReserver, globalTemp, option)) // 4 is # of cpu core?
+					{
+						inFile.close();
+						return false; // return true?
+					}
+
+					inFile.close();
+				}
+				/*
+				catch (const Error& e) { std::cout << e << std::endl; inFile.close(); return false; }
+				catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
+				catch (const std::string& e) { std::cout << e << std::endl; inFile.close(); return false; }
+				catch (const std::exception&e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
+				catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
+				*/
+				global = std::move(globalTemp);
+
+				return true;
+			}
 			static bool LoadDataFromFileFastJson(const std::string& fileName, UserType& global, int pivot_num, int lex_thread_num) /// global should be empty
 			{
 				if (pivot_num < 0) {
@@ -4026,7 +4421,7 @@ namespace wiz {
 					InFileReserver3 ifReserver(inFile);
 					wiz::LoadDataOption option;
 					option.Removal.push_back(',');
-					option.Assignment.push_back(':');
+					option.Assignment.push_back(":");
 					option.Left.push_back('{');
 					option.Left.push_back('[');
 					option.Right.push_back('}');
@@ -4102,7 +4497,52 @@ namespace wiz {
 			}
 
 		public:
-		
+			// global is empty?
+			static bool LoadDataFromFileWithJson(const std::string& fileName, UserType& global) /// global should be empty
+			{
+				std::ifstream inFile;
+				inFile.open(fileName);
+				if (true == inFile.fail())
+				{
+					inFile.close(); return false;
+				}
+				UserType globalTemp = global;
+				ARRAY_QUEUE<Token> strVec;
+
+				try {
+					InFileReserver ifReserver(inFile);
+					wiz::LoadDataOption option;
+					option.Removal.push_back(',');
+					option.Assignment.push_back(":");
+					option.Left.push_back('{');
+					option.Left.push_back('[');
+					//option.LineComment.push_back('#');
+					option.Right.push_back('}');
+					option.Right.push_back(']');
+
+					ifReserver.Num = 1 << 19;
+					// cf) empty file..
+					if (false == _LoadData(strVec, ifReserver, globalTemp, option))
+					{
+						inFile.close();
+						return false; // return true?
+					}
+
+					inFile.close();
+				}
+				catch (const Error& e) { std::cout << e << std::endl; inFile.close(); return false; }
+				catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
+				catch (const std::string& e) { std::cout << e << std::endl; inFile.close(); return false; }
+				catch (const std::exception&e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
+				catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
+
+				RemoveQuotation(&globalTemp);
+				RemoveUnderbar(&globalTemp);
+
+				global = std::move(globalTemp); // check!!
+
+				return true;
+			}
 		private:
 			static void ConvertHtmlToClau(const UserType* htmlUT, UserType* clauUT) {
 				int itemTypeCount = 0;
@@ -4155,7 +4595,306 @@ namespace wiz {
 			}
 		public:
 			/// todo- comment
-		
+			static bool LoadDataFromFileWithHtml(const std::string& fileName, UserType& global) /// global should be empty
+			{
+				bool success = true;
+				std::ifstream inFile;
+				inFile.open(fileName);
+
+
+				if (true == inFile.fail())
+				{
+					inFile.close(); return false;
+				}
+				UserType globalTemp = global;
+				ARRAY_QUEUE<Token> strVec;
+
+				try {
+					InFileReserver ifReserver(inFile);
+					wiz::LoadDataOption option;
+
+					//option.Assignment.push_back('=');
+					//option.Left.push_back('{');
+					//option.LineComment.push_back('#');
+					//option.Right.push_back('}');
+
+					ifReserver.Num = 1 << 20;
+					//strVec.reserve(ifReserver.Num);
+					// cf) empty file..
+					if (false == _LoadDataHTML(strVec, ifReserver, globalTemp, option))
+					{
+						inFile.close();
+						return false; // return true?
+					}
+
+					inFile.close();
+				}
+				catch (const Error& e) { std::cout << e << std::endl; inFile.close(); return false; }
+				catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
+				catch (const std::string& e) { std::cout << e << std::endl; inFile.close(); return false; }
+				catch (const std::exception&e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
+				catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
+
+				ConvertHtmlToClau(&globalTemp, &global);
+
+				//global = std::move(globalTemp);
+				return true;
+			}
+
+			static bool LoadDataFromString(const std::string& str, UserType& ut)
+			{
+				/*
+				char LEFT = '{';
+				char RIGHT = '}';
+
+				std::cout << str.size() << " ";
+				UserType utTemp = ut;
+				VECTOR<Token2> strVec;
+				long long thread_num = 1; // std::thread::hardware_concurrency();
+				long long length = str.size();
+				char* buffer = new char[str.size() + 1];
+				strcpy(buffer, str.c_str());
+
+				wiz::LoadDataOption option;
+				option.Assignment.push_back("=");
+				option.Left.push_back('{');
+
+				//option.MuitipleLineCommentStart.push_back("###");
+				//option.MuitipleLineCommentEnd.push_back("###");
+
+				option.LineComment.push_back("#");
+				option.Right.push_back('}');
+				std::string temp;
+				std::vector<long long> start(thread_num + 1, 0);
+				std::vector<long long> last(thread_num + 1, 0);
+
+				if (thread_num > 1) {
+					start[0] = 0;
+
+					// todo - linear check?
+					for (int i = 1; i < thread_num; ++i) {
+						start[i] = length / thread_num * i;
+						for (int x = start[i]; x <= length; ++x) {
+							// here bug is..  " check "
+							if ('\r' == buffer[x] || '\n' == (buffer[x]) || length == x) {
+								start[i] = x;
+								//	std::cout << "start " << start[i] << std::endl;
+								break;
+							}
+						}
+					}
+					for (int i = 0; i < thread_num - 1; ++i) {
+						last[i] = start[i + 1] - 1;
+						for (int x = last[i]; x <= length; ++x) {
+							if ('\r' == buffer[x] || '\n' == (buffer[x]) || length == x) {
+								last[i] = x;
+								//	std::cout << "start " << start[i] << std::endl;
+								break;
+							}
+						}
+					}
+					last[thread_num - 1] = length;
+					//	std::cout << last[thread_num - 1] << std::endl;
+				}
+				else {
+					start[0] = 0;
+					last[0] = length;
+				}
+
+				//int a = clock();
+				//debug
+
+				if (thread_num > 1) {
+					//// in string, there are '\r' or '\n' etc.. - no '\r' or '\n'?
+					for (int i = thread_num - 1; i > 0; --i) {
+						int last_enter_idx = -1;
+						int first_enter_idx = -1;
+
+						// find last_enter_idx, first_enter_idx -
+						//// has bug - " abc
+						////				def"
+						for (int j = last[i - 1]; j <= last[i]; ++j) {
+							if (buffer[j] == '\r' || buffer[j] == '\n' || j == last[thread_num - 1]) {
+								last_enter_idx = j;
+								break;
+							}
+						}
+
+						{
+							int state = 0;
+							int j = last[i - 1] - 1;
+							for (; j >= 0; --j) {
+								if (state == 0 && (buffer[j] == '\r' || buffer[j] == '\n')) {
+									first_enter_idx = j;
+									break;
+								}
+								else if (j == start[i - 1]) {
+									--i;
+								}
+							}
+
+							if (-1 == first_enter_idx) {
+								first_enter_idx = 0;
+							}
+						}
+
+						// exchange with whitespace
+						{
+							int state = 0;
+							int sharp_start = -1;
+
+							for (int j = first_enter_idx + 1; j < last_enter_idx; ++j) {
+								if (0 == state && buffer[j] == '\'') {
+									state = 1;
+								}
+								else if (1 == state && buffer[j - 1] == '\\' && buffer[j] == '\'') {
+
+								}
+								else if (1 == state && buffer[j] == '\'') {
+									state = 0;
+								}
+								else if (0 == state && buffer[j] == '\"') {
+									state = 3;
+								}
+								else if (3 == state && buffer[j - 1] == '\\' && buffer[j] == '\"') {
+
+								}
+								else if (3 == state && buffer[j] == '\"') {
+									state = 0;
+								}
+								else if (0 == state && buffer[j] == '#') {
+									sharp_start = j;
+								}
+							}
+
+							if (-1 != sharp_start) {
+								for (int k = sharp_start; k < last_enter_idx; ++k) {
+									buffer[k] = ' ';
+								}
+							}
+						}
+					}
+
+					std::vector<VECTOR<Token2>> partial_list(thread_num, VECTOR<Token2>());
+					std::vector<std::thread> thr(thread_num);
+
+					for (int i = 0; i < thread_num; ++i) {
+						//	std::cout << last[i] - start[i] << std::endl;
+						partial_list[i].reserve((last[i] - start[i]) / 10);
+						thr[i] = std::thread(wiz::load_data::Utility::DoThread3(buffer + start[i], buffer + last[i], &partial_list[i], &option));
+					}
+
+					for (int i = 0; i < thread_num; ++i) {
+						thr[i].join();
+					}
+
+					long long new_size = strVec.size() + 4 + 4;
+					for (int i = 0; i < thread_num; ++i) {
+						new_size = new_size + partial_list[i].size();
+					}
+
+					strVec.reserve(new_size);
+
+					//check { {
+					strVec.push_back(wiz::Token2(&LEFT, 1, false));
+					strVec.push_back(wiz::Token2(&LEFT, 1, false));
+
+					for (int i = 0; i < thread_num; ++i) {
+						//for (int j = 0; j < partial_list[i].size(); ++j) {
+						//	aq->push_back(std::move(partial_list[i][j]));
+						//}
+						strVec.insert(strVec.end(), make_move_iterator(partial_list[i].begin()), make_move_iterator(partial_list[i].end()));
+					}
+				}
+				else {
+					VECTOR<Token2> temp;
+
+					temp.reserve((last[0] - start[0]) / 10);
+
+					wiz::load_data::Utility::DoThread3 dothr(buffer + start[0], buffer + last[0], &temp, &option);
+
+					dothr();
+
+					//check { {
+					strVec.push_back(wiz::Token2(&LEFT, 1, false));
+					strVec.push_back(wiz::Token2(&LEFT, 1, false));
+
+
+					strVec.insert(strVec.end(), make_move_iterator(temp.begin()), make_move_iterator(temp.end()));
+				}
+
+				//check } }
+				strVec.push_back(wiz::Token2(&RIGHT, 1, false));
+				strVec.push_back(wiz::Token2(&RIGHT, 1, false));
+
+				try {
+					// empty std::string!
+					NoneReserver nonReserver;
+					if (false == _LoadData3(strVec, nonReserver, utTemp, option, thread_num - 1, thread_num))
+					{
+						return true;
+					}
+				}
+				catch (Error& e) { std::cout << e << std::endl; return false; }
+				catch (const char* err) { std::cout << err << std::endl; return false; }
+				catch (std::exception& e) { std::cout << e.what() << std::endl; return false; }
+				catch (const std::string& estr) { std::cout << str << std::endl; return false; }
+				catch (...) { std::cout << "not expected error" << std::endl; return  false; }
+
+				ut = std::move(utTemp);
+				delete[] buffer;
+				return true;
+			*/
+				
+				UserType utTemp;
+				ARRAY_QUEUE<Token> strVec;
+
+				wiz::StringBuilder builder(str.size(), str.c_str(), str.size());
+
+				wiz::LoadDataOption option;
+				option.Assignment.push_back("=");
+				option.Left.push_back('{');
+
+				//option.MuitipleLineCommentStart.push_back("###");
+				//option.MuitipleLineCommentEnd.push_back("###");
+
+				option.LineComment.push_back("#");
+				option.Right.push_back('}');
+				wiz::load_data::Utility::DoThread doThread(&builder, &strVec, &option);
+
+				doThread();
+
+				try {
+					// empty std::string!
+					NoneReserver nonReserver;
+					if (false == _LoadData(strVec, nonReserver, utTemp, option))
+					{
+						return true;
+					}
+				}
+				catch (Error& e) { std::cout << e << std::endl; return false; }
+				catch (const char* err) { std::cout << err << std::endl; return false; }
+				catch (std::exception& e) { std::cout << e.what() << std::endl; return false; }
+				catch (const std::string& e) { std::cout << str << std::endl; return false; }
+				catch (...) { std::cout << "not expected error" << std::endl; return  false; }
+
+				{
+					long long itCount = 0;
+					long long utCount = 0;
+
+					for (int i = 0; i < utTemp.GetIListSize(); ++i) {
+						if (utTemp.IsItemList(i)) {
+							ut.AddItemList(std::move(utTemp.GetItemList(itCount)));
+							itCount++;
+						}
+						else {
+							ut.AddUserTypeItem(std::move(*utTemp.GetUserTypeList(utCount)));
+							utCount++;
+						}
+					}
+				}
+				return true;
+			}
 
 			static std::string DoCondition(UserType& global, const std::string& condition, const ExcuteData& excuteData, wiz::StringBuilder* builder)
 			{
@@ -4182,6 +4921,9 @@ namespace wiz {
 			// InitQuery or LoadQuery
 			explicit LoadData() { InitWizDB(); }
 
+			explicit LoadData(EXCUTE_MODULE_BASE* pExcuteModule) {
+				this->pExcuteModule = pExcuteModule;
+			}
 			/// need testing!
 			LoadData(const LoadData& ld)
 				: global(ld.global)
@@ -4206,7 +4948,21 @@ namespace wiz {
 			bool AllRemoveWizDB() {
 				return AllRemoveWizDB(global);
 			}
-			
+			// AddQuery AddData, AddUserTypeData
+			bool AddData(const std::string& position, const std::string& data, const std::string& condition, const ExcuteData& excuteData, wiz::StringBuilder* builder) {
+				return AddData(global, position, data, condition, excuteData, builder);
+			}
+			// 
+			bool AddNoNameUserType(const std::string& position, const std::string& data, const std::string& condition, const ExcuteData& excuteData, wiz::StringBuilder* builder)
+			{
+				return AddNoNameUserType(global, position, data, condition, excuteData, builder);
+			}
+			// SetQuery
+			bool SetData(const std::string& position, const std::string& varName, const std::string& data, const std::string& condition, const ExcuteData& excuteData, wiz::StringBuilder* builder)
+			{
+				return SetData(global, position, varName, data, condition, excuteData, builder);
+			}
+			/// 
 			std::string GetData(const std::string& position, const std::string& condition, const ExcuteData& excuteData, wiz::StringBuilder* builder) {
 				return GetData(global, position, condition, excuteData, builder);
 			}
@@ -4233,6 +4989,9 @@ namespace wiz {
 				return Remove(global, position, var, condition, excuteData, builder);
 			}
 
+			bool LoadWizDB(const std::string& fileName) {
+				return LoadWizDB(global, fileName);
+			}
 			// SaveQuery
 			bool SaveWizDB(const std::string& fileName, const std::string& option = "0") { /// , int option
 				return SaveWizDB(global, fileName, option);
@@ -4282,6 +5041,554 @@ namespace wiz {
 				return result;
 			}
 
+			static void _Iterate(Option& opt, UserType& global, const std::string& dir, const std::vector<wiz::load_data::UserType*>& ut, UserType* eventsTemp, const std::string& recursive, const ExcuteData& excuteData, wiz::StringBuilder* builder)
+			{
+				for (int i = 0; i < ut.size(); ++i) {
+					int itemCount = 0;
+					int utCount = 0;
+
+					for (int j = 0; j < ut[i]->GetItemListSize(); ++j) {
+						//if (ut[i]->IsItemList(j)) 
+						{
+							ExcuteData _excuteData;
+							//_excuteData.info = excuteData.info;
+							_excuteData.pModule = excuteData.pModule;
+							_excuteData.pObjectMap = excuteData.pObjectMap;
+							_excuteData.pEvents = eventsTemp;
+							_excuteData.depth = excuteData.depth;
+							_excuteData.noUseInput = excuteData.noUseInput;
+							_excuteData.noUseOutput = excuteData.noUseOutput;
+							//_excuteData.chkInfo = true;
+
+							
+							auto x = eventsTemp->GetUserTypeList(eventsTemp->GetUserTypeListSize() - 1)->GetUserTypeItem("$call");
+							for (int k = 0; k < x.size() && k + itemCount < ut[i]->GetItemListSize(); ++k) {
+								x[k]->GetItemList(1).Set(0, ut[i]->GetItemList(itemCount + k).GetName());
+								x[k]->GetItemList(2).Set(0, ut[i]->GetItemList(itemCount + k).Get(0));
+								x[k]->GetItemList(3).Set(0, "FALSE");
+								x[k]->GetItemList(4).Set(0, GetRealDir(dir, ut[i], builder));
+								wiz::DataType temp;
+								temp.SetInt(j);
+								x[k]->GetItemList(5).Set(0, temp);
+							}
+							std::string result = pExcuteModule->excute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
+
+							if (result.empty() == false) {
+								UserType resultUT;
+								wiz::load_data::LoadData::LoadDataFromString(result, resultUT);
+
+								auto name = resultUT.GetItem("name");
+								if (name.empty() == false) {
+									ut[i]->GetItemList(itemCount).SetName(ToString(name[0].Get(0)));
+								}
+
+								auto value = resultUT.GetItem("value");
+								if (value.empty() == false) {
+									ut[i]->GetItemList(itemCount).Set(0, value[0].Get(0));
+								}
+							}
+
+							itemCount++;
+							//itemCount += ut[i]->GetItemListSize();
+							//j = itemCount - 1;
+						}
+					}
+
+					for (int j = 0; j < ut[i]->GetUserTypeListSize(); ++j) {
+						ExcuteData _excuteData;
+						//_excuteData.info = excuteData.info;
+						_excuteData.pModule = excuteData.pModule;
+						_excuteData.pObjectMap = excuteData.pObjectMap;
+						_excuteData.pEvents = eventsTemp;
+						_excuteData.depth = excuteData.depth + 1;
+						_excuteData.noUseInput = excuteData.noUseInput;
+						_excuteData.noUseOutput = excuteData.noUseOutput;
+						//_excuteData.chkInfo = true;
+
+
+						auto x = eventsTemp->GetUserTypeList(eventsTemp->GetUserTypeListSize() - 1)->GetUserTypeItem("$call");
+						for (int k = 0; k < x.size(); ++k) {
+							x[k]->GetItemList(1).Set(0, ut[i]->GetUserTypeList(utCount)->GetName());
+							x[k]->GetItemList(2).Set(0, "NONE"); // check..
+							x[k]->GetItemList(3).Set(0, "TRUE");
+							const std::string name = ut[i]->GetUserTypeList(utCount)->GetName().ToString();
+							x[k]->GetItemList(4).Set(0, GetRealDir(dir + (name.empty() ? "_" : name) + "/", ut[i]->GetUserTypeList(utCount), builder));
+							
+							wiz::DataType temp;
+							temp.SetInt(j);
+							x[k]->GetItemList(5).Set(0, temp);
+						}
+
+						Option opt;
+ 						std::string result = pExcuteModule->excute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
+
+						if (result.empty() == false) {
+							UserType resultUT;
+							wiz::load_data::LoadData::LoadDataFromString(result, resultUT);
+
+							auto name = resultUT.GetItem("name");
+							if (name.empty() == false) {
+								ut[i]->GetUserTypeList(utCount)->SetName(ToString(name[0].Get(0)));
+							}
+						}
+
+						//// recursive
+						if ("TRUE" == recursive) {
+							const std::string name = wiz::ToString(ut[i]->GetUserTypeList(utCount)->GetName());
+							_Iterate(opt, global, dir + (name.empty() ? "_" : name) + "/",
+								std::vector<UserType*>{ ut[i]->GetUserTypeList(utCount) }, eventsTemp, recursive, excuteData, builder);
+						}
+
+						utCount++;
+					}
+				}
+			}
+			// new function! - check UserType::Find().second[0] ?
+			static void Iterate(wiz::load_data::UserType& global, const std::string& dir, const std::vector<std::string>& events, const std::string& recursive, const std::string& before_value, const ExcuteData& excuteData, wiz::StringBuilder* builder)
+			{
+				std::vector<wiz::load_data::UserType*> ut = wiz::load_data::UserType::Find(&global, dir, builder).second; // chk first?
+				wiz::load_data::UserType eventsTemp = *excuteData.pEvents;
+
+				Option opt;
+				std::string statements2; // = " return_values = { } ";
+					
+				statements2 += " Event = { id = NONE__  $local = { temp } ";
+				statements2 += " $assign = { $local.temp data = { " + before_value + " } } ";
+
+				//for (int t = 0; t < 100; ++t) {
+					for (int i = 0; i < events.size(); ++i) {
+
+						statements2 += " $call = { id = ";
+
+						statements2 += events[i];
+						statements2 += " name = __name ";
+						statements2 += " value = __value ";
+						statements2 += " is_user_type = __is_user_type ";
+						statements2 += " real_dir = __real_dir ";
+						statements2 += " before_value = { $local.temp } ";
+						statements2 += " idx = __idx  ";
+						statements2 += " } ";
+
+						statements2 += " $assign = { $local.temp data = { $return_value = { } } } ";
+					//	statements2 += " $insert2 = { where = { /./return_values/ } data = { $return_value = { } } } ";
+					}
+//}
+				statements2 += " } ";
+
+				wiz::load_data::LoadData::AddData(eventsTemp, "/root", statements2, "TRUE", ExcuteData(), builder);
+
+				_Iterate(opt, global, dir, ut, &eventsTemp, recursive, excuteData, builder);
+
+				eventsTemp.RemoveUserTypeList(eventsTemp.GetUserTypeListSize() - 1);
+			//	eventsTemp->RemoveUserTypeList(eventsTemp->GetUserTypeListSize() - 1);
+			}
+			
+			static void _Iterate2(UserType& global, const std::string& dir, const std::vector<wiz::load_data::UserType*>& ut, UserType* eventsTemp, const std::string& recursive, const ExcuteData& excuteData, wiz::StringBuilder* builder)
+			{
+				for (int i = 0; i < ut.size(); ++i) {
+					int itemCount = ut[i]->GetItemListSize();
+					int utCount = ut[i]->GetUserTypeListSize();
+
+					for (int j = ut[i]->GetItemListSize() - 1; j >= 0; --j) {
+						itemCount--;
+						//if (ut[i]->IsItemList(j)) 
+						{
+							ExcuteData _excuteData;
+							//_excuteData.info = excuteData.info;
+							_excuteData.pModule = excuteData.pModule;
+							_excuteData.pObjectMap = excuteData.pObjectMap;
+							_excuteData.pEvents = eventsTemp;
+							_excuteData.depth = excuteData.depth;
+							_excuteData.noUseInput = excuteData.noUseInput;
+							_excuteData.noUseOutput = excuteData.noUseOutput;
+							//_excuteData.chkInfo = true;
+
+							auto x = eventsTemp->GetUserTypeList(eventsTemp->GetUserTypeListSize() - 1)->GetUserTypeItem("$call");
+							for (int k = 0; k < x.size(); ++k) {
+								x[k]->GetItemList(1).Set(0, ut[i]->GetItemList(itemCount).GetName());
+								x[k]->GetItemList(2).Set(0, ut[i]->GetItemList(itemCount).Get(0));
+								x[k]->GetItemList(3).Set(0, "FALSE");
+								x[k]->GetItemList(4).Set(0, GetRealDir(dir, ut[i], builder));
+							}
+
+							Option opt;
+							std::string result = pExcuteModule->excute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
+
+							if (result.empty() == false) {
+								UserType resultUT;
+								wiz::load_data::LoadData::LoadDataFromString(result, resultUT);
+
+								auto name = resultUT.GetItem("name");
+								if (name.empty() == false) {
+									ut[i]->GetItemList(itemCount).SetName(ToString(name[0].Get(0)));
+								}
+
+								auto value = resultUT.GetItem("value");
+								if (value.empty() == false) {
+									ut[i]->GetItemList(itemCount).Set(0, value[0].Get(0));
+								}
+
+								auto remove = resultUT.GetItem("remove");
+								if (remove.empty() == false && remove[0].Get(0) == "TRUE") {
+									ut[i]->RemoveItemList(itemCount);
+								}
+							}
+						}
+					}
+					for (int j = ut[i]->GetUserTypeListSize() - 1; j >= 0; --j) {
+						utCount--;
+
+						ExcuteData _excuteData;
+						//_excuteData.info = excuteData.info;
+						_excuteData.pModule = excuteData.pModule;
+						_excuteData.pObjectMap = excuteData.pObjectMap;
+						_excuteData.pEvents = eventsTemp;
+						_excuteData.depth = excuteData.depth + 1;
+						_excuteData.noUseInput = excuteData.noUseInput;
+						_excuteData.noUseOutput = excuteData.noUseOutput;
+						//_excuteData.chkInfo = true;
+
+
+						auto x = eventsTemp->GetUserTypeList(eventsTemp->GetUserTypeListSize() - 1)->GetUserTypeItem("$call");
+						for (int k = 0; k < x.size(); ++k) {
+							x[k]->GetItemList(1).Set(0, ut[i]->GetUserTypeList(utCount)->GetName());
+							x[k]->GetItemList(2).Set(0, "NONE"); // check..
+							x[k]->GetItemList(3).Set(0, "TRUE");
+							const std::string name = ut[i]->GetUserTypeList(utCount)->GetName().ToString();
+							x[k]->GetItemList(4).Set(0, GetRealDir(dir + (name.empty() ? "_" : name) + "/", ut[i]->GetUserTypeList(utCount), builder));
+						}
+
+						Option opt;
+						std::string result = pExcuteModule->excute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
+
+						if (result.empty() == false) {
+							UserType resultUT;
+							wiz::load_data::LoadData::LoadDataFromString(result, resultUT);
+
+							auto name = resultUT.GetItem("name");
+							if (name.empty() == false) {
+								ut[i]->GetUserTypeList(utCount)->SetName(ToString(name[0].Get(0)));
+							}
+
+							auto remove = resultUT.GetItem("remove");
+							if (remove.empty() == false && remove[0].Get(0) == "TRUE") {
+								ut[i]->RemoveUserTypeList(utCount);
+								continue;
+							}
+						}
+
+						//// recursive
+						if ("TRUE" == recursive) {
+							const std::string name = wiz::ToString(ut[i]->GetUserTypeList(utCount)->GetName());
+							_Iterate2(global, dir + (name.empty() ? "_" : name) + "/",
+								std::vector<UserType*>{ ut[i]->GetUserTypeList(utCount) }, eventsTemp, recursive, excuteData, builder);
+						}
+					}
+				}
+			}
+			// new function! - check UserType::Find().second[0] ?
+			// todo - beforevalue! - as parameter.
+			static void Iterate2(wiz::load_data::UserType& global, const std::string& dir, const std::vector<std::string>& events, const std::string& recursive, const ExcuteData& excuteData, wiz::StringBuilder* builder)
+			{
+				std::vector<wiz::load_data::UserType*> ut = wiz::load_data::UserType::Find(&global, dir, builder).second; // chk first?
+				wiz::load_data::UserType eventsTemp = *excuteData.pEvents;
+
+				std::string statements2 = " Event = { id = NONE__  $local = { temp } ";
+				statements2 += " $assign = { $local.temp data = { empty } } ";
+
+				for (int i = 0; i < events.size(); ++i) {
+
+					statements2 += " $call = { id = ";
+
+					statements2 += events[i];
+					statements2 += " name = __name ";
+					statements2 += " value = __value ";
+					statements2 += " is_user_type = __is_user_type ";
+					statements2 += " real_dir = __real_dir ";
+					statements2 += " before_value = { $local.temp } ";
+					statements2 += " } ";
+
+					statements2 += " $assign = { $local.temp data = { $return_value = { } } } ";
+				}
+				statements2 += " } ";
+
+				wiz::load_data::LoadData::AddData(eventsTemp, "/root", statements2, "TRUE", ExcuteData(), builder);
+
+				_Iterate2(global, dir, ut, &eventsTemp, recursive, excuteData, builder);
+
+				eventsTemp.RemoveUserTypeList(eventsTemp.GetUserTypeListSize() - 1);
+
+			}
+			
+			// using dir, name
+			static void _Iterate3(Option& opt, UserType& global, const std::string& dir, const std::string& name, const std::vector<wiz::load_data::UserType*>& ut, UserType* eventsTemp, const std::string& recursive, const ExcuteData& excuteData, wiz::StringBuilder* builder)
+			{
+				for (int i = 0; i < ut.size(); ++i) {
+					std::vector<int> itemData = ut[i]->GetItemPtr(name);
+					std::vector<int> utData = ut[i]->GetUserTypeItemPtr(name);
+					int itemNum = 0;
+					int utNum = 0;
+					for (int j = 0; j < itemData.size(); ++j) {
+						//if (ut[i]->IsItemList(j)) 
+						{
+							ExcuteData _excuteData;
+							//_excuteData.info = excuteData.info;
+							_excuteData.pModule = excuteData.pModule;
+							_excuteData.pObjectMap = excuteData.pObjectMap;
+							_excuteData.pEvents = eventsTemp;
+							_excuteData.depth = excuteData.depth;
+							_excuteData.noUseInput = excuteData.noUseInput;
+							_excuteData.noUseOutput = excuteData.noUseOutput;
+							//_excuteData.chkInfo = true;
+
+							auto x = eventsTemp->GetUserTypeList(eventsTemp->GetUserTypeListSize() - 1)->GetUserTypeItem("$call");
+							for (int k = 0; k < x.size(); ++k) {
+								x[k]->GetItemList(1).Set(0, ut[i]->GetItemList(itemData[itemNum]).GetName());
+								x[k]->GetItemList(2).Set(0, ut[i]->GetItemList(itemData[itemNum]).Get(0));
+								x[k]->GetItemList(3).Set(0, "FALSE");
+								x[k]->GetItemList(4).Set(0, GetRealDir(dir, ut[i], builder));
+								wiz::DataType temp;
+								temp.SetInt(itemData[itemNum]);
+								x[k]->GetItemList(5).Set(0, temp);
+							}
+							std::string result = pExcuteModule->excute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
+
+							if (result.empty() == false) {
+								UserType resultUT;
+								wiz::load_data::LoadData::LoadDataFromString(result, resultUT);
+
+								auto name = resultUT.GetItem("name");
+								if (name.empty() == false) {
+									ut[i]->GetItemList(itemData[itemNum]).SetName(ToString(name[0].Get(0)));
+								}
+
+								auto value = resultUT.GetItem("value");
+								if (value.empty() == false) {
+									ut[i]->GetItemList(itemData[itemNum]).Set(0, value[0].Get(0));
+								}
+							}
+
+							itemNum++;
+						}
+					}
+
+					for (int j = 0; j < ut[i]->GetUserTypeListSize(); ++j) {
+						ExcuteData _excuteData;
+						//_excuteData.info = excuteData.info;
+						_excuteData.pModule = excuteData.pModule;
+						_excuteData.pObjectMap = excuteData.pObjectMap;
+						_excuteData.pEvents = eventsTemp;
+						_excuteData.depth = excuteData.depth + 1;
+						_excuteData.noUseInput = excuteData.noUseInput;
+						_excuteData.noUseOutput = excuteData.noUseOutput;
+						//_excuteData.chkInfo = true;
+
+						if (j == utData[utNum]) {
+							auto x = eventsTemp->GetUserTypeList(eventsTemp->GetUserTypeListSize() - 1)->GetUserTypeItem("$call");
+							for (int k = 0; k < x.size(); ++k) {
+								x[k]->GetItemList(1).Set(0, ut[i]->GetUserTypeList(utData[utNum])->GetName());
+								x[k]->GetItemList(2).Set(0, "NONE"); // check..
+								x[k]->GetItemList(3).Set(0, "TRUE");
+								const std::string name = ut[i]->GetUserTypeList(utData[utNum])->GetName().ToString();
+								x[k]->GetItemList(4).Set(0, GetRealDir(dir + (name.empty() ? "_" : name) + "/", ut[i]->GetUserTypeList(utData[utNum]), builder));
+
+								wiz::DataType temp;
+								temp.SetInt(utData[utNum]);
+								x[k]->GetItemList(5).Set(0, temp);
+							}
+
+							Option opt;
+							std::string result = pExcuteModule->excute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
+
+							if (result.empty() == false) {
+								UserType resultUT;
+								wiz::load_data::LoadData::LoadDataFromString(result, resultUT);
+
+								auto name = resultUT.GetItem("name");
+								if (name.empty() == false) {
+									ut[i]->GetUserTypeList(utData[utNum])->SetName(ToString(name[0].Get(0)));
+								}
+							}
+
+							utNum++;
+						}
+
+						//// recursive
+						if ("TRUE" == recursive) {
+							const std::string _name = wiz::ToString(ut[i]->GetUserTypeList(j)->GetName());
+							_Iterate3(opt, global, dir + (_name.empty() ? "_" : _name) + "/", name,
+								std::vector<UserType*>{ ut[i]->GetUserTypeList(j) }, eventsTemp, recursive, excuteData, builder);
+						}
+					}
+				}
+			}
+			// new function! - check UserType::Find().second[0] ?
+			static void Iterate3(wiz::load_data::UserType& global, const std::string& dir, const std::string& name, const std::vector<std::string>& events, const std::string& recursive, const std::string& before_value, const ExcuteData& excuteData, wiz::StringBuilder* builder)
+			{
+				std::vector<wiz::load_data::UserType*> ut = wiz::load_data::UserType::Find(&global, dir, builder).second; // chk first?
+				wiz::load_data::UserType eventsTemp = *excuteData.pEvents;
+
+				Option opt;
+				std::string statements2; // = " return_values = { } ";
+
+				statements2 += " Event = { id = NONE__  $local = { temp } ";
+				statements2 += " $assign = { $local.temp data = { " + before_value + " } } ";
+
+				//for (int t = 0; t < 100; ++t) {
+				for (int i = 0; i < events.size(); ++i) {
+
+					statements2 += " $call = { id = ";
+
+					statements2 += events[i];
+					statements2 += " name = __name ";
+					statements2 += " value = __value ";
+					statements2 += " is_user_type = __is_user_type ";
+					statements2 += " real_dir = __real_dir ";
+					statements2 += " before_value = { $local.temp } ";
+					statements2 += " idx = __idx  ";
+					statements2 += " } ";
+
+					statements2 += " $assign = { $local.temp data = { $return_value = { } } } ";
+					//	statements2 += " $insert2 = { where = { /./return_values/ } data = { $return_value = { } } } ";
+				}
+				//}
+				statements2 += " } ";
+
+				wiz::load_data::LoadData::AddData(eventsTemp, "/root", statements2, "TRUE", ExcuteData(), builder);
+
+				_Iterate3(opt, global, dir, name, ut, &eventsTemp, recursive, excuteData, builder);
+
+				eventsTemp.RemoveUserTypeList(eventsTemp.GetUserTypeListSize() - 1);
+				//	eventsTemp->RemoveUserTypeList(eventsTemp->GetUserTypeListSize() - 1);
+			}
+
+
+			
+			static void _RIterate(UserType& global, const std::string& dir, const std::vector<wiz::load_data::UserType*>& ut, UserType* eventsTemp, const std::string& recursive, const ExcuteData& excuteData, wiz::StringBuilder* builder)
+			{
+				for (int i = 0; i < ut.size(); ++i) {
+					int itemCount = ut[i]->GetItemListSize();
+					int utCount = ut[i]->GetUserTypeListSize();
+
+					for (int j = ut[i]->GetItemListSize() - 1; j >= 0; --j) {
+						itemCount--;
+						//if (ut[i]->IsItemList(j)) 
+						{
+							ExcuteData _excuteData;
+							//_excuteData.info = excuteData.info;
+							_excuteData.pModule = excuteData.pModule;
+							_excuteData.pObjectMap = excuteData.pObjectMap;
+							_excuteData.pEvents = eventsTemp;
+							_excuteData.depth = excuteData.depth;
+							_excuteData.noUseInput = excuteData.noUseInput;
+							_excuteData.noUseOutput = excuteData.noUseOutput;
+							//_excuteData.chkInfo = true;
+
+							auto x = eventsTemp->GetUserTypeList(eventsTemp->GetUserTypeListSize() -
+								(eventsTemp->GetUserTypeListSize() - excuteData.pEvents->GetUserTypeListSize()))->GetUserTypeItem("$call");
+							for (int k = 0; k < x.size(); ++k) {
+								x[k]->GetItemList(1).Set(0, ut[i]->GetItemList(itemCount).GetName());
+								x[k]->GetItemList(2).Set(0, ut[i]->GetItemList(itemCount).Get(0));
+								x[k]->GetItemList(3).Set(0, "FALSE");
+								x[k]->GetItemList(4).Set(0, GetRealDir(dir, ut[i], builder));
+							}
+
+							Option opt;
+							std::string result = pExcuteModule->excute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
+
+							if (result.empty() == false) {
+								UserType resultUT;
+								wiz::load_data::LoadData::LoadDataFromString(result, resultUT);
+
+								auto name = resultUT.GetItem("name");
+								if (name.empty() == false) {
+									ut[i]->GetItemList(itemCount).SetName(ToString(name[0].Get(0)));
+								}
+
+								auto value = resultUT.GetItem("value");
+								if (value.empty() == false) {
+									ut[i]->GetItemList(itemCount).Set(0, value[0].Get(0));
+								}
+							}
+						}
+					}
+					for (int j = ut[i]->GetUserTypeListSize() - 1; j >= 0; --j) {
+						utCount--;
+
+						ExcuteData _excuteData;
+						//_excuteData.info = excuteData.info;
+						_excuteData.pModule = excuteData.pModule;
+						_excuteData.pObjectMap = excuteData.pObjectMap;
+						_excuteData.pEvents = eventsTemp;
+						_excuteData.depth = excuteData.depth + 1;
+						_excuteData.noUseInput = excuteData.noUseInput;
+						_excuteData.noUseOutput = excuteData.noUseOutput;
+						//_excuteData.chkInfo = true;
+
+
+						auto x = eventsTemp->GetUserTypeList(eventsTemp->GetUserTypeListSize() - 1)->GetUserTypeItem("$call");
+						for (int k = 0; k < x.size(); ++k) {
+							x[k]->GetItemList(1).Set(0, ut[i]->GetUserTypeList(utCount)->GetName());
+							x[k]->GetItemList(2).Set(0, "NONE"); // check..
+							x[k]->GetItemList(3).Set(0, "TRUE");
+							const std::string name = ut[i]->GetUserTypeList(utCount)->GetName().ToString();
+							x[k]->GetItemList(4).Set(0, GetRealDir(dir + (name.empty() ? "_" : name) + "/", ut[i]->GetUserTypeList(utCount), builder));
+						}
+
+						Option opt;
+						std::string result = pExcuteModule->excute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
+
+						if (result.empty() == false) {
+							UserType resultUT;
+							wiz::load_data::LoadData::LoadDataFromString(result, resultUT);
+
+							auto name = resultUT.GetItem("name");
+							if (name.empty() == false) {
+								ut[i]->GetUserTypeList(utCount)->SetName(ToString(name[0].Get(0)));
+							}
+						}
+
+						//// recursive
+						if ("TRUE" == recursive) {
+							const std::string name = wiz::ToString(ut[i]->GetUserTypeList(utCount)->GetName());
+							_RIterate(global, dir + (name.empty() ? "_" : name) + "/",
+								std::vector<UserType*>{ ut[i]->GetUserTypeList(utCount) }, eventsTemp, recursive, excuteData, builder);
+						}
+					}
+				}
+			}
+
+			// new function! - check UserType::Find().second[0] ?
+			static void RIterate(wiz::load_data::UserType& global, const std::string& dir, const std::vector<std::string>& events, const std::string& recursive, const ExcuteData& excuteData, wiz::StringBuilder* builder)
+			{
+				std::vector<wiz::load_data::UserType*> ut = wiz::load_data::UserType::Find(&global, dir, builder).second; // chk first?
+				wiz::load_data::UserType eventsTemp = *excuteData.pEvents;
+
+				std::string statements2 = " Event = { id = NONE__  $local = { temp } ";
+				statements2 += " $assign = { $local.temp data = { empty } } ";
+
+				for (int i = 0; i < events.size(); ++i) {
+
+					statements2 += " $call = { id = ";
+
+					statements2 += events[i];
+					statements2 += " name = __name ";
+					statements2 += " value = __value ";
+					statements2 += " is_user_type = __is_user_type ";
+					statements2 += " real_dir = __real_dir ";
+					statements2 += " before_value = { $local.temp } ";
+					statements2 += " } ";
+
+					statements2 += " $assign = { $local.temp data = { $return_value = { } } } ";
+				}
+				statements2 += " } ";
+
+				wiz::load_data::LoadData::AddData(eventsTemp, "/root", statements2, "TRUE", ExcuteData(), builder);
+
+				_RIterate(global, dir, ut, &eventsTemp, recursive, excuteData, builder);
+
+				eventsTemp.RemoveUserTypeList(eventsTemp.GetUserTypeListSize() - 1);
+			}
 		private:
 			void SearchItem(std::vector<std::string>& positionVec, const std::string& var, const std::string& nowPosition,
 				UserType* ut, const std::string& condition, const ExcuteData& excuteData, wiz::StringBuilder* builder)
@@ -4405,7 +5712,455 @@ namespace wiz {
 				global = UserType("");
 				return true;
 			}
-			
+			// AddQuery AddData, AddUserTypeData
+			static bool AddDataAtFront(UserType& global, const std::string& position, const std::string& data, const std::string& condition, const ExcuteData& excuteData, wiz::StringBuilder* builder) {
+				UserType utTemp = UserType("global");
+				bool isTrue = false;
+
+				if (false == LoadDataFromString(data, utTemp))
+				{
+					return false;
+				}
+				auto finded = UserType::Find(&global, position, builder);
+				if (finded.first) {
+					for (int i = 0; i < finded.second.size(); ++i) {
+						int item_n = utTemp.GetItemListSize();
+						int user_n = utTemp.GetUserTypeListSize();
+
+						/// chk temp test codes - > using flag 1->Exist 2->Comparision
+						//if (finded.second[i]->GetItem("base_tax").GetCount() > 0) { continue; }
+						///~end
+						if (false == condition.empty()) {
+							std::string _condition = condition;
+
+							_condition = ToBool4(finded.second[i], global, _condition, excuteData, builder);
+
+							Condition cond(_condition, finded.second[i], &global, builder);
+
+							while (cond.Next());
+
+							if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0]) // || cond.Now().size()  != 1
+							{
+								//std::cout << cond.Now()[0] << endl;
+								continue;
+							}
+						}
+
+						for (int k = utTemp.GetIListSize() - 1; k >= 0; --k) {
+							if (utTemp.IsItemList(k)) {
+								finded.second[i]->AddItemAtFront(wiz::ToString(utTemp.GetItemList(item_n - 1).GetName()), ToString(utTemp.GetItemList(item_n - 1).Get(0)));
+								item_n--;
+							}
+							else {
+								finded.second[i]->AddUserTypeItemAtFront(*utTemp.GetUserTypeList(user_n - 1));
+								user_n--;
+							}
+						}
+						isTrue = true;
+					}
+					return isTrue;
+				}
+				else {
+					UserType::Find(&global, position, builder);
+					return false;
+				}
+			}
+			static bool AddData(UserType& global, const std::string& position, const std::string& data, const std::string& condition, const ExcuteData& excuteData, wiz::StringBuilder* builder) {
+				UserType utTemp = UserType("global");
+				bool isTrue = false;
+
+				if (false == LoadDataFromString(data, utTemp))
+				{
+					return false;
+				}
+				auto finded = UserType::Find(&global, position, builder);
+				if (finded.first) {
+					for (int i = 0; i < finded.second.size(); ++i) {
+						int item_n = 0;
+						int user_n = 0;
+
+						if (false == condition.empty()) {
+							std::string _condition = condition;
+
+							//// todo - add ~~ ~~~ /// ////
+
+							_condition = ToBool4(finded.second[i], global, _condition, excuteData, builder);
+
+							Condition cond(_condition, finded.second[i], &global, builder);
+
+							while (cond.Next());
+
+							if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0]) // || cond.Now().size()  != 1
+							{
+								//std::cout << cond.Now()[0] << endl;
+								continue;
+							}
+						}
+
+						for (int k = 0; k < utTemp.GetIListSize(); ++k) {
+							if (utTemp.IsItemList(k)) {
+								finded.second[i]->AddItem(utTemp.GetItemList(item_n).GetName(), utTemp.GetItemList(item_n).Get(0));
+								item_n++;
+							}
+							else {
+								finded.second[i]->AddUserTypeItem(*utTemp.GetUserTypeList(user_n));
+								user_n++;
+							}
+						}
+						isTrue = true;
+					}
+					return isTrue;
+				}
+				else {
+					return false;
+				}
+			}
+			static bool Insert(UserType& global, const std::string& position, const int idx, const std::string& data, const std::string& condition, const ExcuteData& excuteData, wiz::StringBuilder* builder) {
+				UserType utTemp = UserType("global");
+				bool isTrue = false;
+
+				if (false == LoadDataFromString(data, utTemp))
+				{
+					return false;
+				}
+				auto finded = UserType::Find(&global, position, builder);
+				if (finded.first) {
+					for (int i = 0; i < finded.second.size(); ++i) {
+						int item_n = utTemp.GetIListSize();
+						int user_n = utTemp.GetIListSize();
+
+						/// chk temp test codes - > using flag 1->Exist 2->Comparision
+						//if (finded.second[i]->GetItem("base_tax").GetCount() > 0) { continue; }
+						///~end
+						if (false == condition.empty()) {
+							std::string _condition = condition;
+
+							_condition = ToBool4(finded.second[i], global, _condition, excuteData, builder);
+
+							Condition cond(_condition, finded.second[i], &global, builder);
+
+							while (cond.Next());
+
+							if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0]) // || cond.Now().size()  != 1
+							{
+								//std::cout << cond.Now()[0] << endl;
+								continue;
+							}
+						}
+
+						for (int k = utTemp.GetIListSize() - 1; k >= 0; --k) {
+							if (utTemp.IsItemList(k)) {
+								finded.second[i]->InsertItemByIlist(idx, wiz::ToString(utTemp.GetItemList(item_n - 1).GetName()),
+									ToString(utTemp.GetItemList(item_n - 1).Get(0)));
+								item_n--;
+							}
+							else {
+								finded.second[i]->InsertUserTypeByIlist(idx, *utTemp.GetUserTypeList(user_n - 1));
+								user_n--;
+							}
+						}
+						isTrue = true;
+					}
+					return isTrue;
+				}
+				else {
+					return false;
+				}
+			}
+			static bool AddNoNameUserType(UserType& global, const std::string& position, const std::string& data, const std::string& condition, const ExcuteData& excuteData, wiz::StringBuilder* builder)
+			{
+				UserType utTemp = UserType("");
+				bool isTrue = false;
+
+				if (false == LoadDataFromString(data, utTemp))
+				{
+					return false;
+				}
+				auto finded = UserType::Find(&global, position, builder);
+				if (finded.first) {
+					for (int i = 0; i < finded.second.size(); ++i) {
+						int item_n = 0;
+						int user_n = 0;
+
+						/// chk temp test codes - > using flag 1->Exist 2->Comparision
+						//if (finded.second[i]->GetItem("base_tax").GetCount() > 0) { continue; }
+						///~end
+						if (false == condition.empty()) {
+							std::string _condition = condition;
+							_condition = ToBool4(finded.second[i], global, _condition, excuteData, builder);
+
+							Condition cond(_condition, finded.second[i], &global, builder);
+
+							while (cond.Next());
+
+							if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
+							{
+								//std::cout << cond.Now()[0] << endl;
+								continue;
+							}
+						}
+						finded.second[i]->AddUserTypeItem(utTemp);
+
+						isTrue = true;
+					}
+					return isTrue;
+				}
+				else {
+					return false;
+				}
+			}
+
+			// todo - find example code?  a/b/c/d/e/f/ ??
+			static bool AddUserType(UserType& global, const std::string& position, const std::string& var, const std::string& data, const std::string& condition, const ExcuteData& excuteData, wiz::StringBuilder* builder)
+			{
+				bool isTrue = false;
+				auto finded = UserType::Find(&global, position, builder);
+				if (finded.first) {
+					std::string temp = var;
+					if (temp == "") { temp = " "; }
+					StringTokenizer tokenizer(temp, "/", builder, 1);
+					UserType utTemp = UserType("");
+					if (false == LoadDataFromString(data, utTemp))
+					{
+						return false;
+					}
+
+					while (tokenizer.hasMoreTokens()) {
+						std::string utName = tokenizer.nextToken();
+						std::vector<std::string> strVec;
+						if (utName == " " || utName == "_") { utName = ""; }
+
+						if (utName.size() >= 3 && utName[0] == '[' && utName[utName.size() - 1] == ']')
+						{
+							StringTokenizer tokenizer2(utName, std::vector<std::string>{ "[", "~", "]" }, builder, 1);
+							while (tokenizer2.hasMoreTokens())
+							{
+								strVec.push_back(tokenizer2.nextToken());
+							}
+						}
+
+						long long int a = 0, b = 0, Min = 0, Max = 0;
+						bool chkInt = false;
+
+						if (strVec.size() == 2 && Utility::IsInteger(strVec[0]) && Utility::IsInteger(strVec[1])) {
+							chkInt = true;
+							a = atoll(strVec[0].c_str());
+							b = atoll(strVec[1].c_str());
+							Min = std::min(a, b);
+							Max = std::max(a, b);
+						}
+
+						for (auto x = Min; x <= Max; ++x)
+						{
+							if (strVec.size() == 2 && chkInt)
+							{
+								utName = std::to_string(x);
+							}
+							else {}
+							utTemp.SetName(utName);
+
+							for (int i = 0; i < finded.second.size(); ++i) {
+								int item_n = 0;
+								int user_n = 0;
+
+
+								if (false == condition.empty()) {
+									std::string _condition = condition;
+
+									if (utName == "") { _condition = wiz::String::replace(_condition, "~~", "_"); }// do not use ^ in condition!
+									else
+										_condition = wiz::String::replace(_condition, "~~", utName); //
+
+									_condition = ToBool4(finded.second[i], global, _condition, excuteData, builder);
+									//	cout << "condition is " << _condition << endl;
+
+									Condition cond(_condition, finded.second[i], &global, builder);
+
+									while (cond.Next());
+
+									if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
+									{
+										//std::cout << cond.Now()[0] << endl;
+										continue;
+									}
+								}
+
+								finded.second[i]->AddUserTypeItem(utTemp);
+
+								isTrue = true; // chk!!
+							}
+
+							// prevent from infinity loop.
+							if (x == Max) { break; }
+						}
+					}
+					return isTrue;
+				}
+				else {
+					return false;
+				}
+			}
+			/// SetData - Re Do!
+			static bool SetData(UserType& global, const std::string& position, const std::string& varName, const std::string& data, const std::string& condition, const ExcuteData& excuteData, wiz::StringBuilder* builder)
+			{
+				auto finded = UserType::Find(&global, position, builder);
+				bool isTrue = false;
+
+				if (finded.first) {
+					std::string temp = varName;
+					if (temp == "") { temp = " "; }
+					StringTokenizer tokenizer(temp, "/", builder, 1);
+					UserType utTemp("");
+					if (false == LoadDataFromString(data, utTemp)) {
+						return false;
+					}
+					while (tokenizer.hasMoreTokens()) {
+						std::string _varName = tokenizer.nextToken();
+						/// todo - if varName is "" then data : val val val ... 
+						if (_varName == "" || _varName == " " || _varName == "_") { // re?
+							const int n = utTemp.GetItem("").size();
+							for (int i = 0; i < finded.second.size(); ++i) {
+								if (false == condition.empty()) {
+									std::string _condition = condition;
+									if (_varName == "" || _varName == " " || _varName == "_") { _condition = wiz::String::replace(_condition, "~~", "_"); }
+									else
+										_condition = wiz::String::replace(_condition, "~~", _varName); //
+
+									_condition = ToBool4(finded.second[i], global, _condition, excuteData, builder);
+
+									Condition cond(_condition, finded.second[i], &global, builder);
+
+									while (cond.Next());
+
+									if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
+									{
+										//	std::cout << cond.Now()[0] << endl;
+										continue;
+									}
+								}
+								finded.second[i]->RemoveItemList("");
+
+								for (int j = 0; j < n; ++j) {
+									finded.second[i]->AddItem("", utTemp.GetItem("")[j].Get(0));
+								}
+								isTrue = true;
+							}
+						}
+						else {
+							std::vector<std::string> strVec;
+
+							if (_varName.size() >= 3 && _varName[0] == '[' && _varName[_varName.size() - 1] == ']')
+							{
+								StringTokenizer tokenizer2(_varName, std::vector<std::string>{ "[", "~", "]" }, builder, 1);
+								while (tokenizer2.hasMoreTokens())
+								{
+									strVec.push_back(tokenizer2.nextToken());
+								}
+							}
+
+							long long int a = 0, b = 0, Min = 0, Max = 0;
+							bool chkInt = false;
+
+							if (strVec.size() == 2 && Utility::IsInteger(strVec[0]) && Utility::IsInteger(strVec[1])) {
+								chkInt = true;
+								a = atoll(strVec[0].c_str());
+								b = atoll(strVec[1].c_str());
+								Min = std::min(a, b);
+								Max = std::max(a, b);
+							}
+							for (long long x = Min; x <= Max; ++x) {
+								if (strVec.size() == 2 && chkInt)
+								{
+									_varName = std::to_string(x);
+								}
+								else {}
+
+								for (int i = 0; i < finded.second.size(); ++i) {
+									if (false == condition.empty()) {
+										std::string _condition = condition;
+										if (_varName == "") { _condition = wiz::String::replace(_condition, "~~", "_"); }
+										else
+											_condition = wiz::String::replace(_condition, "~~", _varName); //
+
+										_condition = ToBool4(finded.second[i], global, _condition, excuteData, builder);
+
+										Condition cond(_condition, finded.second[i], &global, builder);
+
+										while (cond.Next());
+
+										if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
+										{
+											//	std::cout << cond.Now()[0] << endl;
+											continue;
+										}
+									}
+									if (wiz::String::startsWith(_varName, "$it")) {
+										int index = atoi(wiz::String::substring(_varName, 3).c_str());
+
+										finded.second[i]->SetItem(index, data);
+										isTrue = true;
+									}
+									else {
+										finded.second[i]->SetItem(_varName, data); /// chk
+										isTrue = true;
+									}
+								}
+
+								// prevent from infinity loop.
+								if (x == Max) { break; }
+							}
+						}
+					}
+					return isTrue;
+				}
+				else {
+					return false;
+				}
+			}
+
+			static bool SetData(UserType& global, const std::string& position, const int var_idx, const std::string& data, const std::string& condition, const ExcuteData& excuteData, wiz::StringBuilder* builder)
+			{
+				auto finded = UserType::Find(&global, position, builder);
+				bool isTrue = false;
+
+				if (finded.first) {
+					UserType utTemp("");
+					if (false == LoadDataFromString(data, utTemp)) {
+						return false;
+					}
+					long long int a = 0, b = 0, Min = 0, Max = 0;
+
+					for (long long x = Min; x <= Max; ++x) {
+						for (int i = 0; i < finded.second.size(); ++i) {
+							if (false == condition.empty()) {
+								std::string _condition = condition;
+
+
+								_condition = ToBool4(finded.second[i], global, _condition, excuteData, builder);
+
+								Condition cond(_condition, finded.second[i], &global, builder);
+
+								while (cond.Next());
+
+								if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
+								{
+									//	std::cout << cond.Now()[0] << endl;
+									continue;
+								}
+							}
+							finded.second[i]->SetItem(var_idx, data); /// chk
+							isTrue = true;
+						}
+
+						// prevent from infinity loop.
+						if (x == Max) { break; }
+					}
+					return isTrue;
+				}
+				else {
+					return false;
+				}
+			}
 			/// 
 			static std::string GetData(UserType& global, const std::string& position, const std::string& condition, const ExcuteData& excuteData, wiz::StringBuilder* builder) {
 				std::string str;
@@ -4783,7 +6538,16 @@ namespace wiz {
 				}
 			}
 
-		
+			static bool LoadWizDB(UserType& global, const std::string& fileName) {
+				UserType globalTemp = UserType("global");
+
+				// Scan + Parse 
+				if (false == LoadDataFromFile(fileName, globalTemp)) { return false; }
+				std::cout << "LoadData End" << std::endl;
+
+				global = std::move(globalTemp);
+				return true;
+			}
 			// SaveQuery
 			static bool SaveWizDB(const UserType& global, const std::string& fileName, const std::string& option = "0", const std::string& option2 = "") { /// , int option
 				std::ofstream outFile;

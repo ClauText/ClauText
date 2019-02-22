@@ -56,7 +56,7 @@ namespace wiz {
 				//chk();
 			}
 			bool operator==(const Type& t) const {
-				return name == (t.name);
+				return name == t.name;
 			}
 			bool operator<(const Type& t) const {
 				return name.ToString() < t.name.ToString();
