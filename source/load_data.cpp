@@ -1473,6 +1473,7 @@ namespace wiz {
 			for (int i = tokenVec.size() - 1; i >= 0; --i) {
 				// todo - chk first? functions in Event
 				if (String::startsWith(tokenVec[i], "$parameter.") ||
+					String::startsWith(tokenVec[i], "$.") || // for regex? $."regular expression"
 					//	tokenVec[i] == "$parameter" || // for lambda
 					//	tokenVec[i] == "$local" || // for lambda
 					String::startsWith(tokenVec[i], "$local.") ||
@@ -1492,6 +1493,7 @@ namespace wiz {
 					{
 						// chk removal here?
 						std::cout << " false " << std::endl;
+						throw "interal error";
 						GETCH();
 						//
 						operatorStack.pop();

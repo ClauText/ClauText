@@ -54,12 +54,27 @@ namespace wiz {
 				float_value = ToFloat();
 			}
 			else {
-				throw "error in gettype in datatype";
+				//throw "error in gettype in datatype";
 			}
 		}
 		change = false;
 
 		return type;
+	}
+
+	std::string DataType::GetTypeString()const
+	{
+		int value = GetType();
+
+		if (3 == value) {
+			return "INTEGER";
+		}
+		else if (5 == value) {
+			return "FLOAT";
+		}
+		else {
+			return "STRING";
+		}
 	}
 
 	void DataType::SetInt(long long val)

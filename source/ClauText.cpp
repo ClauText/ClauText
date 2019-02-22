@@ -1422,6 +1422,40 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
+				else if ("$iterate3" == val->GetName()) { //
+					ExcuteData _excuteData; _excuteData.depth = excuteData.depth;
+					_excuteData.chkInfo = true;
+					_excuteData.info = eventStack.top();
+					_excuteData.pObjectMap = objectMapPtr;
+					_excuteData.pEvents = eventPtr;
+					_excuteData.pModule = moduleMapPtr;
+
+					std::string dir = val->GetUserTypeList(0)->ToString();
+					std::string name = wiz::load_data::LoadData::ToBool4(nullptr, global, val->GetUserTypeList(1)->ToString(), _excuteData, &builder);
+					std::vector<std::string> events; // event_ids
+
+					for (int i = 0; i < val->GetUserTypeList(2)->GetItemListSize(); ++i) {
+						events.push_back(wiz::ToString(val->GetUserTypeList(2)->GetItemList(i).Get(0)));
+					}
+
+					std::string recursive = "FALSE";
+
+					if (val->GetUserTypeListSize() >= 4) {
+						recursive = val->GetUserTypeList(3)->ToString();
+						recursive = wiz::load_data::LoadData::ToBool4(nullptr, global, recursive, _excuteData, &builder);
+					}
+
+					std::string before_value;
+
+					if (val->GetUserTypeListSize() >= 5) {
+						before_value = wiz::load_data::LoadData::ToBool4(nullptr, global, val->GetUserTypeList(4)->ToString(), _excuteData, &builder);
+					}
+					wiz::load_data::LoadData::Iterate3(global, dir, name, events, recursive, before_value, _excuteData, &builder);
+
+
+					eventStack.top().userType_idx.top()++;
+					break;
+				}
 				else if ("$riterate" == val->GetName()) { // very slow? why??
 					ExcuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
