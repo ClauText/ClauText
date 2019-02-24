@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
 				}
 				//char* buf = nullptr;
 				//wiz::load_data::LoadData::LoadDataFromFile3_2(buf, fileName, global, 8, 8);
-				wiz::load_data::LoadData::LoadDataFromFile(fileName, global); // , thr_num - 1, thr_num); // parallel? lexing + parallel parsing
+				wiz::load_data::LoadData::LoadDataFromFile4(fileName, global, -1, 0); // , thr_num - 1, thr_num); // parallel? lexing + parallel parsing
 			}
 			b = clock();
 			//std::cout << "time " << b - a << "ms" << std::endl;
