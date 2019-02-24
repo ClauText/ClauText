@@ -3635,21 +3635,29 @@ namespace wiz {
 						}
 
 						// Merge
-						if (first) {
-							Merge(&_global, &__global[0], &next[0]);
-							first = false;
-						}
-						else {
-							Merge(before_next, &__global[0], &next[0]);
-						}
+						try {
+							if (first) {
+								Merge(&_global, &__global[0], &next[0]);
+								first = false;
+							}
+							else {
+								Merge(before_next, &__global[0], &next[0]);
+							}
 
-						for (int i = 1; i < pivots.size() + 1; ++i) {
-							Merge(next[i - 1], &__global[i], &next[i]);
-						}
+							for (int i = 1; i < pivots.size() + 1; ++i) {
+								Merge(next[i - 1], &__global[i], &next[i]);
+							}
 
+						}
+						catch (...) {
+							delete[] buffer;
+							buffer = nullptr;
+							throw "in Merge, error";
+						}
 						{
 							if (next[pivots.size()]->GetParent() != nullptr) {
-								std::cout << "merge error" << "\n";
+								delete[] buffer;
+								buffer = nullptr;
 								throw "merge error";
 							}
 						}
@@ -3804,10 +3812,10 @@ namespace wiz {
 					}
 				}
 				if (next_depth < ut_depth) {
-					std::cout << "merge error" << "\n";
-					throw "Merge Error depth is not matched...";
+					throw "Merge error depth difference";
 				}
 			}
+
 
 		public:
 			//// ToDo : # => option.~?
