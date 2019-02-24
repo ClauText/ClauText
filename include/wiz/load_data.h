@@ -3655,14 +3655,14 @@ namespace wiz {
 							throw "in Merge, error";
 						}
 						{
-							if (next[pivots.size()]->GetParent() != nullptr) {
+							if (next[pivots.size()] != nullptr && next[pivots.size()]->GetParent() != nullptr) {
 								delete[] buffer;
 								buffer = nullptr;
 								throw "merge error";
 							}
 						}
 
-						strVec.erase(strVec.begin(), strVec.begin() + last_idx + 1);
+						strVec.erase(strVec.begin(), strVec.begin() + (last_idx + 1));
 
 						before_next = next.back();
 					}
@@ -4869,7 +4869,7 @@ namespace wiz {
 				delete[] buffer;
 				return true;
 			*/
-				
+
 				UserType utTemp;
 				ARRAY_QUEUE<Token> strVec;
 
