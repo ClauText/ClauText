@@ -2637,8 +2637,12 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					if (val->GetUserTypeListSize() >= 3) {
 						condition = val->GetUserTypeList(2)->ToString();
 					}
+					
+					if (dir == "/FunctionNo") {
+						std::cout << "";
+					}
 					wiz::load_data::LoadData::AddData(global, dir, value, condition, _excuteData, &builder);
-
+					
 					eventStack.top().userType_idx.top()++;
 					break;
 				}

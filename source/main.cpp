@@ -104,6 +104,7 @@ int main(int argc, char* argv[])
 	
 
 	*/
+	//srand(0);
 	srand(time(nullptr)); // 
 
 	std::string fileName;
