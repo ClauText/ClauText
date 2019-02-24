@@ -3647,6 +3647,13 @@ namespace wiz {
 							Merge(next[i - 1], &__global[i], &next[i]);
 						}
 
+						{
+							if (next[pivots.size()]->GetParent() != nullptr) {
+								std::cout << "merge error" << "\n";
+								throw "merge error";
+							}
+						}
+
 						strVec.erase(strVec.begin(), strVec.begin() + last_idx + 1);
 
 						before_next = next.back();
@@ -3706,7 +3713,7 @@ namespace wiz {
 					option.Assignment.push_back("=");
 					option.Left.push_back('{');
 					option.Right.push_back('}');
-					//option.LineComment.push_back("#");
+					option.LineComment.push_back("#");
 
 					ifReserver.Num = 1 << 19;
 					//	strVec.reserve(ifReserver.Num);
@@ -3741,11 +3748,15 @@ namespace wiz {
 			
 			static void Merge(UserType* next, UserType* ut, UserType** ut_next)
 			{
+				int ut_depth = 0;
+				int next_depth = 0;
+
 				//check!!
 				while (ut->GetIListSize() >= 1 && ut->GetUserTypeListSize() >= 1 
 					&& (ut->GetUserTypeList(0)->GetName() == "##" ||
 					ut->GetUserTypeList(0)->GetName() == "#"))
 				{
+					ut_depth++;
 					ut = ut->GetUserTypeList(0);
 				}
 
@@ -3782,15 +3793,20 @@ namespace wiz {
 						}
 					}
 					_ut->Remove();
+
 					if (ut->GetParent() && next->GetParent()) {
 						ut = ut->GetParent();
 						next = next->GetParent();
+						next_depth++;
 					}
 					else {
 						break;
 					}
 				}
-				
+				if (next_depth < ut_depth) {
+					std::cout << "merge error" << "\n";
+					throw "Merge Error depth is not matched...";
+				}
 			}
 
 		public:
@@ -5183,6 +5199,7 @@ namespace wiz {
 			//	eventsTemp->RemoveUserTypeList(eventsTemp->GetUserTypeListSize() - 1);
 			}
 			
+			// chk remove!
 			static void _Iterate2(UserType& global, const std::string& dir, const std::vector<wiz::load_data::UserType*>& ut, UserType* eventsTemp, const std::string& recursive, const ExcuteData& excuteData, wiz::StringBuilder* builder)
 			{
 				for (int i = 0; i < ut.size(); ++i) {
