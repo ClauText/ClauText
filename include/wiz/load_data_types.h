@@ -892,8 +892,7 @@ namespace wiz {
 			}
 			void AddItem(WIZ_STRING_TYPE&& name, WIZ_STRING_TYPE&& item) {
 				{
-					ItemType<WIZ_STRING_TYPE> temp(std::move(name), std::move(item));
-					itemList.push_back(std::move(temp));
+					itemList.emplace_back(std::move(name), std::move(item));
 				}
 				ilist.push_back(1);
 

@@ -72,6 +72,7 @@ namespace wiz {
 		DataType() { int_value = 0; float_value = 0; }
 		DataType(const char* cstr);
 		DataType(const std::string& str);
+		DataType(std::string&& str);
 	public:
 		void SetInt(long long val);
 		void SetFloat(long double val);
@@ -154,6 +155,20 @@ namespace wiz {
 			str = nullptr;
 			len = 0;
 			isComment = false;
+		}
+
+		bool operator==(const char* cstr) const {
+			int cstr_len = strlen(cstr);
+
+			if (len == cstr_len) {
+				for (int i = 0; i < len; ++i) {
+					if (str[i] != cstr[i]) {
+						return false;
+					}
+				}
+				return true;
+			}
+			return false;
 		}
 	};
 
