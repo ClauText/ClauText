@@ -121,6 +121,14 @@ int main(int argc, char* argv[])
 
 	wiz::load_data::UserType global;
 
+	{
+		// temporary test.
+		char* buffer = nullptr;
+		wiz::load_data::LoadData::Node global;
+		wiz::load_data::LoadData::LoadDataFromFile6(fileName, global, -1, 0, &buffer);
+		delete[] buffer;
+	}
+
 	try {
 		int a = clock();
 		{

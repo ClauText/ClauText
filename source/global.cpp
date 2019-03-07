@@ -144,6 +144,31 @@ namespace wiz {
 		this->change = true; // false;
 	}
 
+	DataType::DataType(std::string&& str)
+	{
+		this->str_value = std::move(str);
+
+		if (USE_REMOVE_IN_DATATYPE) {
+			this->str_value = Remove(str_value);
+		}
+
+		/*
+		this->change = true;
+
+		if (wiz::load_data::Utility::IsInteger(this->str_value)) {
+			this->type = 3;
+			this->int_value = ToInt();
+		}
+		else if (wiz::load_data::Utility::IsDouble(this->str_value)) {
+			this->type = 5;
+			this->float_value = ToFloat();
+		}
+		else {
+			this->type = 1;
+		}
+		*/
+		this->change = true; // false;
+	}
 
 	bool DataType::operator==(const DataType& type) const
 	{

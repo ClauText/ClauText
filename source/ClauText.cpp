@@ -3335,6 +3335,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					break;
 
 				}
+				
 #ifdef USE_FAST_LOAD_DATA
 
 				else if ("$fast_load" == val->GetName())
