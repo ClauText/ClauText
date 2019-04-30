@@ -3548,10 +3548,10 @@ namespace wiz {
 				}
 				return str;
 			}
-			static int FindRight(VECTOR<Token2>& strVec, int start, int last, const wiz::LoadDataOption& option)
+			static int FindRight(VECTOR<Token2>& strVec, int start, int last, const wiz::LoadDataOption2& option)
 			{
 				for (int i = last; i >= start; --i) {
-					if (strVec[i].len == 1 && -1 != Equal(option.Right, strVec[i].str[0])) {
+					if (strVec[i].len == 1 && -1 != Equal2(option.Right, strVec[i].str[0])) {
 						return i;
 					}
 				}
@@ -4892,7 +4892,7 @@ namespace wiz {
 				return true;
 			}
 		private:
-			/*static int FindRight(VECTOR<Token2>& strVec, int start, int last, const wiz::LoadDataOption& option)
+			static int FindRight(VECTOR<Token2>& strVec, int start, int last, const wiz::LoadDataOption& option)
 			{
 				for (int i = last; i >= start; --i) {
 					if (strVec[i].len == 1 && -1 != Equal(option.Right, strVec[i].str[0])) {
@@ -4901,7 +4901,7 @@ namespace wiz {
 				}
 
 				return -1;
-			}*/
+			}
 			
 			static void Merge(UserType* next, UserType* ut, UserType** ut_next)
 			{
