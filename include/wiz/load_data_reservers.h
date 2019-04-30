@@ -77,7 +77,29 @@ namespace wiz {
 			}
 		};
 
-
+		class InFileReserver4
+		{
+		private:
+			std::ifstream* pInFile;
+			bool isFirst;
+		public:
+			int Num;
+		public:
+			explicit InFileReserver4(std::ifstream& inFile)
+			{
+				pInFile = &inFile;
+				Num = 1;
+				isFirst = true;
+			}
+			bool end()const { return pInFile->eof(); } //
+		public:
+			bool operator() (const wiz::LoadDataOption2& option, int thr_num, char*& buffer, long long*& llptr, long long* buffer_len, long long*& llptr2, long long* llptr2_len,
+				wiz::load_data::Utility::UT_IT_NUM*& llptr3, wiz::load_data::Utility::UT_IT_NUM& llptr3_total)
+			{
+				bool x = Utility::Reserve2_4(*pInFile, Num, &isFirst, option, thr_num, buffer, llptr, buffer_len, llptr2, llptr2_len, llptr3, llptr3_total).second > 0;
+				return x;
+			}
+		};
 
 		class NoneReserver
 		{

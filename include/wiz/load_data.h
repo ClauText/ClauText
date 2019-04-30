@@ -3540,6 +3540,530 @@ namespace wiz {
 				return true;
 			}
 	
+
+			static std::string& check_syntax_error1(std::string& str, const wiz::LoadDataOption2& opt) {
+				if (1 == str.size() && (opt.Left == str[0] || opt.Left2 == str[0] || opt.Right == str[0] ||
+					opt.Right2 == str[0] || opt.Assignment == str[0])) {
+					throw "check syntax error 1 : " + str;
+				}
+				return str;
+			}
+			static int FindRight(VECTOR<Token2>& strVec, int start, int last, const wiz::LoadDataOption& option)
+			{
+				for (int i = last; i >= start; --i) {
+					if (strVec[i].len == 1 && -1 != Equal(option.Right, strVec[i].str[0])) {
+						return i;
+					}
+				}
+
+				return -1;
+			}
+
+			static int Merge_2(UserType* next, UserType* ut, UserType** ut_next)
+			{
+				//check!!
+				while (ut->GetIListSize() >= 1 && ut->GetUserTypeListSize() >= 1
+					&& (ut->GetUserTypeList(0)->GetName() == "#"))
+				{
+					ut = ut->GetUserTypeList(0);
+				}
+
+				//int chk = 0;
+				while (true) {
+					int itCount = 0;
+					int utCount = 0;
+
+					UserType* _ut = ut;
+					UserType* _next = next;
+
+					if (ut_next && _ut == *ut_next) {
+						*ut_next = _next;
+					}
+
+					for (int i = 0; i < _ut->GetIListSize(); ++i) {
+						if (_ut->IsUserTypeList(i)) {
+							if (_ut->GetUserTypeList(utCount)->GetName() == "#") {
+								_ut->GetUserTypeList(utCount)->SetName("");
+							}
+							else {
+								{
+									_next->LinkUserType(_ut->GetUserTypeList(utCount));
+									_ut->GetUserTypeList(utCount) = nullptr;
+								}
+							}
+							utCount++;
+						}
+						else if (_ut->IsItemList(i)) {
+							_next->AddItemList(std::move(_ut->GetItemList(itCount)));
+							itCount++;
+						}
+					}
+					_ut->Remove();
+
+					ut = ut->GetParent();
+					next = next->GetParent();
+
+					if (next && ut) {
+						//
+					}
+					else {
+						// right_depth > left_depth
+						if (!next && ut) {
+							return -1;
+						}
+						return 0;
+					}
+				}
+
+			}
+			static bool __LoadData5_2(const char* buffer, long long llptr2_len, const long long* llptr, const long long* llptr2, UserType* _global, const wiz::LoadDataOption2* _option,
+				int start_state, int last_state, UserType** next, wiz::load_data::Utility::UT_IT_NUM* llptr3) // first, strVec.empty() must be true!!
+			{
+				std::vector<std::string> varVec;
+				std::vector<std::string> valVec;
+
+
+				if (llptr2_len <= 0) {
+					return false;
+				}
+
+				UserType& global = *_global;
+				const wiz::LoadDataOption2& option = *_option;
+
+				int state = start_state;
+				int braceNum = 0;
+				std::vector< UserType* > nestedUT(1);
+				std::string var, val;
+
+
+				nestedUT[0] = &global;
+
+
+				long long count = 0;
+				const long long* x = llptr2;
+				const long long* x_next = x;
+
+				for (long long i = 0; i < llptr2_len; ++i) {
+					x = x_next;
+					{
+						x_next = x + 1;
+					}
+					if (count > 0) {
+						count--;
+						continue;
+					}
+					long long len = llptr[*x];
+
+
+					switch (state)
+					{
+					case 0:
+					{
+						if (len == 1 && (-1 != Equal2(option.Left, buffer[*x]) || -1 != Equal2(option.Left2, buffer[*x]))) {
+							//i += 1;
+
+							if (!varVec.empty()) {
+								nestedUT[braceNum]->ReserveIList(nestedUT[braceNum]->GetIListSize() + varVec.size());
+								nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
+
+								for (int i = 0; i < varVec.size(); ++i) {
+									nestedUT[braceNum]->AddItem(std::move(varVec[i]), std::move(valVec[i]));
+								}
+								varVec.clear();
+								valVec.clear();
+							}
+
+							UserType temp("");
+
+							nestedUT[braceNum]->AddUserTypeItem(temp);
+							UserType* pTemp = nullptr;
+							nestedUT[braceNum]->GetLastUserTypeItemRef("", pTemp);
+
+							braceNum++;
+
+							/// new nestedUT
+							if (nestedUT.size() == braceNum) { /// changed 2014.01.23..
+								nestedUT.push_back(nullptr);
+							}
+
+							/// initial new nestedUT.
+							nestedUT[braceNum] = pTemp;
+							///
+
+							state = 0;
+
+							nestedUT[braceNum]->ReserveUserTypeList(llptr3[*x].utNum);
+							nestedUT[braceNum]->ReserveItemList(llptr3[*x].itNum - llptr3[*x].eqNum);
+							nestedUT[braceNum]->ReserveIList(llptr3[*x].utNum + llptr3[*x].itNum - llptr3[*x].eqNum);
+						}
+						else if (len == 1 && (-1 != Equal2(option.Right, buffer[*x]) || -1 != Equal2(option.Right2, buffer[*x]))) {
+							//i += 1;
+
+							state = 0;
+
+							if (!varVec.empty()) {
+								// UserTypeListsize?
+								nestedUT[braceNum]->ReserveIList(nestedUT[braceNum]->GetIListSize() + varVec.size());
+								nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
+
+								for (int i = 0; i < varVec.size(); ++i) {
+									nestedUT[braceNum]->AddItem(std::move(varVec[i]), std::move(valVec[i]));
+								}
+								varVec.clear();
+								valVec.clear();
+							}
+
+
+							if (braceNum == 0) {
+								UserType ut;
+								ut.AddUserTypeItem(UserType("#")); // json -> "var_name" = val  // clautext, # is line comment delimiter.
+								UserType* pTemp = nullptr;
+								ut.GetLastUserTypeItemRef("#", pTemp);
+								int utCount = 0;
+								int itCount = 0;
+								auto max = nestedUT[braceNum]->GetIListSize();
+								for (auto i = 0; i < max; ++i) {
+									if (nestedUT[braceNum]->IsUserTypeList(i)) {
+										ut.GetUserTypeList(0)->AddUserTypeItem(std::move(*(nestedUT[braceNum]->GetUserTypeList(utCount))));
+										utCount++;
+									}
+									else {
+										ut.GetUserTypeList(0)->AddItemList(std::move(nestedUT[braceNum]->GetItemList(itCount)));
+										itCount++;
+									}
+								}
+
+								nestedUT[braceNum]->Remove();
+								nestedUT[braceNum]->AddUserTypeItem(std::move(*(ut.GetUserTypeList(0))));
+
+								braceNum++;
+							}
+
+							{
+								if (braceNum < nestedUT.size()) {
+									nestedUT[braceNum] = nullptr;
+								}
+								braceNum--;
+							}
+						}
+						else {
+							//std::pair<bool, Token2> bsPair;
+
+							//	if (i < last_idx)
+							//	{
+							//		bsPair = std::make_pair(true, strVec[i + 1]);
+							//	}
+							//	else {
+							//		bsPair = std::make_pair(false, Token2());
+							//	}
+							if (x < llptr2 + llptr2_len - 1) {
+								long long _len = llptr[*(x + 1)];
+
+								if (_len == 1 && -1 != Equal2(option.Assignment, buffer[*(x + 1)])) {
+									// var2
+									var = std::string(buffer + *x, len);
+
+									state = 1;
+									//i += 1;
+
+									//i += 1;
+									{
+										count = 1;
+									}
+								}
+								else {
+									// var1
+									if (x <= llptr2 + llptr2_len - 1) {
+										val = std::string(buffer + *x, len);
+
+										varVec.push_back(check_syntax_error1(var, option));
+										valVec.push_back(check_syntax_error1(val, option));
+										//nestedUT[braceNum]->AddItem("", ""); // std::move(val));
+										val = "";
+
+										state = 0;
+										//i += 1;
+
+									}
+								}
+							}
+							else
+							{
+								// var1
+								if (x <= llptr2 + llptr2_len - 1)
+								{
+									val = std::string(buffer + *x, len);
+									varVec.push_back(check_syntax_error1(var, option));
+									valVec.push_back(check_syntax_error1(val, option));
+									//nestedUT[braceNum]->AddItem("", "");// std::move(val));
+									val = "";
+
+									state = 0;
+									//i += 1;
+
+								}
+							}
+						}
+					}
+					break;
+					case 1:
+					{
+						if (len == 1 && (-1 != Equal2(option.Left, buffer[*x]) || -1 != Equal2(option.Left2, buffer[*x]))) {
+							//i += 1;
+
+							nestedUT[braceNum]->ReserveIList(nestedUT[braceNum]->GetIListSize() + varVec.size());
+							nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
+
+							for (int i = 0; i < varVec.size(); ++i) { // i -> long long ?
+								nestedUT[braceNum]->AddItem(std::move(varVec[i]), std::move(valVec[i]));
+							}
+							varVec.clear();
+							valVec.clear();
+
+
+							///
+							{
+								nestedUT[braceNum]->AddUserTypeItem(UserType(var));
+								UserType* pTemp = nullptr;
+								nestedUT[braceNum]->GetLastUserTypeItemRef(var, pTemp);
+								var = "";
+								braceNum++;
+
+								/// new nestedUT
+								if (nestedUT.size() == braceNum) {
+									nestedUT.push_back(nullptr);
+								}
+
+								/// initial new nestedUT.
+								nestedUT[braceNum] = pTemp;
+							}
+							///
+							state = 0;
+
+
+							nestedUT[braceNum]->ReserveUserTypeList(llptr3[*x].utNum);
+							nestedUT[braceNum]->ReserveItemList(llptr3[*x].itNum - llptr3[*x].eqNum);
+							nestedUT[braceNum]->ReserveIList(llptr3[*x].utNum + llptr3[*x].itNum - llptr3[*x].eqNum);
+						}
+						else {
+							if (x <= llptr2 + llptr2_len - 1) {
+								val = std::string(buffer + *x, len);
+
+								//i += 1;
+
+								varVec.push_back(check_syntax_error1(var, option));
+								valVec.push_back(check_syntax_error1(val, option));
+								//nestedUT[braceNum]->AddItem("", ""); // std::move(var), std::move(val));
+								var = ""; val = "";
+
+								state = 0;
+							}
+						}
+					}
+					break;
+					default:
+						// syntax err!!
+						throw "syntax error ";
+						break;
+					}
+				}
+
+				if (next) {
+					*next = nestedUT[braceNum];
+				}
+
+				if (varVec.empty() == false) {
+					nestedUT[braceNum]->ReserveIList(nestedUT[braceNum]->GetIListSize() + varVec.size());
+					nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
+
+					for (int i = 0; i < varVec.size(); ++i) {
+						nestedUT[braceNum]->AddItem(varVec[i], valVec[i]);
+					}
+					varVec.clear();
+					valVec.clear();
+				}
+
+				if (state != last_state) {
+					throw std::string("error final state is not last_state!  : ") + toStr(state);
+				}
+				if (x > llptr2 + llptr2_len) {
+					throw std::string("error x > buffer + buffer_len: ");
+				}
+				return true;
+			}
+			static long long FindRight3(const char* buffer, const long long* llptr, const long long* llptr2, long long start, long long last, const wiz::LoadDataOption2 & option)
+			{
+				for (long long a = last; a >= start; --a) {
+					long long i = llptr2[a];
+
+					if (llptr[i] == 1 && (-1 != Equal2(option.Right, buffer[i]) || -1 != Equal2(option.Right2, buffer[i]))) {
+						return a;
+					}
+
+					bool pass = false;
+					if (llptr[i] == 1 && (-1 != Equal2(option.Left, buffer[i]) || -1 != Equal2(option.Left2, buffer[i]))) {
+						return a;
+					}
+					else if (llptr[i] == 1 && -1 != Equal2(option.Assignment, buffer[i])) {
+						//
+						pass = true;
+					}
+
+					if (a < last && pass == false) {
+						long long _i = llptr2[a + 1];
+						if (!(llptr[_i] == 1 && -1 != Equal2(option.Assignment, buffer[_i])))
+						{                // NOT
+							return a;
+						}
+					}
+				}
+				return -1;
+			}
+
+			static bool _LoadData5_2(InFileReserver4 & reserver, UserType & global, const wiz::LoadDataOption2 & option, const int lex_thr_num, const int parse_num) // first, strVec.empty() must be true!!
+			{
+				const int pivot_num = parse_num - 1;
+				char* buffer = nullptr;
+				long long* llptr = nullptr;
+				long long* llptr2 = nullptr;
+				long long buffer_total_len;
+				long long llptr2_len = 0;
+				wiz::load_data::Utility::UT_IT_NUM* llptr3 = nullptr;
+				wiz::load_data::Utility::UT_IT_NUM llptr3_total;
+
+				bool end = false;
+				{
+					int a = clock();
+					end = !reserver(option, lex_thr_num, buffer, llptr, &buffer_total_len, llptr2, &llptr2_len, llptr3, llptr3_total);
+					int b = clock();
+					std::cout << b - a << "ms \n";
+				}
+
+				UserType* before_next = nullptr;
+				UserType _global;
+
+				bool first = true;
+				long long sum = 0;
+				int a, c;
+				while (true) {
+					end = true;
+
+
+					a = clock();
+
+					std::set<long long> _pivots;
+					std::vector<long long> pivots;
+					const long long num = llptr2_len; //
+
+					if (pivot_num > 0) {
+						std::vector<int> pivot;
+						pivots.reserve(pivot_num);
+						pivot.reserve(pivot_num);
+
+						int w = clock();
+						for (int i = 0; i < pivot_num; ++i) {
+							pivot.push_back(FindRight3(buffer, llptr, llptr2, (num / (pivot_num + 1)) * (i), (num / (pivot_num + 1)) * (i + 1) - 1, option));
+						}
+						int v = clock();
+						//std::cout << "divide data " <<  v - w << "ms" << "\n";
+
+						for (int i = 0; i < pivot.size(); ++i) {
+							if (pivot[i] != -1) {
+								_pivots.insert(pivot[i]);
+							}
+						}
+
+						for (auto& x : _pivots) {
+							pivots.push_back(x);
+						}
+					}
+
+					std::vector<UserType*> next(pivots.size() + 1, nullptr);
+
+					{
+						std::vector<UserType> __global(pivots.size() + 1);
+
+						std::vector<std::thread> thr(pivots.size() + 1);
+
+						{
+							long long idx = pivots.empty() ? num - 1 : pivots[0]; // chk? - !!
+							long long _llptr2_len = idx - 0 + 1;
+							__global[0].ReserveUserTypeList(llptr3_total.utNum);
+							thr[0] = std::thread(__LoadData5_2, buffer, _llptr2_len, llptr, llptr2, &__global[0], &option, 0, 0, &next[0], llptr3);
+							// __LoadData4 -> __LoadData5
+						}
+
+						for (int i = 1; i < pivots.size(); ++i) {
+							long long _llptr2_len = pivots[i] - (pivots[i - 1] + 1) + 1;
+							__global[i].ReserveUserTypeList(llptr3_total.utNum);
+							thr[i] = std::thread(__LoadData5_2, buffer, _llptr2_len, llptr, llptr2 + pivots[i - 1] + 1, &__global[i], &option, 0, 0, &next[i], llptr3);
+
+						}
+
+						if (pivots.size() >= 1) {
+							long long _llptr2_len = num - 1 - (pivots.back() + 1) + 1;
+							__global[pivots.size()].ReserveUserTypeList(llptr3_total.utNum);
+							thr[pivots.size()] = std::thread(__LoadData5_2, buffer, _llptr2_len, llptr, llptr2 + pivots.back() + 1, &__global[pivots.size()],
+								&option, 0, 0, &next[pivots.size()], llptr3);
+						}
+
+						// wait
+						for (int i = 0; i < thr.size(); ++i) {
+							thr[i].join();
+						}
+						c = clock();
+						// Merge
+						try {
+							if (__global[0].GetUserTypeListSize() > 0 && __global[0].GetUserTypeList(0)->GetName() == "#") {
+								std::cout << "not valid file\n";
+								throw 1;
+							}
+
+							Merge_2(&_global, &__global[0], &next[0]);
+
+							for (int i = 1; i < pivots.size() + 1; ++i) {
+								// linearly merge and error check...
+								if (-1 == Merge_2(next[i - 1], &__global[i], &next[i])) {
+									std::cout << "not valid file\n";
+									throw 2;
+								}
+							}
+
+						}
+						catch (...) {
+							delete[] buffer;
+							delete[] llptr;
+							delete[] llptr2;
+							free(llptr3);
+							buffer = nullptr;
+							throw "in Merge, error";
+						}
+
+						before_next = next.back();
+					}
+
+
+					if (!end) {
+						//
+					}
+					else {
+						break;
+					}
+				}
+				int b = clock();
+				delete[] buffer;
+				delete[] llptr;
+				delete[] llptr2;
+				free(llptr3);
+				int d = clock();
+				global = std::move(_global);
+				std::cout << "parsing " << b - a << "ms" << " merge " << b - c << "ms" << "\n";
+				std::cout << "delete and free " << d - b << "ms\n";
+
+				return true;
+			}
+
+
 			class Node { // all node has first
 			public:
 				wiz::Token2 var;
@@ -3781,10 +4305,11 @@ namespace wiz {
 						next = Parent(next);
 					}
 					else {
-						break;
+						break; // todo -add error processing..
 					}
 				}
 			}
+
 
 			static bool __LoadData6(VECTOR<wiz::Token2>* _strVec, int start_idx, int last_idx, Node* _global, const wiz::LoadDataOption* _option,
 				int start_state, int last_state, Node** next) // first, strVec.empty() must be true!!
@@ -4367,7 +4892,7 @@ namespace wiz {
 				return true;
 			}
 		private:
-			static int FindRight(VECTOR<Token2>& strVec, int start, int last, const wiz::LoadDataOption& option)
+			/*static int FindRight(VECTOR<Token2>& strVec, int start, int last, const wiz::LoadDataOption& option)
 			{
 				for (int i = last; i >= start; --i) {
 					if (strVec[i].len == 1 && -1 != Equal(option.Right, strVec[i].str[0])) {
@@ -4376,7 +4901,7 @@ namespace wiz {
 				}
 
 				return -1;
-			}
+			}*/
 			
 			static void Merge(UserType* next, UserType* ut, UserType** ut_next)
 			{
@@ -4442,6 +4967,67 @@ namespace wiz {
 
 
 		public:
+			static bool LoadDataFromFile5_2(const std::string& fileName, UserType& global, int lex_thr_num, int parse_num) /// global should be empty
+			{
+				if (lex_thr_num <= 0) {
+					lex_thr_num = std::thread::hardware_concurrency();
+				}
+				if (lex_thr_num <= 0) {
+					lex_thr_num = 1;
+				}
+
+				if (parse_num <= 0) {
+					parse_num = std::thread::hardware_concurrency();
+				}
+				if (parse_num <= 0) {
+					parse_num = 1;
+				}
+
+				bool success = true;
+				std::ifstream inFile;
+				inFile.open(fileName, std::ios::binary);
+
+
+				if (true == inFile.fail())
+				{
+					inFile.close(); return false;
+				}
+
+				UserType globalTemp;
+
+				try {
+
+					InFileReserver4 ifReserver(inFile);
+					wiz::LoadDataOption2 option;
+					option.Assignment = ('=');
+					option.Left = '{';  option.Left2 = ('{');
+					option.Right = '}'; option.Right2 = ('}');
+					option.LineComment = ('#');
+					option.Removal = ' ';
+
+					char* buffer = nullptr;
+					ifReserver.Num = 1 << 19;
+					//	strVec.reserve(ifReserver.Num);
+					// cf) empty file..
+					if (false == _LoadData5_2(ifReserver, globalTemp, option, lex_thr_num, parse_num))
+					{
+						inFile.close();
+						return false; // return true?
+					}
+
+					inFile.close();
+				}
+				catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
+				catch (const std::string & e) { std::cout << e << std::endl; inFile.close(); return false; }
+				catch (std::exception e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
+				catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
+
+
+				global = std::move(globalTemp);
+
+				return true;
+			}
+
 
 			static bool LoadDataFromFile6(const std::string& fileName, Node& global, int pivot_num, int lex_thr_num, char** _buffer) /// global should be empty
 			{

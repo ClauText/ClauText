@@ -261,6 +261,15 @@ namespace wiz {
 		std::vector<char> Delimiter; // 
 	};
 
+	class LoadDataOption2
+	{
+	public:
+		char LineComment = 0;	// # 
+		char Left = 0, Left2 = 0, Right = 0, Right2 = 0;	// { } , [ ] <- json
+		char Assignment = 0;	// = , :
+		char Removal = 0;		// ',', empty. 
+	};
+
 	inline int Equal(const std::vector<char>& option, const char ch)
 	{
 		for (int i = 0; i < option.size(); ++i) {
@@ -277,6 +286,14 @@ namespace wiz {
 				return i;
 			}
 		}
+		return -1;
+	}
+	inline int Equal2(const char& option, const char ch)
+	{
+		if (ch == option) {
+			return 0;
+		}
+
 		return -1;
 	}
 }
