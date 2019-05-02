@@ -2870,11 +2870,14 @@ namespace wiz {
 							first = false;
 						}
 						else {
-							Merge(before_next, &__global[0], &next[0]);
+							Merge(before_next, &__global[0], &next[0]); // remove?
 						}
 
 						for (int i = 1; i < pivots.size() + 1; ++i) {
-							Merge(next[i - 1], &__global[i], &next[i]);
+							if (-1 == Merge(next[i - 1], &__global[i], &next[i])) {
+								std::cout << "not valid file\n";
+								throw 2;
+							}
 						}
 
 						//std::cout << "merge " << clock() - merge_start << "ms" << std::endl;
@@ -4250,7 +4253,7 @@ namespace wiz {
 				}
 				Print(node->next, out);
 			}
-			static void Merge2(Node* next, Node* ut, Node** ut_next)
+			static int Merge2(Node* next, Node* ut, Node** ut_next)
 			{
 				static Token2 EmptyName;
 				EmptyName.str = nullptr;
@@ -4300,12 +4303,18 @@ namespace wiz {
 
 					//_ut->Remove();
 
-					if (Parent(ut) && Parent(next)) {
-						ut = Parent(ut);
-						next = Parent(next);
+					ut = Parent(ut);
+					next = Parent(next);
+
+					if (next && ut) {
+						//
 					}
 					else {
-						break; // todo -add error processing..
+						// right_depth > left_depth
+						if (!next && ut) {
+							return -1;
+						}
+						return 0;
 					}
 				}
 			}
@@ -4639,11 +4648,14 @@ namespace wiz {
 								first = false;
 							}
 							else {
-								Merge2(before_next, &__global[0], &next[0]);
+								Merge2(before_next, &__global[0], &next[0]); // remove?
 							}
 
 							for (int i = 1; i < pivots.size() + 1; ++i) {
-								Merge2(next[i - 1], &__global[i], &next[i]);
+								if (-1 == Merge2(next[i - 1], &__global[i], &next[i])) {
+									std::cout << "not valid file\n";
+									throw 2;
+								}
 							}
 
 						}
@@ -4651,13 +4663,6 @@ namespace wiz {
 							delete[] buffer;
 							buffer = nullptr;
 							throw "in Merge, error";
-						}
-						{
-							if (next[pivots.size()] != nullptr && Parent(next[pivots.size()]) != nullptr) {
-								delete[] buffer;
-								buffer = nullptr;
-								throw "merge error";
-							}
 						}
 
 						strVec.erase(strVec.begin(), strVec.begin() + (last_idx + 1));
@@ -4791,11 +4796,15 @@ namespace wiz {
 								first = false;
 							}
 							else {
-								Merge(before_next, &__global[0], &next[0]);
+								Merge(before_next, &__global[0], &next[0]); // remove?
 							}
 
 							for (int i = 1; i < pivots.size() + 1; ++i) {
-								Merge(next[i - 1], &__global[i], &next[i]);
+								if (-1 == Merge(next[i - 1], &__global[i], &next[i])) {
+									std::cout << "not valid file\n";
+									throw 2;
+								}
+
 							}
 
 						}
@@ -4803,13 +4812,6 @@ namespace wiz {
 							delete[] buffer;
 							buffer = nullptr;
 							throw "in Merge, error";
-						}
-						{
-							if (next[pivots.size()] != nullptr && next[pivots.size()]->GetParent() != nullptr) {
-								delete[] buffer;
-								buffer = nullptr;
-								throw "merge error";
-							}
 						}
 
 						strVec.erase(strVec.begin(), strVec.begin() + (last_idx + 1));
@@ -4903,7 +4905,7 @@ namespace wiz {
 				return -1;
 			}
 			
-			static void Merge(UserType* next, UserType* ut, UserType** ut_next)
+			static int Merge(UserType* next, UserType* ut, UserType** ut_next)
 			{
 				int ut_depth = 0;
 				int next_depth = 0;
@@ -4951,17 +4953,19 @@ namespace wiz {
 					}
 					_ut->Remove();
 
-					if (ut->GetParent() && next->GetParent()) {
-						ut = ut->GetParent();
-						next = next->GetParent();
-						next_depth++;
+					ut = ut->GetParent();
+					next = next->GetParent();
+
+					if (next && ut) {
+						//
 					}
 					else {
-						break;
+						// right_depth > left_depth
+						if (!next && ut) {
+							return -1;
+						}
+						return 0;
 					}
-				}
-				if (next_depth < ut_depth) {
-					throw "Merge error depth difference";
 				}
 			}
 
