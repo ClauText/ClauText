@@ -142,9 +142,11 @@ namespace wiz {
 	class Token2
 	{
 	public:
-		char* str = nullptr;
+		const char* str = nullptr;
 		int len = 0;
 		bool isComment = false;
+		bool isEnd = false;
+		Token2* ptr = nullptr;
 	public:
 		Token2(char* str, int len, bool isComment) :
 			str(str), len(len), isComment(isComment) { }
@@ -157,7 +159,6 @@ namespace wiz {
 			len = 0;
 			isComment = false;
 		}
-
 		bool operator==(const char* cstr) const {
 			int cstr_len = strlen(cstr);
 
@@ -173,6 +174,40 @@ namespace wiz {
 		}
 	};
 
+	class Token3
+	{
+	public:
+		const char* str = nullptr;
+		int len = 0;
+		bool isComment = false;
+		bool isEnd = false;
+		Token3* ptr = nullptr;
+	public:
+		Token3(char* str, int len, bool isComment) :
+			str(str), len(len), isComment(isComment) { }
+
+		Token3() { }
+
+		void clear()
+		{
+			str = nullptr;
+			len = 0;
+			isComment = false;
+		}
+		bool operator==(const char* cstr) const {
+			int cstr_len = strlen(cstr);
+
+			if (len == cstr_len) {
+				for (int i = 0; i < len; ++i) {
+					if (str[i] != cstr[i]) {
+						return false;
+					}
+				}
+				return true;
+			}
+			return false;
+		}
+	};
 	//
 	inline std::string ToString(WIZ_STRING_TYPE&& x) {
 		return x.ToString();

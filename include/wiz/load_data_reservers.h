@@ -77,6 +77,29 @@ namespace wiz {
 			}
 		};
 
+		class InFileReserver3_2
+		{
+		private:
+			std::ifstream* pInFile;
+			bool isFirst;
+		public:
+			int Num;
+		public:
+			explicit InFileReserver3_2(std::ifstream& inFile)
+			{
+				pInFile = &inFile;
+				Num = 1;
+				isFirst = true;
+			}
+			bool end()const { return pInFile->eof(); } //
+		public:
+			bool operator() (VECTOR<Token3>* strVec, const wiz::LoadDataOption2& option, int thr_num, char*& buffer)
+			{
+				bool x = Utility::Reserve2_3_2(*pInFile, strVec, Num, &isFirst, option, thr_num, buffer).second > 0;
+				return x;
+			}
+		};
+
 		class InFileReserver4
 		{
 		private:

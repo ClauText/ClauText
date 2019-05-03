@@ -3695,9 +3695,9 @@ namespace wiz {
 
 							state = 0;
 
-							nestedUT[braceNum]->ReserveUserTypeList(llptr3[*x].utNum);
-							nestedUT[braceNum]->ReserveItemList(llptr3[*x].itNum - llptr3[*x].eqNum);
-							nestedUT[braceNum]->ReserveIList(llptr3[*x].utNum + llptr3[*x].itNum - llptr3[*x].eqNum);
+							//nestedUT[braceNum]->ReserveUserTypeList(llptr3[*x].utNum);
+							//nestedUT[braceNum]->ReserveItemList(llptr3[*x].itNum - llptr3[*x].eqNum);
+							//nestedUT[braceNum]->ReserveIList(llptr3[*x].utNum + llptr3[*x].itNum - llptr3[*x].eqNum);
 						}
 						else if (len == 1 && (-1 != Equal2(option.Right, buffer[*x]) || -1 != Equal2(option.Right2, buffer[*x]))) {
 							//i += 1;
@@ -3706,9 +3706,14 @@ namespace wiz {
 
 							if (!varVec.empty()) {
 								// UserTypeListsize?
+
+								//nestedUT[braceNum]->ReserveIList(llptr3[*x].utNum + llptr3[*x].itNum - llptr3[*x].eqNum);
+								//nestedUT[braceNum]->ReserveUserTypeList(llptr3[*x].utNum);
+								//nestedUT[braceNum]->ReserveItemList(llptr3[*x].itNum - llptr3[*x].eqNum);
+
 								nestedUT[braceNum]->ReserveIList(nestedUT[braceNum]->GetIListSize() + varVec.size());
 								nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
-
+								
 								for (int i = 0; i < varVec.size(); ++i) {
 									nestedUT[braceNum]->AddItem(std::move(varVec[i]), std::move(valVec[i]));
 								}
@@ -3844,9 +3849,9 @@ namespace wiz {
 							state = 0;
 
 
-							nestedUT[braceNum]->ReserveUserTypeList(llptr3[*x].utNum);
-							nestedUT[braceNum]->ReserveItemList(llptr3[*x].itNum - llptr3[*x].eqNum);
-							nestedUT[braceNum]->ReserveIList(llptr3[*x].utNum + llptr3[*x].itNum - llptr3[*x].eqNum);
+						//	nestedUT[braceNum]->ReserveUserTypeList(llptr3[*x].utNum);
+						//	nestedUT[braceNum]->ReserveItemList(llptr3[*x].itNum - llptr3[*x].eqNum);
+						//	nestedUT[braceNum]->ReserveIList(llptr3[*x].utNum + llptr3[*x].itNum - llptr3[*x].eqNum);
 						}
 						else {
 							if (x <= llptr2 + llptr2_len - 1) {
@@ -4032,12 +4037,16 @@ namespace wiz {
 								}
 							}
 
+							if (next.back()->GetParent()) {
+								std::cout << "not valid file2\n";
+								throw 3;
+							}
 						}
 						catch (...) {
 							delete[] buffer;
 							delete[] llptr;
 							delete[] llptr2;
-							free(llptr3);
+							if (llptr3) { free(llptr3); }
 							buffer = nullptr;
 							throw "in Merge, error";
 						}
@@ -4057,7 +4066,7 @@ namespace wiz {
 				delete[] buffer;
 				delete[] llptr;
 				delete[] llptr2;
-				free(llptr3);
+				if (llptr3) { free(llptr3); }
 				int d = clock();
 				global = std::move(_global);
 				std::cout << "parsing " << b - a << "ms" << " merge " << b - c << "ms" << "\n";
@@ -4688,6 +4697,72 @@ namespace wiz {
 
 				return true;
 			}
+		
+			template <class Reserver>
+			static bool _LoadData7(VECTOR<Token3>& strVec, Reserver& reserver, VECTOR<Token3>& global, const wiz::LoadDataOption2& option, const int lex_thr_num, char** out_buffer) // first, strVec.empty() must be true!!
+			{
+				char* buffer = nullptr;
+
+				bool end = false;
+				{
+					Token3 _end(nullptr, 0, false);
+					strVec.push_back(_end);
+					strVec.front().isEnd = true;
+
+					int a = clock();
+					end = !reserver(&strVec, option, lex_thr_num, buffer);
+					int b = clock();
+					std::cout << b - a << "ms ";
+
+					strVec.push_back(_end);
+					strVec.front().isEnd = true;
+				}
+
+				while (true) {
+					end = true;
+
+					int a = clock();
+
+					{
+						std::stack<int> _stack;
+						_stack.push(0);
+
+						for (int i = 1; i < strVec.size() - 1; ++i) {
+							//if (is_left(strVec[i])) {
+							if (strVec[i].len == 1 && strVec[i].str[0] == '{') {
+								_stack.push(i);
+							}
+							//else if (is_right(strVec[i])) {
+							else if (strVec[i].len == 1 && strVec[i].str[0] == '}') {
+								strVec[_stack.top()].ptr = &strVec[i + 1];
+								strVec[i].ptr = &strVec[_stack.top()];
+
+								_stack.pop();
+							}
+						}
+
+						strVec[_stack.top()].ptr = &strVec[strVec.size() - 1];
+						strVec[strVec.size() - 1].ptr = &strVec[_stack.top()];
+					}
+
+					int b = clock();
+					std::cout << b - a << "ms" << "\n";
+					if (!end) {
+						//
+					}
+					else {
+						break;
+					}
+				}
+
+				//delete[] buffer;
+				*out_buffer = buffer;
+
+				global = std::move(strVec);
+
+				return true;
+			}
+
 		private:
 		// [must] option.Assignment[i].size() == 1  - chk!
 			static int FindRight2(VECTOR<Token2>& strVec, int start, int last, const wiz::LoadDataOption& option)
@@ -5090,6 +5165,62 @@ namespace wiz {
 
 
 				global = globalTemp;
+
+				return true;
+			}
+			
+			static bool LoadDataFromFile7(const std::string& fileName, VECTOR<Token3>& global, int lex_thr_num, char** _buffer) /// global should be empty
+			{
+				if (lex_thr_num <= 0) {
+					lex_thr_num = std::thread::hardware_concurrency();
+				}
+				if (lex_thr_num <= 0) {
+					lex_thr_num = 1;
+				}
+
+
+				bool success = true;
+				std::ifstream inFile;
+				inFile.open(fileName, std::ios::binary);
+
+
+				if (true == inFile.fail())
+				{
+					inFile.close(); return false;
+				}
+				VECTOR<Token3> globalTemp;
+				static VECTOR<Token3> strVec;
+
+				strVec.clear();
+
+				try {
+					InFileReserver3_2 ifReserver(inFile);
+					wiz::LoadDataOption2 option;
+					option.Assignment = ('=');
+					option.Left = option.Left2 = ('{');
+					option.Right = option.Right2 = ('}');
+					option.LineComment = ('#');
+					option.Removal = ' ';
+
+					char* buffer = nullptr;
+					ifReserver.Num = 1 << 19;
+					//	strVec.reserve(ifReserver.Num);
+					// cf) empty file..
+					if (false == _LoadData7(strVec, ifReserver, globalTemp, option, lex_thr_num, _buffer))
+					{
+						inFile.close();
+						return false; // return true?
+					}
+
+					inFile.close();
+				}
+				catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
+				catch (const std::string & e) { std::cout << e << std::endl; inFile.close(); return false; }
+				catch (std::exception e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
+				catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
+
+
+				global = std::move(globalTemp);
 
 				return true;
 			}

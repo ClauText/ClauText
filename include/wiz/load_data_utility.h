@@ -1985,11 +1985,13 @@ namespace wiz {
 								}
 							}
 							else if (0 == state && -1 != (idx = Equal2(option->Left, *x))) {
-								llptr3[now_idx] = wiz::load_data::Utility::UT_IT_NUM();
-								_stack.push_back(&llptr3[now_idx]);
+								if (llptr3) {
+									llptr3[now_idx] = wiz::load_data::Utility::UT_IT_NUM();
+									_stack.push_back(&llptr3[now_idx]);
 
-								if (_stack.size() >= 2) {
-									_stack[_stack.size() - 2]->utNum++;
+									if (_stack.size() >= 2) {
+										_stack[_stack.size() - 2]->utNum++;
+									}
 								}
 
 								token_last = x - 1;
@@ -2041,11 +2043,16 @@ namespace wiz {
 							}
 							else if (0 == state && -1 != (idx = Equal2(option->Right, *x))) {
 								UT_IT_NUM* top = nullptr;
-								if (!_stack.empty()) {
-									top = _stack.back();
-									_stack.pop_back();
-								}
+								if (llptr3) {
+									llptr3[now_idx] = wiz::load_data::Utility::UT_IT_NUM();
 
+									if (!_stack.empty()) {
+										llptr3[now_idx] = *_stack.back();
+
+										top = _stack.back();
+										_stack.pop_back();
+									}
+								}
 								token_last = x - 1;
 								last_idx = now_idx - 1;
 								if (token_last >= 0 && token_last - token_first + 1 > 0) {
@@ -2367,6 +2374,7 @@ namespace wiz {
 				return UNDEFINED;
 			}
 
+
 			static std::pair<bool, int> Reserve2_3(std::ifstream& inFile, VECTOR<Token2>* aq, const int num, bool* isFirst, const wiz::LoadDataOption& option, int thr_num, char*& _buffer)
 			{
 				if (inFile.eof()) {
@@ -2429,8 +2437,11 @@ namespace wiz {
 				}
 				else {
 					inFile.seekg(0, inFile.end);
-					const unsigned long long length = inFile.tellg();
+					unsigned long long length = inFile.tellg();
 					inFile.seekg(0, inFile.beg);
+
+					ReadBom(inFile);
+					length = length - inFile.tellg();
 
 					buffer = new char[length + 1]; // 
 
@@ -2576,6 +2587,611 @@ namespace wiz {
 				return{ true, 1 };
 			}
 
+			class DoThread3_2 // need to rename!
+			{
+			private:
+				char* start;
+				char* last;
+			public:
+				VECTOR<Token3>* aq;
+				const wiz::LoadDataOption2* option; // wiz::LoadDatOption2 ?
+				std::vector<long long>* _length;
+			public:
+				DoThread3_2(char* start, char* last, VECTOR<Token3>* aq, const wiz::LoadDataOption2* option,
+					std::vector<long long>* _length) //, list<std::string>* aq)//, int strVecStart, int strVecEnd)
+					: start(start), last(last), aq(aq), option(option) // , strVecStart(strVecStart), strVecEnd(strVecEnd)
+				{
+					this->_length = _length;
+				}
+				~DoThread3_2() {
+					//
+				}
+			private:
+				int checkDelimiter(const char* start, const char* last, const std::vector<std::string>& delimiter)
+				{
+
+					int sum = 0;
+					for (int delim_num = 0; delim_num < delimiter.size(); ++delim_num) {
+						// size check
+						if (start + delimiter[delim_num].size() - 1 > last) {
+							continue;
+						}
+
+						for (const char* x = start; x <= start + delimiter[delim_num].size() - 1; ++x) {
+							if (*x == delimiter[delim_num][x - start]) {
+
+							}
+							else {
+								sum--;
+								break;
+							}
+						}
+						sum++;
+
+						if (sum > 0) {
+							return delim_num;
+						}
+					}
+
+					return -1;
+				}
+
+				long long chk2(bool make) {
+					{
+						std::vector<long long>& length = *_length; // removal?
+
+						long long start_idx = 0;
+						long long last_idx = 0;
+						long long count = 0;
+						char* token_first = start;
+						char* token_last = start;
+						int state = 0;
+
+						long long now_idx = 0;
+						for (long long i = 0; start + i < last; ++i, ++now_idx) {
+							char* x = start + i;
+							long long offset = 0;
+							int idx;
+							if (0 == state && '\'' == *x) {
+								//token_last = x - 1;
+								//if (token_last >= 0 && token_last - token_first + 1 > 0) {
+								//	aq->emplace_back(statement.substr(token_first, token_last - token_first + 1));
+								//}
+								state = 2;
+								//token_first = i; 
+								token_last = x;
+								last_idx = now_idx;
+							}
+							else if (2 == state && '\\' == *(x - 1) && '\'' == *x) {
+								token_last = x;
+								last_idx = now_idx;
+							}
+							else if (2 == state && '\'' == *x) {
+								state = 0; token_last = x;
+								last_idx = now_idx;
+							}
+							else if (0 == state && '\"' == *x) {
+								//token_last = x - 1;
+								//if (token_last >= 0 && token_last - token_first + 1 > 0) {
+								//	aq->emplace_back(statement.substr(token_first, token_last - token_first + 1));
+								//}
+
+								state = 1;
+								//token_first = i; 
+								token_last = x;
+								last_idx = now_idx;
+							}
+							else if (1 == state && '\\' == *(x - 1) && '\"' == *x) {
+								token_last = x;
+								last_idx = now_idx;
+							}
+							else if (1 == state && '\"' == *x) {
+								state = 0; token_last = x;
+								last_idx = now_idx;
+							}
+							else if (0 == state && -1 != (idx = Equal2(option->Removal, *x)))
+							{
+								token_last = x - 1;
+								last_idx = now_idx - 1;
+
+								if (token_last >= 0 && token_last - token_first + 1 > 0) {
+									if (make) {
+										aq->emplace_back(token_first, token_last - token_first + 1, false);
+
+									}
+									else {
+										length[start_idx] = token_last - token_first + 1;
+										count++;
+									}
+
+
+									token_first = x + 1;
+									start_idx = now_idx + 1;
+								}
+								else {
+									token_first = token_first + 1;
+									start_idx = start_idx + 1;
+								}
+								continue;
+							}
+							else if (0 == state && -1 != (idx = Equal2(option->Assignment, *x))) {
+								token_last = x - 1;
+								last_idx = now_idx - 1;
+
+								if (token_last >= 0 && token_last - token_first + 1 > 0) {
+									if (make) {
+										aq->emplace_back(token_first, token_last - token_first + 1, false);
+
+									}
+									else {
+										length[start_idx] = token_last - token_first + 1;
+										count++;
+									}
+
+									token_first = x + 1;
+									start_idx = now_idx + 1;
+									if (make) {
+										aq->emplace_back(x, 1, false);
+
+									}
+									else {
+										length[now_idx] = 1; count++;
+									}
+								}
+								else {
+									if (make) {
+										aq->emplace_back(x, 1, false);
+									}
+									else {
+										length[now_idx] = 1; count++;
+									}
+									token_first = token_first + 1;
+									start_idx = start_idx + 1;
+
+								}
+							}
+							else if (0 == state && isWhitespace(*x)) { // isspace ' ' \t \r \n , etc... ?
+								token_last = x - 1;
+								last_idx = now_idx - 1;
+								if (token_last >= 0 && token_last - token_first + 1 > 0) {
+									if (make) {
+										aq->emplace_back(token_first, token_last - token_first + 1, false);
+
+									}
+									else {
+										length[start_idx] = token_last - token_first + 1; count++;
+									}
+									token_first = x + 1;
+
+									start_idx = now_idx + 1;
+								}
+								else
+								{
+									token_first = token_first + 1;
+									start_idx = start_idx + 1;
+								}
+							}
+							else if (0 == state && -1 != (idx = Equal2(option->Left, *x))) {
+								token_last = x - 1;
+								last_idx = now_idx - 1;
+								if (token_last >= 0 && token_last - token_first + 1 > 0) {
+									if (make) {
+										aq->emplace_back(token_first, token_last - token_first + 1, false);
+
+									}
+									else {
+										length[start_idx] = token_last - token_first + 1; count++;
+									}
+									token_first = x + 1;
+
+									start_idx = now_idx + 1;
+									if (make) {
+										aq->emplace_back(x, 1, false);
+										count++;
+									}
+									else {
+										length[now_idx] = 1;
+									}
+								}
+								else {
+									if (make) {
+										aq->emplace_back(x, 1, false);
+
+									}
+									else {
+										length[now_idx] = 1; count++;
+									}
+									token_first = token_first + 1;
+									start_idx = start_idx + 1;
+								}
+							}
+							else if (0 == state && -1 != (idx = Equal2(option->Right, *x))) {
+								token_last = x - 1;
+								last_idx = now_idx - 1;
+								if (token_last >= 0 && token_last - token_first + 1 > 0) {
+									if (make) {
+										aq->emplace_back(token_first, token_last - token_first + 1, false);
+
+									}
+									else {
+										length[start_idx] = token_last - token_first + 1; count++;
+									}
+									token_first = x + 1;
+									start_idx = now_idx + 1;
+									if (make) {
+										aq->emplace_back(x, 1, false);
+
+									}
+									else {
+										length[now_idx] = 1; count++;
+									}
+								}
+								else {
+									if (make) {
+										aq->emplace_back(x, 1, false);
+
+									}
+									else {
+										length[now_idx] = 1; count++;
+									}
+									token_first = token_first + 1;
+									start_idx = start_idx + 1;
+
+								}
+							}
+							else if (0 == state && -1 != (idx = Equal2(option->Left2, *x))) {
+								token_last = x - 1;
+								last_idx = now_idx - 1;
+								if (token_last >= 0 && token_last - token_first + 1 > 0) {
+									if (make) {
+										aq->emplace_back(token_first, token_last - token_first + 1, false);
+
+									}
+									else {
+										length[start_idx] = token_last - token_first + 1; count++;
+									}
+									token_first = x + 1;
+
+									start_idx = now_idx + 1;
+									if (make) {
+										aq->emplace_back(x, 1, false);
+										count++;
+									}
+									else {
+										length[now_idx] = 1;
+									}
+								}
+								else {
+									if (make) {
+										aq->emplace_back(x, 1, false);
+
+									}
+									else {
+										length[now_idx] = 1; count++;
+									}
+									token_first = token_first + 1;
+									start_idx = start_idx + 1;
+								}
+							}
+							else if (0 == state && -1 != (idx = Equal2(option->Right2, *x))) {
+								token_last = x - 1;
+								last_idx = now_idx - 1;
+								if (token_last >= 0 && token_last - token_first + 1 > 0) {
+									if (make) {
+										aq->emplace_back(token_first, token_last - token_first + 1, false);
+
+									}
+									else {
+										length[start_idx] = token_last - token_first + 1; count++;
+									}
+									token_first = x + 1;
+									start_idx = now_idx + 1;
+									if (make) {
+										aq->emplace_back(x, 1, false);
+
+									}
+									else {
+										length[now_idx] = 1; count++;
+									}
+								}
+								else {
+									if (make) {
+										aq->emplace_back(x, 1, false);
+
+									}
+									else {
+										length[now_idx] = 1; count++;
+									}
+									token_first = token_first + 1;
+									start_idx = start_idx + 1;
+
+								}
+							}
+							else if (0 == state &&
+								-1 != Equal2(*x, option->LineComment)) { // different from load_data_from_file
+								token_last = x - 1;
+								last_idx = now_idx - 1;
+								if (token_last >= 0 && token_last - token_first + 1 > 0) {
+									if (make) {
+										aq->emplace_back(token_first, token_last - token_first + 1, false);
+
+									}
+									else {
+										length[start_idx] = token_last - token_first + 1; count++;
+									}
+									x = token_last + 1;
+									now_idx = last_idx + 1;
+									token_first = token_last + 1;
+									start_idx = last_idx + 1;
+									token_last = token_last + 1;
+
+									last_idx = last_idx + 1;
+								}
+								for (; x < last; ++x) {
+									token_last++;
+
+									last_idx++;
+									if (*x == '\n' || *x == '\0') // cf) '\r' ? '\0'?
+									{
+										break;
+									}
+								}
+								//aq->emplace_back(token_first, token_last - token_first + 1, true); // cancel?
+								token_first = x + 1;
+								start_idx = now_idx + 1;
+								offset = 1;
+							}
+							else {
+								//
+							}
+
+							token_last = x + offset;
+
+							last_idx = now_idx + offset;
+						}
+
+						if (token_first < last)
+						{
+							if (make) {
+								aq->emplace_back(token_first, last - 1 - token_first + 1, false);
+
+							}
+							else {
+								length[start_idx] = last - 1 - token_first + 1; count++;
+							}
+						}
+
+						return count;
+					}
+				}
+			public:
+				void operator() () {
+					long long size = chk2(true);
+					/*aq->reserve(size);
+					std::vector<long long>& length = *_length;
+					int count = 0;
+					for (int i = 0; i < length.size();) {
+						if (length[i] > 0) {
+							aq->emplace_back(this->start + i, length[i], false);
+							i += (length)[i];
+							count++;
+						}
+						else {
+							++i;
+						}
+					}*/
+				}
+			};
+			// no enter strings? " abc \n def " and problem - one line!?
+			static std::pair<bool, int> Reserve2_3_2(std::ifstream& inFile, VECTOR<Token3>* aq, const int num, bool* isFirst, const wiz::LoadDataOption2& option, int thr_num, char*& _buffer)
+			{
+				if (inFile.eof()) {
+					return { false, 0 };
+				}
+
+				//int a = clock();
+
+				//int count = 0;
+				std::string temp;
+				char* buffer = nullptr;// = new char[length + 1]; // 
+				std::vector<long long> start(thr_num + 1, 0);
+				std::vector<long long> last(thr_num + 1, 0);
+
+				if (thr_num > 0) {
+					inFile.seekg(0, inFile.end);
+					unsigned long long length = inFile.tellg();
+					inFile.seekg(0, inFile.beg);
+
+					ReadBom(inFile);
+					length = length - inFile.tellg();
+
+					buffer = new char[length + 1]; // 
+
+												   // read data as a block:
+					inFile.read(buffer, length);
+					inFile.seekg(0, inFile.end);
+					char temp;
+					inFile >> temp;
+
+					buffer[length] = '\0';
+
+					start[0] = 0;
+
+
+					// todo - linear check?
+					for (int i = 1; i < thr_num; ++i) {
+						start[i] = length / thr_num * i;
+						for (int x = start[i]; x <= length; ++x) {
+							// here bug is..  " check "
+							if ('\r' == buffer[x] || '\n' == (buffer[x]) || '\0' == buffer[x]) {
+								start[i] = x;
+								//	std::cout << "start " << start[i] << std::endl;
+								break;
+							}
+						}
+					}
+					for (int i = 0; i < thr_num - 1; ++i) {
+						last[i] = start[i + 1] - 1;
+						for (int x = last[i]; x <= length; ++x) {
+							if ('\r' == buffer[x] || '\n' == (buffer[x]) || '\0' == buffer[x]) {
+								last[i] = x;
+								//	std::cout << "start " << start[i] << std::endl;
+								break;
+							}
+						}
+					}
+					last[thr_num - 1] = length;
+					//	std::cout << last[thr_num - 1] << std::endl;
+				}
+				else {
+					inFile.seekg(0, inFile.end);
+					unsigned long long length = inFile.tellg();
+					inFile.seekg(0, inFile.beg);
+
+					ReadBom(inFile);
+					length = length - inFile.tellg();
+
+					buffer = new char[length + 1]; // 
+
+												   // read data as a block:
+					inFile.read(buffer, length);
+					buffer[length] = '\0';
+
+					inFile.seekg(0, inFile.end);
+					char temp;
+					inFile >> temp;
+
+					start[0] = 0;
+					last[0] = length;
+				}
+
+				//int a = clock();
+				//debug
+
+				if (thr_num > 0) {
+					//// in string, there are '\r' or '\n' etc.. - no '\r' or '\n'?
+					for (int i = thr_num - 1; i > 0; --i) {
+						int last_enter_idx = -1;
+						int first_enter_idx = -1;
+
+						// find last_enter_idx, first_enter_idx -
+						//// has bug - " abc
+						////				def"
+						for (int j = last[i - 1]; j <= last[i]; ++j) {
+							if (buffer[j] == '\r' || buffer[j] == '\n' || j == last[thr_num - 1]) {
+								last_enter_idx = j;
+								break;
+							}
+						}
+
+						{
+							int state = 0;
+							int j = last[i - 1] - 1;
+							for (; j >= 0; --j) {
+								if (state == 0 && (buffer[j] == '\r' || buffer[j] == '\n')) {
+									first_enter_idx = j;
+									break;
+								}
+								else if (j == start[i - 1]) {
+									--i;
+								}
+							}
+
+							if (-1 == first_enter_idx) {
+								first_enter_idx = 0;
+							}
+						}
+
+						// exchange with whitespace
+						{
+							int state = 0;
+							int sharp_start = -1;
+
+							for (int j = first_enter_idx + 1; j < last_enter_idx; ++j) {
+								if (0 == state && buffer[j] == '\'') {
+									state = 1;
+								}
+								else if (1 == state && buffer[j - 1] == '\\' && buffer[j] == '\'') {
+
+								}
+								else if (1 == state && buffer[j] == '\'') {
+									state = 0;
+								}
+								else if (0 == state && buffer[j] == '\"') {
+									state = 3;
+								}
+								else if (3 == state && buffer[j - 1] == '\\' && buffer[j] == '\"') {
+
+								}
+								else if (3 == state && buffer[j] == '\"') {
+									state = 0;
+								}
+								else if (0 == state && buffer[j] == '#') {
+									sharp_start = j;
+								}
+							}
+
+							if (-1 != sharp_start) {
+								for (int k = sharp_start; k < last_enter_idx; ++k) {
+									buffer[k] = ' ';
+								}
+							}
+						}
+					}
+
+					std::vector<VECTOR<Token3>> partial_list(thr_num, VECTOR<Token3>());
+					std::vector<std::thread> thr(thr_num);
+					std::vector<std::vector<long long>> length(thr_num);
+					for (int i = 0; i < length.size(); ++i) {
+						//length[i].resize(last[i] - start[i] + 1);
+					}
+					for (int i = 0; i < thr_num; ++i) {
+						//	std::cout << last[i] - start[i] << std::endl;
+						//partial_list[i].reserve((last[i] - start[i]) / 10;
+						thr[i] = std::thread(DoThread3_2(buffer + start[i], buffer + last[i], &partial_list[i], &option, &length[i]));
+					}
+
+					for (int i = 0; i < thr_num; ++i) {
+						thr[i].join();
+					}
+
+					int new_size = aq->size() + 2; // chk!
+					for (int i = 0; i < thr_num; ++i) {
+						new_size = new_size + partial_list[i].size();
+					}
+
+					aq->reserve(new_size);
+
+					for (int i = 0; i < thr_num; ++i) {
+						//for (int j = 0; j < partial_list[i].size(); ++j) {
+						//	aq->push_back(std::move(partial_list[i][j]));
+						//}
+						aq->insert(aq->end(), make_move_iterator(partial_list[i].begin()), make_move_iterator(partial_list[i].end()));
+					}
+				}
+				else {
+					VECTOR<Token3> temp;
+
+					temp.reserve((last[0] - start[0]) / 10);
+					std::vector<long long> length; //  (last[0] - start[0] + 1);
+					DoThread3_2 dothr(buffer + start[0], buffer + last[0], &temp, &option, &length);
+
+					dothr();
+
+					aq->insert(aq->end(), make_move_iterator(temp.begin()), make_move_iterator(temp.end()));
+				}
+
+				//delete[] buffer;
+
+				//				log_result = log_result + clock() - a;
+				//std::cout << "lexing " << clock() - a << "ms" << std::endl;
+
+				_buffer = buffer;
+
+				return{ true, 1 };
+			}
+
+
 			static std::pair<bool, int> Reserve2_4(std::ifstream& inFile, const int num, bool* isFirst, const wiz::LoadDataOption2& option, int thr_num,
 				char*& _buffer, long long*& _llptr, long long* _buffer_len, long long*& _llptr2, long long* _llptr2_len, UT_IT_NUM*& _llptr3, UT_IT_NUM& _llptr3_total)
 			{
@@ -2594,8 +3210,12 @@ namespace wiz {
 				long long file_length;
 				if (thr_num > 0) {
 					inFile.seekg(0, inFile.end);
-					file_length = inFile.tellg();
+					unsigned long long length = inFile.tellg();
 					inFile.seekg(0, inFile.beg);
+
+					ReadBom(inFile);
+					length = length - inFile.tellg();
+					file_length = length;
 
 					buffer = new char[file_length + 1]; // 
 
@@ -2637,8 +3257,11 @@ namespace wiz {
 				}
 				else {
 					inFile.seekg(0, inFile.end);
-					file_length = inFile.tellg();
+					unsigned long long length = inFile.tellg();
 					inFile.seekg(0, inFile.beg);
+
+					ReadBom(inFile);
+					file_length = length - inFile.tellg();
 
 					buffer = new char[file_length + 1]; // 
 
@@ -2739,9 +3362,9 @@ namespace wiz {
 					llptr = new long long[file_length];
 					llptr2 = new long long[file_length];
 					int x = clock();
-					llptr3 = (UT_IT_NUM*)malloc(sizeof(UT_IT_NUM) * file_length);
+					//llptr3 = (UT_IT_NUM*)malloc(sizeof(UT_IT_NUM) * file_length);
 					int y = clock();
-					std::cout << y - x << "ms \n";
+					//std::cout << y - x << "ms \n";
 
 					std::vector<long long> counter(thr_num, 0);
 					for (int i = 0; i < thr_num; ++i) {

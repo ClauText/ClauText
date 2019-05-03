@@ -874,19 +874,19 @@ namespace wiz {
 			//
 			void ReserveIList(int offset)
 			{
-				if (offset > 0) {
+				if (offset > 0 && offset > ilist.size()) {
 					ilist.reserve(offset);
 				}
 			}
 			void ReserveItemList(int offset)
 			{
-				if (offset > 0) {
+				if (offset > 0 && offset > itemList.size()) {
 					itemList.reserve(offset);
 				}
 			}
 			void ReserveUserTypeList(int offset)
 			{
-				if (offset > 0) {
+				if (offset > 0 && offset > userTypeList.size()) {
 					userTypeList.reserve(offset);
 				}
 			}
