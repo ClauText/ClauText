@@ -126,7 +126,7 @@ int main(int argc, char* argv[])
 	//	char* buffer = nullptr;
 	//	wiz::load_data::LoadData::Node global;
 	//	wiz::load_data::LoadData::LoadDataFromFile6(fileName, global, -1, 0, &buffer);
-	///	delete[] buffer;
+	//	delete[] buffer;
 	//	wiz::load_data::LoadData::RemoveAll(&global);
 	}
 
@@ -138,10 +138,10 @@ int main(int argc, char* argv[])
 		int b = clock();
 		//std::cout << "time " << b - a << "ms" << std::endl;
 
-		global.Remove();
+	//	global.Remove();
 
 		for (int i = 4; i <= 4; ++i) { // i : pivot_num, thread num <= pivot_num + 1
-			global.Remove();
+		//	global.Remove();
 
 			a = clock();
 			{
@@ -151,7 +151,9 @@ int main(int argc, char* argv[])
 				}
 				//char* buf = nullptr;
 				//wiz::load_data::LoadData::LoadDataFromFile3_2(buf, fileName, global, 8, 8);
+				// has bug? in debug x64
 				wiz::load_data::LoadData::LoadDataFromFile4(fileName, global, -1, 0); // , thr_num - 1, thr_num); // parallel? lexing + parallel parsing
+				//wiz::load_data::LoadData::LoadDataFromFile5_2(fileName, global, 0, 0);
 			}
 			b = clock();
 			//std::cout << "time " << b - a << "ms" << std::endl;
