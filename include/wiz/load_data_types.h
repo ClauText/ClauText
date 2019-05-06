@@ -884,6 +884,12 @@ namespace wiz {
 					itemList.reserve(offset);
 				}
 			}
+			void ResizeItemList(int offset)
+			{
+				if (offset > 0) {
+					itemList.resize(offset);
+				}
+			}
 			void ReserveUserTypeList(int offset)
 			{
 				if (offset > 0 && offset > userTypeList.size()) {
@@ -916,6 +922,57 @@ namespace wiz {
 					useSortedItemList = false;
 				}
 			}
+			void AddItem(std::vector<WIZ_STRING_TYPE>&& name, std::vector<WIZ_STRING_TYPE>&& item, const int n) {
+				// name.size() == item.size()
+				int start_idx = itemList.size();
+				itemList.reserve(itemList.size() + n);
+				ilist.reserve(ilist.size() + n);
+				int end_idx = itemList.size() + n;
+
+				{
+					for (int i = start_idx; i < end_idx; ++i) {
+						itemList.push_back(ItemType<WIZ_STRING_TYPE>(std::move(name[i-start_idx]), std::move(item[i-start_idx])));
+						ilist.push_back(1);
+					}
+				}
+
+				if (useSortedItemList) {
+					sortedItemList.reserve(sortedItemList.size() + n);
+					for (int i = start_idx; i < end_idx; ++i) {
+						sortedItemList.push_back(&itemList[i]);
+					}
+					miniInsertSort<wiz::load_data::ItemType<WIZ_STRING_TYPE>*, ItemTypeStringPtrCompare>(sortedItemList);
+				}
+				else {
+					useSortedItemList = false;
+				}
+			}
+			void AddItem(const std::vector<WIZ_STRING_TYPE>& name, const std::vector<WIZ_STRING_TYPE>& item, const int n) {
+				// name.size() == item.size()
+				int start_idx = itemList.size();
+				itemList.reserve(itemList.size() + n);
+				ilist.reserve(ilist.size() + n);
+				int end_idx = itemList.size() + n;
+
+				{
+					for (int i = start_idx; i < end_idx; ++i) {
+						itemList.push_back(ItemType<WIZ_STRING_TYPE>((name[i-start_idx]), (item[i-start_idx])));
+						ilist.push_back(1);
+					}
+				}
+
+				if (useSortedItemList) {
+					sortedItemList.reserve(sortedItemList.size() + n);
+					for (int i = start_idx; i < end_idx; ++i) {
+						sortedItemList.push_back(&itemList[i]);
+					}
+					miniInsertSort<wiz::load_data::ItemType<WIZ_STRING_TYPE>*, ItemTypeStringPtrCompare>(sortedItemList);
+				}
+				else {
+					useSortedItemList = false;
+				}
+			}
+
 			void AddUserTypeItem(UserType&& item) {
 				UserType* temp = new UserType(std::move(item));
 				temp->parent = this;

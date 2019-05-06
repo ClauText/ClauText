@@ -1745,7 +1745,7 @@ namespace wiz {
 				}
 			};
 
-			
+			inline static int timeA[8], timeB[8];
 
 			class DoThread4 // need to rename!
 			{
@@ -1760,11 +1760,12 @@ namespace wiz {
 				UT_IT_NUM* llptr3;
 				UT_IT_NUM* llptr3_total;
 				long long num;
+				int no;
 			public:
 				DoThread4(char* start, char* last, const wiz::LoadDataOption2* option,
 					long long* llptr, long long* llptr2, long long num, long long* llptr2_len, UT_IT_NUM* llptr3,
-					UT_IT_NUM* llptr3_total) //, list<std::string>* aq)//, int strVecStart, int strVecEnd)
-					: start(start), last(last), option(option), llptr3(llptr3), llptr3_total(llptr3_total) // , strVecStart(strVecStart), strVecEnd(strVecEnd)
+					UT_IT_NUM* llptr3_total, int no) //, list<std::string>* aq)//, int strVecStart, int strVecEnd)
+					: start(start), last(last), option(option), llptr3(llptr3), llptr3_total(llptr3_total), no(no) // , strVecStart(strVecStart), strVecEnd(strVecEnd)
 				{
 					this->llptr = llptr;
 					this->llptr2 = llptr2;
@@ -1821,7 +1822,7 @@ namespace wiz {
 
 						long long now_idx = 0;
 						for (long long i = 0; start + i < last; ++i, ++now_idx) {
-							llptr[i] = 0;
+							//llptr[i] = 0;
 
 							char* x = start + i;
 							long long offset = 0;
@@ -1879,8 +1880,8 @@ namespace wiz {
 									if (make) {
 										//aq->emplace_back(token_first, token_last - token_first + 1, false);
 
-										llptr[start_idx] = token_last - token_first + 1;
-										llptr2[llptr2_count] = start_idx + num; // num : offset
+										//llptr[start_idx] = token_last - token_first + 1;
+										llptr2[llptr2_count] = ((start_idx + num) << 32) + ((token_last - token_first + 1) << 2) + 0;
 										llptr2_count++;
 
 										if (!_stack.empty()) {
@@ -1909,8 +1910,8 @@ namespace wiz {
 								if (token_last >= 0 && token_last - token_first + 1 > 0) {
 									if (make) {
 										//aq->emplace_back(token_first, token_last - token_first + 1, false);{
-										llptr[start_idx] = token_last - token_first + 1;
-										llptr2[llptr2_count] = start_idx + num;
+										//llptr[start_idx] = token_last - token_first + 1;
+										llptr2[llptr2_count] = ((start_idx + num) << 32) + ((token_last - token_first + 1) << 2) + 0;
 										llptr2_count++;
 
 
@@ -1926,8 +1927,8 @@ namespace wiz {
 									start_idx = now_idx + 1;
 									if (make) {
 										//aq->emplace_back(x, 1, false);
-										llptr[i] = 1;
-										llptr2[llptr2_count] = i + num;
+										//llptr[i] = 1; 
+										llptr2[llptr2_count] = ((i + num) << 32) + ((1) << 2) + 3;
 										llptr2_count++;
 
 										if (!_stack.empty()) {
@@ -1941,8 +1942,8 @@ namespace wiz {
 								else {
 									if (make) {
 										//aq->emplace_back(x, 1, false);
-										llptr[i] = 1;
-										llptr2[llptr2_count] = i + num;
+										//llptr[i] = 1;
+										llptr2[llptr2_count] = ((i + num) << 32) + ((1) << 2) + 3;
 										llptr2_count++;
 
 									}
@@ -1962,8 +1963,8 @@ namespace wiz {
 									if (make) {
 										//aq->emplace_back(token_first, token_last - token_first + 1, false);
 
-										llptr[start_idx] = token_last - token_first + 1;
-										llptr2[llptr2_count] = start_idx + num;
+										//llptr[start_idx] = token_last - token_first + 1;
+										llptr2[llptr2_count] = ((start_idx + num) << 32) + ((token_last - token_first + 1) << 2) + 0;
 										llptr2_count++;
 
 
@@ -2000,8 +2001,8 @@ namespace wiz {
 									if (make) {
 										//	aq->emplace_back(token_first, token_last - token_first + 1, false);
 
-										llptr[start_idx] = token_last - token_first + 1;
-										llptr2[llptr2_count] = start_idx + num;
+										//llptr[start_idx] = token_last - token_first + 1;
+										llptr2[llptr2_count] = ((start_idx + num) << 32) + ((token_last - token_first + 1) << 2) + 0;
 										llptr2_count++;
 
 
@@ -2017,8 +2018,9 @@ namespace wiz {
 									start_idx = now_idx + 1;
 									if (make) {
 										//	aq->emplace_back(x, 1, false);
-										llptr[i] = 1;
-										llptr2[llptr2_count] = i + num;
+										//llptr[i] = 1;
+										llptr2[llptr2_count] = ((i + num) << 32) + ((1) << 2) + 1;
+
 										llptr2_count++;
 
 									}
@@ -2029,8 +2031,8 @@ namespace wiz {
 								else {
 									if (make) {
 										//	aq->emplace_back(x, 1, false);
-										llptr[i] = 1;
-										llptr2[llptr2_count] = i + num;
+										//llptr[i] = 1; 
+										llptr2[llptr2_count] = ((i + num) << 32) + ((1) << 2) + 1;
 										llptr2_count++;
 
 									}
@@ -2059,8 +2061,8 @@ namespace wiz {
 									if (make) {
 										//	aq->emplace_back(token_first, token_last - token_first + 1, false);
 
-										llptr[start_idx] = token_last - token_first + 1;
-										llptr2[llptr2_count] = start_idx + num;
+										//llptr[start_idx] = token_last - token_first + 1;
+										llptr2[llptr2_count] = ((start_idx + num) << 32) + ((token_last - token_first + 1) << 2) + 0;
 										llptr2_count++;
 
 										if (top) {
@@ -2076,8 +2078,8 @@ namespace wiz {
 									if (make) {
 										//	aq->emplace_back(x, 1, false);
 
-										llptr[i] = 1;
-										llptr2[llptr2_count] = i + num;
+										//llptr[i] = 1;
+										llptr2[llptr2_count] = ((i + num) << 32) + ((1) << 2) + 2;
 										llptr2_count++;
 									}
 									else {
@@ -2088,8 +2090,8 @@ namespace wiz {
 									if (make) {
 										//	aq->emplace_back(x, 1, false);
 
-										llptr[i] = 1;
-										llptr2[llptr2_count] = i + num;
+										//llptr[i] = 1;
+										llptr2[llptr2_count] = ((i + num) << 32) + ((1) << 2) + 2;
 										llptr2_count++;
 									}
 									else {
@@ -2214,8 +2216,8 @@ namespace wiz {
 									if (make) {
 										//	aq->emplace_back(token_first, token_last - token_first + 1, false);
 
-										llptr[start_idx] = token_last - token_first + 1;
-										llptr2[llptr2_count] = start_idx + num;
+										//llptr[start_idx] = token_last - token_first + 1;
+										llptr2[llptr2_count] = ((start_idx + num) << 32) + ((token_last - token_first + 1)) << 2 + 1;
 										llptr2_count++;
 									}
 									else {
@@ -2231,7 +2233,7 @@ namespace wiz {
 								}
 								bool is_i = false;
 								for (; x < last; ++x) {
-									llptr[i] = 0;
+									//llptr[i] = 0;
 									i++;
 									now_idx++;
 									is_i = true;
@@ -2265,9 +2267,9 @@ namespace wiz {
 						{
 							if (make) {
 								//aq->emplace_back(token_first, last - 1 - token_first + 1, false);
-								llptr[start_idx] = last - 1 - token_first + 1;
-								if (llptr[start_idx] > 0) {
-									llptr2[llptr2_count] = start_idx + num;
+								//llptr[start_idx] = last - 1 - token_first + 1;
+								if (last - 1 - token_first + 1 > 0) {
+									llptr2[llptr2_count] = ((start_idx + num) << 32) + ((last -1  - token_first + 1) << 2) + 1;
 									llptr2_count++;
 								}
 							}
@@ -2284,9 +2286,9 @@ namespace wiz {
 				}
 			public:
 				void operator() () {
-					int a = clock();
+					timeA[no] = clock();
 					long long size = chk2(true);
-					int b = clock();
+					timeB[no] = clock();
 					//std::cout << b - a << "ms\n";
 					/*aq->reserve(size);
 					std::vector<long long>& length = *_length;
@@ -3358,13 +3360,14 @@ namespace wiz {
 
 					//std::vector<VECTOR<Token2>> partial_list(thr_num, VECTOR<Token2>());
 					std::vector<std::thread> thr(thr_num);
-
-					llptr = new long long[file_length];
-					llptr2 = new long long[file_length];
+					
 					int x = clock();
-					//llptr3 = (UT_IT_NUM*)malloc(sizeof(UT_IT_NUM) * file_length);
+					//llptr = new long long[file_length];
+					llptr2 = new long long[file_length];
+					
+					//llptr3 = (wiz::load_data::Utility::UT_IT_NUM*)malloc(sizeof(wiz::load_data::Utility::UT_IT_NUM) * file_length);
 					int y = clock();
-					//std::cout << y - x << "ms \n";
+					std::cout << y - x << "ms \n";
 
 					std::vector<long long> counter(thr_num, 0);
 					for (int i = 0; i < thr_num; ++i) {
@@ -3372,7 +3375,7 @@ namespace wiz {
 						//partial_list[i].reserve((last[i] - start[i]) / 10;
 
 						thr[i] = std::thread(DoThread4(buffer + start[i], buffer + last[i], &option,
-							llptr + start[i], llptr2 + start[i], start[i], &counter[i], llptr3, &llptr3_total));
+							llptr + start[i], llptr2 + start[i], start[i], &counter[i], llptr3, &llptr3_total, i));
 					}
 
 					for (int i = 0; i < thr_num; ++i) {
@@ -3381,6 +3384,12 @@ namespace wiz {
 
 					y = clock();
 					std::cout << "parallel lexing " << y - x << "ms\n";
+
+
+					for (int i = 0; i < 8; ++i) {
+						std::cout << timeB[i] - timeA[i] << "ms ";
+					}
+					std::cout << "\n";
 
 					int a = clock();
 					long long sum = 0;
@@ -3413,12 +3422,12 @@ namespace wiz {
 						//}
 				}
 				else {
-					llptr = new long long[file_length];
+					//llptr = new long long[file_length];
 					llptr2 = new long long[file_length];
-					llptr3 = (UT_IT_NUM*)malloc(sizeof(UT_IT_NUM) * file_length);
+					//llptr3 = (UT_IT_NUM*)malloc(sizeof(UT_IT_NUM) * file_length);
 
 					long long len;
-					DoThread4 dothr(buffer + start[0], buffer + last[0], &option, llptr, llptr2, start[0], &len, llptr3, &llptr3_total);
+					DoThread4 dothr(buffer + start[0], buffer + last[0], &option, llptr, llptr2, start[0], &len, llptr3, &llptr3_total, 0);
 
 					dothr();
 

@@ -3619,11 +3619,24 @@ namespace wiz {
 				}
 
 			}
+			inline static int timeA[8], timeB[8];
+
+			static long long GetIdx(long long x) {
+				return (x >> 32) & 0x00000000FFFFFFFF;
+			}
+			static long long GetLength(long long x) {
+				return (x & 0x00000000FFFFFFFC) >> 2;
+			}
+			static long long GetType(long long x) {
+				return x & 3; // % 4
+			}
 			static bool __LoadData5_2(const char* buffer, long long llptr2_len, const long long* llptr, const long long* llptr2, UserType* _global, const wiz::LoadDataOption2* _option,
-				int start_state, int last_state, UserType** next, wiz::load_data::Utility::UT_IT_NUM* llptr3) // first, strVec.empty() must be true!!
+				int start_state, int last_state, UserType** next, wiz::load_data::Utility::UT_IT_NUM* llptr3, int no) // first, strVec.empty() must be true!!
 			{
-				std::vector<std::string> varVec;
-				std::vector<std::string> valVec;
+				timeA[no] = clock();
+
+				std::vector<wiz::DataType> varVec;
+				std::vector<wiz::DataType> valVec;
 
 
 				if (llptr2_len <= 0) {
@@ -3638,7 +3651,7 @@ namespace wiz {
 				std::vector< UserType* > nestedUT(1);
 				std::string var, val;
 
-
+				nestedUT.reserve(10);
 				nestedUT[0] = &global;
 
 
@@ -3655,23 +3668,21 @@ namespace wiz {
 						count--;
 						continue;
 					}
-					long long len = llptr[*x];
+					long long len = GetLength(llptr2[i]);
 
 
 					switch (state)
 					{
 					case 0:
 					{
-						if (len == 1 && (-1 != Equal2(option.Left, buffer[*x]) || -1 != Equal2(option.Left2, buffer[*x]))) {
+						// Left 1
+						if (len == 1 && (-1 != Equal2(1, GetType(llptr2[i])) || -1 != Equal2(1, GetType(llptr2[i])))) {
 							//i += 1;
 
 							if (!varVec.empty()) {
-								nestedUT[braceNum]->ReserveIList(nestedUT[braceNum]->GetIListSize() + varVec.size());
-								nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
-
-								for (int i = 0; i < varVec.size(); ++i) {
-									nestedUT[braceNum]->AddItem(std::move(varVec[i]), std::move(valVec[i]));
-								}
+								
+								nestedUT[braceNum]->AddItem((varVec), (valVec), varVec.size());
+								
 								varVec.clear();
 								valVec.clear();
 							}
@@ -3699,7 +3710,8 @@ namespace wiz {
 							//nestedUT[braceNum]->ReserveItemList(llptr3[*x].itNum - llptr3[*x].eqNum);
 							//nestedUT[braceNum]->ReserveIList(llptr3[*x].utNum + llptr3[*x].itNum - llptr3[*x].eqNum);
 						}
-						else if (len == 1 && (-1 != Equal2(option.Right, buffer[*x]) || -1 != Equal2(option.Right2, buffer[*x]))) {
+						// Right 2
+						else if (len == 1 && (-1 != Equal2(2, GetType(llptr2[i])) || -1 != Equal2(2, GetType(llptr2[i])))) {
 							//i += 1;
 
 							state = 0;
@@ -3711,12 +3723,11 @@ namespace wiz {
 								//nestedUT[braceNum]->ReserveUserTypeList(llptr3[*x].utNum);
 								//nestedUT[braceNum]->ReserveItemList(llptr3[*x].itNum - llptr3[*x].eqNum);
 
-								nestedUT[braceNum]->ReserveIList(nestedUT[braceNum]->GetIListSize() + varVec.size());
-								nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
-								
-								for (int i = 0; i < varVec.size(); ++i) {
-									nestedUT[braceNum]->AddItem(std::move(varVec[i]), std::move(valVec[i]));
+								{
+									nestedUT[braceNum]->AddItem(varVec, valVec, varVec.size());
 								}
+
+								
 								varVec.clear();
 								valVec.clear();
 							}
@@ -3765,11 +3776,11 @@ namespace wiz {
 							//		bsPair = std::make_pair(false, Token2());
 							//	}
 							if (x < llptr2 + llptr2_len - 1) {
-								long long _len = llptr[*(x + 1)];
+								long long _len = GetLength(llptr2[i + 1]); //llptr[*(x + 1)];
 
-								if (_len == 1 && -1 != Equal2(option.Assignment, buffer[*(x + 1)])) {
+								if (_len == 1 && -1 != Equal2(3, GetType(llptr2[i+1]))) { //buffer[*(x + 1)])) {
 									// var2
-									var = std::string(buffer + *x, len);
+									var = std::string(buffer + GetIdx(llptr2[i]), len);
 
 									state = 1;
 									//i += 1;
@@ -3782,7 +3793,11 @@ namespace wiz {
 								else {
 									// var1
 									if (x <= llptr2 + llptr2_len - 1) {
-										val = std::string(buffer + *x, len);
+								//		std::cout << "idx " << GetIdx(llptr2[i]) << "\n";
+										
+									//	std::cout << "len " << GetLength(llptr2[i]) << "\n";
+
+										val = std::string(buffer + GetIdx(llptr2[i]), len);
 
 										varVec.push_back(check_syntax_error1(var, option));
 										valVec.push_back(check_syntax_error1(val, option));
@@ -3800,7 +3815,7 @@ namespace wiz {
 								// var1
 								if (x <= llptr2 + llptr2_len - 1)
 								{
-									val = std::string(buffer + *x, len);
+									val = std::string(buffer + GetIdx(llptr2[i]), len);
 									varVec.push_back(check_syntax_error1(var, option));
 									valVec.push_back(check_syntax_error1(val, option));
 									//nestedUT[braceNum]->AddItem("", "");// std::move(val));
@@ -3816,15 +3831,11 @@ namespace wiz {
 					break;
 					case 1:
 					{
-						if (len == 1 && (-1 != Equal2(option.Left, buffer[*x]) || -1 != Equal2(option.Left2, buffer[*x]))) {
+						if (len == 1 && (-1 != Equal2(1, GetType(llptr2[i])) || -1 != Equal2(1, GetType(llptr2[i])))) {
 							//i += 1;
 
-							nestedUT[braceNum]->ReserveIList(nestedUT[braceNum]->GetIListSize() + varVec.size());
-							nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
-
-							for (int i = 0; i < varVec.size(); ++i) { // i -> long long ?
-								nestedUT[braceNum]->AddItem(std::move(varVec[i]), std::move(valVec[i]));
-							}
+							nestedUT[braceNum]->AddItem((varVec), (valVec), varVec.size());
+							
 							varVec.clear();
 							valVec.clear();
 
@@ -3855,7 +3866,7 @@ namespace wiz {
 						}
 						else {
 							if (x <= llptr2 + llptr2_len - 1) {
-								val = std::string(buffer + *x, len);
+								val = std::string(buffer + GetIdx(llptr2[i]), len);
 
 								//i += 1;
 
@@ -3881,12 +3892,8 @@ namespace wiz {
 				}
 
 				if (varVec.empty() == false) {
-					nestedUT[braceNum]->ReserveIList(nestedUT[braceNum]->GetIListSize() + varVec.size());
-					nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
-
-					for (int i = 0; i < varVec.size(); ++i) {
-						nestedUT[braceNum]->AddItem(varVec[i], valVec[i]);
-					}
+					nestedUT[braceNum]->AddItem(varVec, valVec, varVec.size());
+					
 					varVec.clear();
 					valVec.clear();
 				}
@@ -3897,29 +3904,34 @@ namespace wiz {
 				if (x > llptr2 + llptr2_len) {
 					throw std::string("error x > buffer + buffer_len: ");
 				}
+
+				timeB[no] = clock();
 				return true;
 			}
 			static long long FindRight3(const char* buffer, const long long* llptr, const long long* llptr2, long long start, long long last, const wiz::LoadDataOption2 & option)
 			{
 				for (long long a = last; a >= start; --a) {
-					long long i = llptr2[a];
-
-					if (llptr[i] == 1 && (-1 != Equal2(option.Right, buffer[i]) || -1 != Equal2(option.Right2, buffer[i]))) {
+					long long len = GetLength(llptr2[a]);
+					long long val = GetType(llptr2[a]); // % 4  
+			
+					if (len == 1 && (-1 != Equal2(2, val) || -1 != Equal2(2, val))) { // right
 						return a;
 					}
 
 					bool pass = false;
-					if (llptr[i] == 1 && (-1 != Equal2(option.Left, buffer[i]) || -1 != Equal2(option.Left2, buffer[i]))) {
+					if (len == 1 && (-1 != Equal2(1, val) || -1 != Equal2(1, val))) { // left
 						return a;
 					}
-					else if (llptr[i] == 1 && -1 != Equal2(option.Assignment, buffer[i])) {
+					else if (len == 1 && -1 != Equal2(3, val)) { // assignment
 						//
 						pass = true;
 					}
 
 					if (a < last && pass == false) {
-						long long _i = llptr2[a + 1];
-						if (!(llptr[_i] == 1 && -1 != Equal2(option.Assignment, buffer[_i])))
+						long long len = GetLength(llptr2[a + 1]);
+						long long val = GetType(llptr2[a + 1]); // % 4
+
+						if (!(len == 1 && -1 != Equal2(3, val))) // assignment
 						{                // NOT
 							return a;
 						}
@@ -3997,14 +4009,14 @@ namespace wiz {
 							long long idx = pivots.empty() ? num - 1 : pivots[0]; // chk? - !!
 							long long _llptr2_len = idx - 0 + 1;
 							__global[0].ReserveUserTypeList(llptr3_total.utNum);
-							thr[0] = std::thread(__LoadData5_2, buffer, _llptr2_len, llptr, llptr2, &__global[0], &option, 0, 0, &next[0], llptr3);
+							thr[0] = std::thread(__LoadData5_2, buffer, _llptr2_len, llptr, llptr2, &__global[0], &option, 0, 0, &next[0], llptr3, 0);
 							// __LoadData4 -> __LoadData5
 						}
 
 						for (int i = 1; i < pivots.size(); ++i) {
 							long long _llptr2_len = pivots[i] - (pivots[i - 1] + 1) + 1;
 							__global[i].ReserveUserTypeList(llptr3_total.utNum);
-							thr[i] = std::thread(__LoadData5_2, buffer, _llptr2_len, llptr, llptr2 + pivots[i - 1] + 1, &__global[i], &option, 0, 0, &next[i], llptr3);
+							thr[i] = std::thread(__LoadData5_2, buffer, _llptr2_len, llptr, llptr2 + pivots[i - 1] + 1, &__global[i], &option, 0, 0, &next[i], llptr3, i);
 
 						}
 
@@ -4012,7 +4024,7 @@ namespace wiz {
 							long long _llptr2_len = num - 1 - (pivots.back() + 1) + 1;
 							__global[pivots.size()].ReserveUserTypeList(llptr3_total.utNum);
 							thr[pivots.size()] = std::thread(__LoadData5_2, buffer, _llptr2_len, llptr, llptr2 + pivots.back() + 1, &__global[pivots.size()],
-								&option, 0, 0, &next[pivots.size()], llptr3);
+								&option, 0, 0, &next[pivots.size()], llptr3, pivots.size());
 						}
 
 						// wait
@@ -4020,6 +4032,13 @@ namespace wiz {
 							thr[i].join();
 						}
 						c = clock();
+
+						std::cout << "chk " << "\n";
+						for (int i = 0; i < 8; ++i) {
+							std::cout << timeB[i] - timeA[i] << " ";
+						}
+						std::cout << "\n";
+
 						// Merge
 						try {
 							if (__global[0].GetUserTypeListSize() > 0 && __global[0].GetUserTypeList(0)->GetName() == "#") {
@@ -4044,7 +4063,9 @@ namespace wiz {
 						}
 						catch (...) {
 							delete[] buffer;
-							delete[] llptr;
+							if (llptr) {
+								delete[] llptr;
+							}
 							delete[] llptr2;
 							if (llptr3) { free(llptr3); }
 							buffer = nullptr;
@@ -4064,7 +4085,9 @@ namespace wiz {
 				}
 				int b = clock();
 				delete[] buffer;
-				delete[] llptr;
+				if (llptr) {
+					delete[] llptr;
+				}
 				delete[] llptr2;
 				if (llptr3) { free(llptr3); }
 				int d = clock();
