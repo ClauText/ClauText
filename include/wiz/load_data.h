@@ -4045,6 +4045,11 @@ namespace wiz {
 								std::cout << "not valid file\n";
 								throw 1;
 							}
+						
+							if (next.back()->GetParent()) {
+								std::cout << "not valid file2\n";
+								throw 3;
+							}
 
 							Merge_2(&_global, &__global[0], &next[0]);
 
@@ -4056,10 +4061,7 @@ namespace wiz {
 								}
 							}
 
-							if (next.back()->GetParent()) {
-								std::cout << "not valid file2\n";
-								throw 3;
-							}
+						
 						}
 						catch (...) {
 							delete[] buffer;
