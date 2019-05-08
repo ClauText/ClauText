@@ -3572,15 +3572,20 @@ namespace wiz {
 				}
 
 				//int chk = 0;
+				bool chk_ut_next = false;
+				
 				while (true) {
 					int itCount = 0;
 					int utCount = 0;
 
 					UserType* _ut = ut;
 					UserType* _next = next;
+					
 
 					if (ut_next && _ut == *ut_next) {
 						*ut_next = _next;
+						//std::cout << "_ut == *ut_next" << "\n";
+						chk_ut_next = true;
 					}
 
 					for (int i = 0; i < _ut->GetIListSize(); ++i) {
@@ -3606,6 +3611,7 @@ namespace wiz {
 					ut = ut->GetParent();
 					next = next->GetParent();
 
+
 					if (next && ut) {
 						//
 					}
@@ -3614,11 +3620,15 @@ namespace wiz {
 						if (!next && ut) {
 							return -1;
 						}
+						if (ut_next && (*ut_next)->GetParent() != nullptr) {
+							return 1;
+						}
+
 						return 0;
 					}
 				}
-
 			}
+
 			inline static int timeA[8], timeB[8];
 
 			static long long GetIdx(long long x) {
@@ -3777,7 +3787,7 @@ namespace wiz {
 							//	}
 							if (x < llptr2 + llptr2_len - 1) {
 								long long _len = GetLength(llptr2[i + 1]); //llptr[*(x + 1)];
-
+								// EQ 3
 								if (_len == 1 && -1 != Equal2(3, GetType(llptr2[i+1]))) { //buffer[*(x + 1)])) {
 									// var2
 									var = std::string(buffer + GetIdx(llptr2[i]), len);
@@ -3830,6 +3840,7 @@ namespace wiz {
 					}
 					break;
 					case 1:
+						// LEFT 1
 					{
 						if (len == 1 && (-1 != Equal2(1, GetType(llptr2[i])) || -1 != Equal2(1, GetType(llptr2[i])))) {
 							//i += 1;
@@ -4042,26 +4053,28 @@ namespace wiz {
 						// Merge
 						try {
 							if (__global[0].GetUserTypeListSize() > 0 && __global[0].GetUserTypeList(0)->GetName() == "#") {
-								std::cout << "not valid file\n";
+								std::cout << "not valid file1\n";
 								throw 1;
 							}
-						
-							if (next.back()->GetParent()) {
-								std::cout << "not valid file2\n";
-								throw 3;
-							}
 
-							Merge_2(&_global, &__global[0], &next[0]);
+							int err = Merge_2(&_global, &__global[0], &next[0]);
+							if (-1 == err || (pivots.size() == 0 && 1 == err)) {
+								std::cout << "not valid file2\n";
+								throw 2;
+							}
 
 							for (int i = 1; i < pivots.size() + 1; ++i) {
 								// linearly merge and error check...
-								if (-1 == Merge_2(next[i - 1], &__global[i], &next[i])) {
-									std::cout << "not valid file\n";
-									throw 2;
+								int err = Merge_2(next[i - 1], &__global[i], &next[i]);
+								if (-1 == err) {
+									std::cout << "not valid file3\n";
+									throw 3;
+								}
+								else if (i == pivots.size() && 1 == err) {
+									std::cout << "not valid file4\n";
+									throw 4;
 								}
 							}
-
-						
 						}
 						catch (...) {
 							delete[] buffer;

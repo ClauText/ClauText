@@ -2217,7 +2217,7 @@ namespace wiz {
 										//	aq->emplace_back(token_first, token_last - token_first + 1, false);
 
 										//llptr[start_idx] = token_last - token_first + 1;
-										llptr2[llptr2_count] = ((start_idx + num) << 32) + ((token_last - token_first + 1)) << 2 + 1;
+										llptr2[llptr2_count] = ((start_idx + num) << 32) + ((token_last - token_first + 1)) << 2 + 0;
 										llptr2_count++;
 									}
 									else {
@@ -2269,7 +2269,7 @@ namespace wiz {
 								//aq->emplace_back(token_first, last - 1 - token_first + 1, false);
 								//llptr[start_idx] = last - 1 - token_first + 1;
 								if (last - 1 - token_first + 1 > 0) {
-									llptr2[llptr2_count] = ((start_idx + num) << 32) + ((last -1  - token_first + 1) << 2) + 1;
+									llptr2[llptr2_count] = ((start_idx) << 32) + ((last -1  - token_first + 1) << 2) + 0;
 									llptr2_count++;
 								}
 							}

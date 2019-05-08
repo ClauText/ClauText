@@ -1488,7 +1488,7 @@ namespace wiz {
 							stream << wiz::ToString(ut->userTypeList[userTypeListCount]->GetName()) << "=";
 						}
 
-						stream << "{\n";
+						stream << " {\n";
 						
 						Save1(stream, ut->userTypeList[userTypeListCount], depth + 1);
 						stream << "\n";
@@ -1496,7 +1496,7 @@ namespace wiz {
 						for (int k = 0; k < depth; ++k) {
 							stream << "\t";
 						}
-						stream << "}";
+						stream << " } ";
 						if (i != ut->ilist.size() - 1) {
 							stream << "\n";
 						}
