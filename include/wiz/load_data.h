@@ -3385,10 +3385,12 @@ namespace wiz {
 								ut.GetLastUserTypeItemRef("#", pTemp);
 								int utCount = 0;
 								int itCount = 0;
+								
 								auto max = nestedUT[braceNum]->GetIListSize();
 								for (auto i = 0; i < max; ++i) {
 									if (nestedUT[braceNum]->IsUserTypeList(i)) {
 										ut.GetUserTypeList(0)->AddUserTypeItem(std::move(*(nestedUT[braceNum]->GetUserTypeList(utCount))));
+										nestedUT[braceNum]->GetUserTypeList(utCount) = nullptr;
 										utCount++;
 									}
 									else {
@@ -3396,7 +3398,7 @@ namespace wiz {
 										itCount++;
 									}
 								}
-
+								
 								nestedUT[braceNum]->Remove();
 								nestedUT[braceNum]->AddUserTypeItem(std::move(*(ut.GetUserTypeList(0))));
 
@@ -3680,7 +3682,6 @@ namespace wiz {
 					}
 					long long len = GetLength(llptr2[i]);
 
-
 					switch (state)
 					{
 					case 0:
@@ -3803,12 +3804,21 @@ namespace wiz {
 								else {
 									// var1
 									if (x <= llptr2 + llptr2_len - 1) {
-								//		std::cout << "idx " << GetIdx(llptr2[i]) << "\n";
-										
-									//	std::cout << "len " << GetLength(llptr2[i]) << "\n";
 
 										val = std::string(buffer + GetIdx(llptr2[i]), len);
+										/*if (val == "=") {
 
+											std::cout << "idx " << GetIdx(llptr2[i - 1]) << "\n";
+											std::cout << "type " << GetType(llptr2[i - 1]) << "\n";
+											std::cout << "len " << GetLength(llptr2[i - 1]) << "\n";
+											std::cout << "idx " << GetIdx(llptr2[i]) << "\n";
+											std::cout << "type " << GetType(llptr2[i]) << "\n";
+											std::cout << "len " << GetLength(llptr2[i]) << "\n";
+											std::cout << "idx " << GetIdx(llptr2[i+1]) << "\n";
+											std::cout << "type " << GetType(llptr2[i+1]) << "\n";
+											std::cout << "len " << GetLength(llptr2[i+1]) << "\n";
+
+										}*/
 										varVec.push_back(check_syntax_error1(var, option));
 										valVec.push_back(check_syntax_error1(val, option));
 										//nestedUT[braceNum]->AddItem("", ""); // std::move(val));
@@ -4019,21 +4029,21 @@ namespace wiz {
 						{
 							long long idx = pivots.empty() ? num - 1 : pivots[0]; // chk? - !!
 							long long _llptr2_len = idx - 0 + 1;
-							__global[0].ReserveUserTypeList(llptr3_total.utNum);
+							//__global[0].ReserveUserTypeList(llptr3_total.utNum);
 							thr[0] = std::thread(__LoadData5_2, buffer, _llptr2_len, llptr, llptr2, &__global[0], &option, 0, 0, &next[0], llptr3, 0);
 							// __LoadData4 -> __LoadData5
 						}
 
 						for (int i = 1; i < pivots.size(); ++i) {
 							long long _llptr2_len = pivots[i] - (pivots[i - 1] + 1) + 1;
-							__global[i].ReserveUserTypeList(llptr3_total.utNum);
+							//__global[i].ReserveUserTypeList(llptr3_total.utNum);
 							thr[i] = std::thread(__LoadData5_2, buffer, _llptr2_len, llptr, llptr2 + pivots[i - 1] + 1, &__global[i], &option, 0, 0, &next[i], llptr3, i);
 
 						}
 
 						if (pivots.size() >= 1) {
 							long long _llptr2_len = num - 1 - (pivots.back() + 1) + 1;
-							__global[pivots.size()].ReserveUserTypeList(llptr3_total.utNum);
+							//__global[pivots.size()].ReserveUserTypeList(llptr3_total.utNum);
 							thr[pivots.size()] = std::thread(__LoadData5_2, buffer, _llptr2_len, llptr, llptr2 + pivots.back() + 1, &__global[pivots.size()],
 								&option, 0, 0, &next[pivots.size()], llptr3, pivots.size());
 						}

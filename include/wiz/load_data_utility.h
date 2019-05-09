@@ -1758,14 +1758,13 @@ namespace wiz {
 				long long* llptr2;
 				long long* llptr2_len;
 				UT_IT_NUM* llptr3;
-				UT_IT_NUM* llptr3_total;
 				long long num;
 				int no;
 			public:
 				DoThread4(char* start, char* last, const wiz::LoadDataOption2* option,
 					long long* llptr, long long* llptr2, long long num, long long* llptr2_len, UT_IT_NUM* llptr3,
 					UT_IT_NUM* llptr3_total, int no) //, list<std::string>* aq)//, int strVecStart, int strVecEnd)
-					: start(start), last(last), option(option), llptr3(llptr3), llptr3_total(llptr3_total), no(no) // , strVecStart(strVecStart), strVecEnd(strVecEnd)
+					: start(start), last(last), option(option), llptr3(llptr3), no(no) // , strVecStart(strVecStart), strVecEnd(strVecEnd)
 				{
 					this->llptr = llptr;
 					this->llptr2 = llptr2;
@@ -1818,7 +1817,7 @@ namespace wiz {
 						char* token_last = start;
 						int state = 0;
 
-						_stack.push_back(llptr3_total);
+						//_stack.push_back(llptr3_total);
 
 						long long now_idx = 0;
 						for (long long i = 0; start + i < last; ++i, ++now_idx) {
