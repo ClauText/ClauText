@@ -1,0 +1,123 @@
+
+eu4 = { }
+
+Main = { $call = { id = test } }
+
+Event = {
+	id = test
+	
+	
+	#$print = { str = { "한글 한글" } }
+	# load_only_data2 -> load_only_data3 ?
+	
+	$load_only_data4 = { { "C:\Users\vztpv\Desktop\Clau\ClauText\c.txt" } { eu4 } { 1 } { 0 } }
+	
+	#$load_only_data4 = { { "C:\Users\vztpv\Documents\Paradox Interactive\Europa Universalis IV\save games\output.eu4" } { eu4 } { 0 } { 0 } } # { 1 } { 1 } }
+	
+	#$iterate = { dir = { /eu4 } events = { replace } recursive = { TRUE } } # use ClauToCpp!
+	
+	#$save_data_only2 = { {eu4} {"d.txt"} { 1} }
+#$save_data_only2 = { dirName = { eu4 } fileName = { "C:\Users\vztpv\Documents\Paradox Interactive\Europa Universalis IV\save games\output.eu4" } option = { 1 } }
+	
+	#$edit_mode = { }
+	$_getch = { }
+}
+
+Event = 
+{
+	id = replace
+
+	$local = { name value }
+
+	$parameter = { name value is_user_type  }	
+	
+	
+	$if = { 
+		condition = { 
+			$AND_ALL = { $EQ = { FALSE $parameter.is_user_type } 
+				$COMP> = { $parameter.name 1444.1.1 }
+				$NOT = { $is_quoted_str = { $parameter.name } }
+			}
+		} 
+		then = {
+			$assign = { $local.name data = { 1444.1.1 } }
+ 			$assign = { $local.value data = { $parameter.value } }
+			
+			$return = { name = $local.name value = $local.value }
+		}
+	}
+	
+
+	$if = { 
+		condition = { 
+			$AND_ALL = { $EQ = { FALSE $parameter.is_user_type } 
+				$COMP> = { $remove_quoted = { $parameter.name } 1444.1.1 }
+				$is_quoted_str = { $parameter.name }
+			}
+		} 
+		then = {
+			$assign = { $local.name data = { "1444.1.1" } }
+ 			$assign = { $local.value data = { $parameter.value } }
+			
+			$return = { name = $local.name value = $local.value }
+		}
+	}
+
+	$if = { 
+		condition = { 
+			$AND_ALL = { $EQ = { FALSE $parameter.is_user_type } 
+				$COMP> = { $parameter.value 1444.1.1 }
+				$NOT = { $is_quoted_str = { $parameter.value } }
+			}
+		}                               
+		then = {
+			$assign = { $local.name data = { $parameter.name } }
+ 			$assign = { $local.value data = { 1444.1.1 } }
+			
+			$return = { name = $local.name value = $local.value }
+		}
+	}
+	
+	$if = { 
+		condition = { 
+			$AND_ALL = { $EQ = { FALSE $parameter.is_user_type } 
+				$COMP> = { $remove_quoted = { $parameter.value } 1444.1.1 }
+				$is_quoted_str = { $parameter.value }
+			}
+		} 
+		then = {
+			$assign = { $local.name data = { $parameter.name } }
+ 			$assign = { $local.value data = { "1444.1.1" } }
+			
+			$return = { name = $local.name value = $local.value }
+		}
+	}
+	
+	$if = { 
+		condition = { 
+			$AND_ALL = { $EQ = { TRUE $parameter.is_user_type } 
+				$COMP> = { $parameter.name 1444.1.1 }
+				$NOT = { $is_quoted_str = { $parameter.name } }
+			}
+		} 
+		then = {
+			$assign = { $local.name data = { 1444.1.1 } }
+ 			
+			$return = { name = $local.name }
+		}
+	}
+	
+	$if = { 
+		condition = { 
+			$AND_ALL = { $EQ = { TRUE $parameter.is_user_type } 
+				$COMP> = { $remove_quoted = { $parameter.name } 1444.1.1 }
+				$is_quoted_str = { $parameter.name }
+			}
+		} 
+		then = {
+			$assign = { $local.name data = { "1444.1.1" } }
+			
+			$return = { name = $local.name }
+		}
+	}
+}
