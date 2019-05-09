@@ -2325,11 +2325,12 @@ namespace wiz {
 				BomType type = ReadBom(btBom, readSize, stBom);
 				
 				if (type == UNDEFINED) { // ansi
+					file.clear();
 					file.seekg(0, std::ios_base::beg);
 					return UNDEFINED;
 				}
 				
-
+				file.clear();
 				file.seekg(stBom.bom_size, std::ios_base::beg);
 				return type;
 			}
@@ -2394,7 +2395,7 @@ namespace wiz {
 						std::cout << "UTF-8" << "\n";
 					}
 					length = length - inFile.tellg();
-
+					
 
 					buffer = new char[length +1]; // 
 
@@ -3212,7 +3213,11 @@ namespace wiz {
 					inFile.seekg(0, inFile.beg);
 
 					BomType x = ReadBom(inFile);
-					length = length - inFile.tellg();
+					std::cout << "length " << length << "\n";
+					if (x == UTF_8) {
+						length = length - 3;
+					}
+					std::cout << "length " << length << "\n";
 					file_length = length;
 					if (x == UTF_8) {
 						std::cout << "UTF-8" << "\n";
@@ -3225,7 +3230,7 @@ namespace wiz {
 					inFile.seekg(0, inFile.end);
 					char temp;
 					inFile >> temp;
-
+					
 					buffer[file_length] = '\0';
 
 					start[0] = 0;
@@ -3261,9 +3266,16 @@ namespace wiz {
 					unsigned long long length = inFile.tellg();
 					inFile.seekg(0, inFile.beg);
 
-					ReadBom(inFile);
-					file_length = length - inFile.tellg();
-
+					BomType x = ReadBom(inFile);
+					std::cout << "length " << length << "\n";
+					if (x == UTF_8) {
+						length = length - 3;
+					}
+					std::cout << "length " << length << "\n";
+					file_length = length;
+					if (x == UTF_8) {
+						std::cout << "UTF-8" << "\n";
+					}
 					buffer = new char[file_length + 1]; // 
 
 												   // read data as a block:
