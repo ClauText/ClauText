@@ -3622,7 +3622,7 @@ namespace wiz {
 						if (!next && ut) {
 							return -1;
 						}
-						if (ut_next && (*ut_next)->GetParent() != nullptr) {
+						else if (next && !ut) {
 							return 1;
 						}
 
@@ -3978,6 +3978,14 @@ namespace wiz {
 					end = !reserver(option, lex_thr_num, buffer, llptr, &buffer_total_len, llptr2, &llptr2_len, llptr3, llptr3_total);
 					int b = clock();
 					std::cout << b - a << "ms \n";
+
+					{
+
+						//for (int i = 0; i < llptr2_len; ++i) {
+							//std::cout << std::string(buffer + GetIdx(llptr2[i]), GetLength(llptr2[i])) << "\n";
+						//}
+						//}
+					}
 				}
 
 				UserType* before_next = nullptr;
@@ -4066,23 +4074,27 @@ namespace wiz {
 								std::cout << "not valid file1\n";
 								throw 1;
 							}
+							if (next.back()->GetParent() != nullptr) {
+								std::cout << "not valid file2\n";
+								throw 2;
+							}
 
 							int err = Merge_2(&_global, &__global[0], &next[0]);
 							if (-1 == err || (pivots.size() == 0 && 1 == err)) {
-								std::cout << "not valid file2\n";
-								throw 2;
+								std::cout << "not valid file3\n";
+								throw 3;
 							}
 
 							for (int i = 1; i < pivots.size() + 1; ++i) {
 								// linearly merge and error check...
 								int err = Merge_2(next[i - 1], &__global[i], &next[i]);
 								if (-1 == err) {
-									std::cout << "not valid file3\n";
-									throw 3;
-								}
-								else if (i == pivots.size() && 1 == err) {
 									std::cout << "not valid file4\n";
 									throw 4;
+								}
+								else if (i == pivots.size() && 1 == err) {
+									std::cout << "not valid file5\n";
+									throw 5;
 								}
 							}
 						}

@@ -1807,7 +1807,7 @@ namespace wiz {
 				long long chk2(bool make) {
 					{
 						std::vector<UT_IT_NUM*> _stack;
-						_stack.reserve(1024);
+						//_stack.reserve(1024);
 
 						long long llptr2_count = 0;
 						long long start_idx = 0;
@@ -1822,16 +1822,9 @@ namespace wiz {
 						long long now_idx = 0;
 						for (long long i = 0; start + i < last; ++i, ++now_idx) {
 							//llptr[i] = 0;
-
 							char* x = start + i;
 							long long offset = 0;
 							int idx;
-
-							if ('\n' == *x) {
-								state = 0;
-								token_last = x - 1;
-								last_idx = now_idx - 1;
-							}
 
 							if (0 == state && '\'' == *x) {
 								//token_last = x - 1;
@@ -2335,6 +2328,7 @@ namespace wiz {
 					file.seekg(0, std::ios_base::beg);
 					return UNDEFINED;
 				}
+				
 
 				file.seekg(stBom.bom_size, std::ios_base::beg);
 				return type;
@@ -2395,7 +2389,10 @@ namespace wiz {
 					unsigned long long length = inFile.tellg();
 					inFile.seekg(0, inFile.beg);
 
-					ReadBom(inFile);
+					BomType x = ReadBom(inFile);
+					if (x == UTF_8) {
+						std::cout << "UTF-8" << "\n";
+					}
 					length = length - inFile.tellg();
 
 
@@ -3214,9 +3211,12 @@ namespace wiz {
 					unsigned long long length = inFile.tellg();
 					inFile.seekg(0, inFile.beg);
 
-					ReadBom(inFile);
+					BomType x = ReadBom(inFile);
 					length = length - inFile.tellg();
 					file_length = length;
+					if (x == UTF_8) {
+						std::cout << "UTF-8" << "\n";
+					}
 
 					buffer = new char[file_length + 1]; // 
 
