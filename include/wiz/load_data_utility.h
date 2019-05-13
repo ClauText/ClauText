@@ -2281,7 +2281,7 @@ namespace wiz {
 						}
 
 						if (state != 0) {
-							throw "Error qouted string has \n character.";
+							throw "Scanning Error in qouted string";
 						}
 						return count;
 					}
