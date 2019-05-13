@@ -74,6 +74,9 @@ namespace wiz {
 		DataType(const char* cstr);
 		DataType(const std::string& str);
 		DataType(std::string&& str);
+		~DataType() {
+			//
+		}
 	public:
 		void SetInt(long long val);
 		void SetFloat(long double val);

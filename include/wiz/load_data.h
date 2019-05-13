@@ -3986,6 +3986,9 @@ namespace wiz {
 						//}
 						//}
 					}
+					if (llptr2_len <= 0) {
+						return true;
+					}
 				}
 
 				UserType* before_next = nullptr;

@@ -1844,6 +1844,9 @@ namespace wiz {
 								state = 0; token_last = x;
 								last_idx = now_idx;
 							}
+							else if (2 == state && '\n' == *x) {
+								throw "Error : \n is included in \' ~ \' ";
+							}
 							else if (0 == state && '\"' == *x) {
 								//token_last = x - 1;
 								//if (token_last >= 0 && token_last - token_first + 1 > 0) {
@@ -1858,6 +1861,9 @@ namespace wiz {
 							else if (1 == state && '\\' == *(x - 1) && '\"' == *x) {
 								token_last = x;
 								last_idx = now_idx;
+							}
+							else if (1 == state && '\n' == *x) {
+								throw "error : \n is included.. in \" ~ \" ";
 							}
 							else if (1 == state && '\"' == *x) {
 								state = 0; token_last = x;
@@ -2272,6 +2278,10 @@ namespace wiz {
 
 						if (this->llptr2_len) {
 							*(this->llptr2_len) = llptr2_count;
+						}
+
+						if (state != 0) {
+							throw "Error qouted string has \n character.";
 						}
 						return count;
 					}

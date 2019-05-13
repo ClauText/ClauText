@@ -104,7 +104,9 @@ namespace wiz {
 			{
 
 			}
-			virtual ~ItemType() { }
+			virtual ~ItemType() { 
+				//std::cout << "~ItemType called" << "\n";
+			}
 		public:
 			void Remove(const int idx = 0)
 			{
