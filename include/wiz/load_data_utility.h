@@ -1734,6 +1734,7 @@ namespace wiz {
 				int utNum = 0;
 				int itNum = 0;
 				int eqNum = 0;
+				int valid = 0;
 			public:
 				UT_IT_NUM() {
 
@@ -1763,7 +1764,7 @@ namespace wiz {
 			public:
 				DoThread4(char* start, char* last, const wiz::LoadDataOption2* option,
 					long long* llptr, long long* llptr2, long long num, long long* llptr2_len, UT_IT_NUM* llptr3,
-					UT_IT_NUM* llptr3_total, int no) //, list<std::string>* aq)//, int strVecStart, int strVecEnd)
+				 int no) //, list<std::string>* aq)//, int strVecStart, int strVecEnd)
 					: start(start), last(last), option(option), llptr3(llptr3), no(no) // , strVecStart(strVecStart), strVecEnd(strVecEnd)
 				{
 					this->llptr = llptr;
@@ -1807,17 +1808,16 @@ namespace wiz {
 				long long chk2(bool make) {
 					{
 						std::vector<UT_IT_NUM*> _stack;
-						//_stack.reserve(1024);
+						_stack.reserve(1024);
 
 						long long llptr2_count = 0;
 						long long start_idx = 0;
 						long long last_idx = 0;
 						long long count = 0;
+						long long llptr3_count = 0;
 						char* token_first = start;
 						char* token_last = start;
 						int state = 0;
-
-						//_stack.push_back(llptr3_total);
 
 						long long now_idx = 0;
 						for (long long i = 0; start + i < last; ++i, ++now_idx) {
@@ -1986,7 +1986,10 @@ namespace wiz {
 							else if (0 == state && -1 != (idx = Equal2(option->Left, *x))) {
 								if (llptr3) {
 									llptr3[now_idx] = wiz::load_data::Utility::UT_IT_NUM();
+									llptr3[now_idx].valid = 1;
+									
 									_stack.push_back(&llptr3[now_idx]);
+									llptr3_count++;
 
 									if (_stack.size() >= 2) {
 										_stack[_stack.size() - 2]->utNum++;
@@ -3202,7 +3205,7 @@ namespace wiz {
 
 
 			static std::pair<bool, int> Reserve2_4(std::ifstream& inFile, const int num, bool* isFirst, const wiz::LoadDataOption2& option, int thr_num,
-				char*& _buffer, long long*& _llptr, long long* _buffer_len, long long*& _llptr2, long long* _llptr2_len, UT_IT_NUM*& _llptr3, UT_IT_NUM& _llptr3_total)
+				char*& _buffer, long long*& _llptr, long long* _buffer_len, long long*& _llptr2, long long* _llptr2_len, UT_IT_NUM*& _llptr3)
 			{
 				if (inFile.eof()) {
 					return { false, 0 };
@@ -3306,7 +3309,7 @@ namespace wiz {
 				long long* llptr = nullptr;
 				long long* llptr2 = nullptr;
 				UT_IT_NUM* llptr3 = nullptr;
-				UT_IT_NUM llptr3_total;
+				long long llptr3_len = -1;
 
 				if (thr_num > 0) {
 					//// in string, there are '\r' or '\n' etc.. - no '\r' or '\n'?
@@ -3386,7 +3389,7 @@ namespace wiz {
 					//llptr = new long long[file_length];
 					llptr2 = new long long[file_length];
 					
-					//llptr3 = (wiz::load_data::Utility::UT_IT_NUM*)malloc(sizeof(wiz::load_data::Utility::UT_IT_NUM) * file_length);
+					llptr3 = (wiz::load_data::Utility::UT_IT_NUM*)calloc(file_length, sizeof(wiz::load_data::Utility::UT_IT_NUM));
 					int y = clock();
 					std::cout << y - x << "ms \n";
 
@@ -3396,7 +3399,7 @@ namespace wiz {
 						//partial_list[i].reserve((last[i] - start[i]) / 10;
 
 						thr[i] = std::thread(DoThread4(buffer + start[i], buffer + last[i], &option,
-							llptr + start[i], llptr2 + start[i], start[i], &counter[i], llptr3, &llptr3_total, i));
+							llptr + start[i], llptr2 + start[i], start[i], &counter[i], llptr3, i));
 					}
 
 					for (int i = 0; i < thr_num; ++i) {
@@ -3448,7 +3451,7 @@ namespace wiz {
 					//llptr3 = (UT_IT_NUM*)malloc(sizeof(UT_IT_NUM) * file_length);
 
 					long long len;
-					DoThread4 dothr(buffer + start[0], buffer + last[0], &option, llptr, llptr2, start[0], &len, llptr3, &llptr3_total, 0);
+					DoThread4 dothr(buffer + start[0], buffer + last[0], &option, llptr, llptr2, start[0], &len, llptr3, 0);
 
 					dothr();
 
@@ -3466,7 +3469,6 @@ namespace wiz {
 				_llptr2 = llptr2;
 				*_buffer_len = file_length;
 				_llptr3 = llptr3;
-				_llptr3_total = llptr3_total;
 
 				return{ true, 1 };
 			}

@@ -3717,9 +3717,11 @@ namespace wiz {
 
 							state = 0;
 
-							//nestedUT[braceNum]->ReserveUserTypeList(llptr3[*x].utNum);
-							//nestedUT[braceNum]->ReserveItemList(llptr3[*x].itNum - llptr3[*x].eqNum);
-							//nestedUT[braceNum]->ReserveIList(llptr3[*x].utNum + llptr3[*x].itNum - llptr3[*x].eqNum);
+							if (long long idx = GetIdx(llptr2[i]); llptr3[idx].valid) {
+								nestedUT[braceNum]->ReserveUserTypeList(llptr3[idx].utNum);
+								nestedUT[braceNum]->ReserveItemList(llptr3[idx].itNum - llptr3[idx].eqNum);
+								nestedUT[braceNum]->ReserveIList(llptr3[idx].utNum + llptr3[idx].itNum - llptr3[idx].eqNum);
+							}
 						}
 						// Right 2
 						else if (len == 1 && (-1 != Equal2(2, GetType(llptr2[i])) || -1 != Equal2(2, GetType(llptr2[i])))) {
@@ -3806,19 +3808,7 @@ namespace wiz {
 									if (x <= llptr2 + llptr2_len - 1) {
 
 										val = std::string(buffer + GetIdx(llptr2[i]), len);
-										/*if (val == "=") {
 
-											std::cout << "idx " << GetIdx(llptr2[i - 1]) << "\n";
-											std::cout << "type " << GetType(llptr2[i - 1]) << "\n";
-											std::cout << "len " << GetLength(llptr2[i - 1]) << "\n";
-											std::cout << "idx " << GetIdx(llptr2[i]) << "\n";
-											std::cout << "type " << GetType(llptr2[i]) << "\n";
-											std::cout << "len " << GetLength(llptr2[i]) << "\n";
-											std::cout << "idx " << GetIdx(llptr2[i+1]) << "\n";
-											std::cout << "type " << GetType(llptr2[i+1]) << "\n";
-											std::cout << "len " << GetLength(llptr2[i+1]) << "\n";
-
-										}*/
 										varVec.push_back(check_syntax_error1(var, option));
 										valVec.push_back(check_syntax_error1(val, option));
 										//nestedUT[braceNum]->AddItem("", ""); // std::move(val));
@@ -3881,9 +3871,11 @@ namespace wiz {
 							state = 0;
 
 
-						//	nestedUT[braceNum]->ReserveUserTypeList(llptr3[*x].utNum);
-						//	nestedUT[braceNum]->ReserveItemList(llptr3[*x].itNum - llptr3[*x].eqNum);
-						//	nestedUT[braceNum]->ReserveIList(llptr3[*x].utNum + llptr3[*x].itNum - llptr3[*x].eqNum);
+							if (long long idx = GetIdx(llptr2[i]); llptr3[idx].valid) {
+								nestedUT[braceNum]->ReserveUserTypeList(llptr3[idx].utNum);
+								nestedUT[braceNum]->ReserveItemList(llptr3[idx].itNum - llptr3[idx].eqNum);
+								nestedUT[braceNum]->ReserveIList(llptr3[idx].utNum + llptr3[idx].itNum - llptr3[idx].eqNum);
+							}
 						}
 						else {
 							if (x <= llptr2 + llptr2_len - 1) {
@@ -3970,12 +3962,11 @@ namespace wiz {
 				long long buffer_total_len;
 				long long llptr2_len = 0;
 				wiz::load_data::Utility::UT_IT_NUM* llptr3 = nullptr;
-				wiz::load_data::Utility::UT_IT_NUM llptr3_total;
 
 				bool end = false;
 				{
 					int a = clock();
-					end = !reserver(option, lex_thr_num, buffer, llptr, &buffer_total_len, llptr2, &llptr2_len, llptr3, llptr3_total);
+					end = !reserver(option, lex_thr_num, buffer, llptr, &buffer_total_len, llptr2, &llptr2_len, llptr3);
 					int b = clock();
 					std::cout << b - a << "ms \n";
 
