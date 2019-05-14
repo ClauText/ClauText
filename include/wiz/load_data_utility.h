@@ -3399,7 +3399,7 @@ namespace wiz {
 						//partial_list[i].reserve((last[i] - start[i]) / 10;
 
 						thr[i] = std::thread(DoThread4(buffer + start[i], buffer + last[i], &option,
-							llptr + start[i], llptr2 + start[i], start[i], &counter[i], llptr3, i));
+							llptr + start[i], llptr2 + start[i], start[i], &counter[i], llptr3 + start[i], i));
 					}
 
 					for (int i = 0; i < thr_num; ++i) {

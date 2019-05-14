@@ -3632,6 +3632,7 @@ namespace wiz {
 			}
 
 			inline static int timeA[8], timeB[8];
+			inline static int countReserve[8];
 
 			static long long GetIdx(long long x) {
 				return (x >> 32) & 0x00000000FFFFFFFF;
@@ -3645,6 +3646,7 @@ namespace wiz {
 			static bool __LoadData5_2(const char* buffer, long long llptr2_len, const long long* llptr, const long long* llptr2, UserType* _global, const wiz::LoadDataOption2* _option,
 				int start_state, int last_state, UserType** next, wiz::load_data::Utility::UT_IT_NUM* llptr3, int no) // first, strVec.empty() must be true!!
 			{
+				countReserve[no] = 0;
 				timeA[no] = clock();
 
 				std::vector<wiz::DataType> varVec;
@@ -3718,6 +3720,8 @@ namespace wiz {
 							state = 0;
 
 							if (long long idx = GetIdx(llptr2[i]); llptr3[idx].valid) {
+								countReserve[no]++;
+
 								nestedUT[braceNum]->ReserveUserTypeList(llptr3[idx].utNum);
 								nestedUT[braceNum]->ReserveItemList(llptr3[idx].itNum - llptr3[idx].eqNum);
 								nestedUT[braceNum]->ReserveIList(llptr3[idx].utNum + llptr3[idx].itNum - llptr3[idx].eqNum);
@@ -3872,6 +3876,8 @@ namespace wiz {
 
 
 							if (long long idx = GetIdx(llptr2[i]); llptr3[idx].valid) {
+								countReserve[no]++;
+
 								nestedUT[braceNum]->ReserveUserTypeList(llptr3[idx].utNum);
 								nestedUT[braceNum]->ReserveItemList(llptr3[idx].itNum - llptr3[idx].eqNum);
 								nestedUT[braceNum]->ReserveIList(llptr3[idx].utNum + llptr3[idx].itNum - llptr3[idx].eqNum);
@@ -4059,6 +4065,10 @@ namespace wiz {
 						std::cout << "chk " << "\n";
 						for (int i = 0; i < 8; ++i) {
 							std::cout << timeB[i] - timeA[i] << " ";
+						}
+						std::cout << "\n";
+						for (int i = 0; i < 8; ++i) {
+							std::cout << countReserve[i] << " ";
 						}
 						std::cout << "\n";
 
