@@ -2,7 +2,7 @@
 # ClauText [![Total alerts](https://img.shields.io/lgtm/alerts/g/ClauText/ClauText.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ClauText/ClauText/alerts/)[![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/ClauText/ClauText.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ClauText/ClauText/context:cpp)[![Build status](https://ci.appveyor.com/api/projects/status/f3o54347ns0a3xda?svg=true)](https://ci.appveyor.com/project/vztpv/clautext)
 
 
-  My Own Language for Editing? of Paradox Game(Clausewitz Engine) Data
+  My Own Language for Editing? "Paradox Game(Clausewitz Engine) Data"
 # Feature
   1. Parallel Load Data From File (cf JSON Parser)
   2. Linux is supported?, but some has bug, is limited(especially $edit_mode)
