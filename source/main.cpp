@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
 
 	//	global.Remove();
 
-		for (int i = 4; i <= 4; ++i) { // i : pivot_num, thread num <= pivot_num + 1
+		for (int i = 1; i <= 1; ++i) { // i : pivot_num, thread num <= pivot_num + 1
 		//	global.Remove();
 
 			a = clock();
@@ -153,10 +153,12 @@ int main(int argc, char* argv[])
 				//wiz::load_data::LoadData::LoadDataFromFile3_2(buf, fileName, global, 8, 8);
 				// has bug? in debug x64
 				//wiz::load_data::LoadData::LoadDataFromFile4(fileName, global, -1, 0); // , -1, 0); // , thr_num - 1, thr_num); // parallel? lexing + parallel parsing
-				wiz::load_data::LoadData::LoadDataFromFile5_2(fileName, global, 0, 0);
+				wiz::load_data::LoadData::LoadDataFromFile5_2(fileName, global, 0, 1);
+
+			
 			}
 			b = clock();
-			//std::cout << "time " << b - a << "ms" << std::endl;
+			std::cout << "time " << b - a << "ms" << std::endl;
 		}
 		//global.Remove();
 
