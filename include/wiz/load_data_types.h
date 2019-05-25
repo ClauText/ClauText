@@ -15,7 +15,7 @@
 namespace wiz {
 	namespace load_data {
 		class Type {
-		private:
+		protected:
 			WIZ_STRING_TYPE name;
 
 			void chk() {
@@ -97,15 +97,15 @@ namespace wiz {
 			explicit ItemType(const WIZ_STRING_TYPE& name, const T& value, const bool valid=true)
 				:Type(name, valid), data(value), inited(true)
 			{
-
+				//
 			}
 			explicit ItemType(WIZ_STRING_TYPE&& name, T&& value, const bool valid = true)
 				:Type(std::move(name), valid), data(std::move(value)), inited(true)
 			{
-
+				//
 			}
 			virtual ~ItemType() { 
-				//std::cout << "~ItemType called" << "\n";
+				//
 			}
 		public:
 			void Remove(const int idx = 0)
@@ -161,17 +161,20 @@ namespace wiz {
 		public:
 			ItemType<T>& operator=(const ItemType<T>& ta)
 			{
-				Type::operator=(ta);
-				ItemType<T> temp = ta;
+				if (this == &ta) {
+					return *this;
+				}
 
-				data = std::move(temp.data);
-				inited = temp.inited;
+				this->name = (ta.name);
+				data = ta.data;
+				inited = ta.inited;
 				return *this;
 			}
 			ItemType<T>& operator=(ItemType<T>&& ta)
 			{
-				Type::operator=(ta);
-				if (data == ta.data) { return *this; }
+				if (this == &ta) { return *this; }
+
+				this->name = std::move(ta.name);
 
 				data = std::move(ta.data);
 				inited = ta.inited;
@@ -628,7 +631,7 @@ namespace wiz {
 			void RemoveUserTypeList() { /// chk memory leak test!!
 				for (int i = 0; i < userTypeList.size(); i++) {
 					if (nullptr != userTypeList[i]) {
-						delete userTypeList[i]; //
+						//delete userTypeList[i]; //
 						userTypeList[i] = nullptr;
 					}
 				}
@@ -933,7 +936,7 @@ namespace wiz {
 
 				{
 					for (int i = start_idx; i < end_idx; ++i) {
-						itemList.push_back(ItemType<WIZ_STRING_TYPE>(std::move(name[i-start_idx]), std::move(item[i-start_idx])));
+						itemList.emplace_back(std::move(name[i-start_idx]), std::move(item[i-start_idx]));
 						ilist.push_back(1);
 					}
 				}
@@ -958,7 +961,7 @@ namespace wiz {
 
 				{
 					for (int i = start_idx; i < end_idx; ++i) {
-						itemList.push_back(ItemType<WIZ_STRING_TYPE>((name[i-start_idx]), (item[i-start_idx])));
+						itemList.emplace_back(name[i-start_idx], item[i-start_idx]);
 						ilist.push_back(1);
 					}
 				}

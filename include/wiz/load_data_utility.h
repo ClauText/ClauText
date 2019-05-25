@@ -1183,7 +1183,7 @@ namespace wiz {
 							}
 							else if (0 == state && -1 != (idx = checkDelimiter(statement, i, option.Assignment))) {
 								token_last = i - 1;
-								std::cout << "chk " << std::endl;
+							//	std::cout << "chk " << std::endl;
 								if (token_last >= 0 && token_last - token_first + 1 > 0) {
 									statement.Divide(i);
 				
@@ -1747,6 +1747,7 @@ namespace wiz {
 			};
 
 			inline static int timeA[8], timeB[8];
+			inline static int countTotal[8];
 
 			class DoThread4 // need to rename!
 			{
@@ -1809,11 +1810,12 @@ namespace wiz {
 					{
 						std::vector<UT_IT_NUM*> _stack;
 						_stack.reserve(1024);
+						countTotal[no] = 0;
 
 						long long llptr2_count = 0;
 						long long start_idx = 0;
 						long long last_idx = 0;
-						long long count = 0;
+						long long count = 0; 
 						long long llptr3_count = 0;
 						char* token_first = start;
 						char* token_last = start;
@@ -1882,6 +1884,20 @@ namespace wiz {
 										llptr2[llptr2_count] = ((start_idx + num) << 32) + ((token_last - token_first + 1) << 2) + 0;
 										llptr2_count++;
 
+										{
+											if (token_last - token_first + 1 == 1) {
+												if (start[start_idx] == option->Left) {
+													llptr2[llptr2_count - 1] += 1;
+												}
+												if (start[start_idx] == option->Right) {
+													llptr2[llptr2_count - 1] += 2;
+												}
+												if (start[start_idx] == option->Assignment) {
+													llptr2[llptr2_count - 1] += 3;
+												}
+											}
+										}
+
 										if (!_stack.empty()) {
 											_stack.back()->itNum++;
 										}
@@ -1902,6 +1918,7 @@ namespace wiz {
 								continue;
 							}
 							else if (0 == state && -1 != (idx = Equal2(option->Assignment, *x))) {
+								countTotal[no]++;
 								token_last = x - 1;
 								last_idx = now_idx - 1;
 
@@ -1912,7 +1929,19 @@ namespace wiz {
 										llptr2[llptr2_count] = ((start_idx + num) << 32) + ((token_last - token_first + 1) << 2) + 0;
 										llptr2_count++;
 
-
+										{
+											if (token_last - token_first + 1 == 1) {
+												if (start[start_idx] == option->Left) {
+													llptr2[llptr2_count - 1] += 1;
+												}
+												if (start[start_idx] == option->Right) {
+													llptr2[llptr2_count - 1] += 2;
+												}
+												if (start[start_idx] == option->Assignment) {
+													llptr2[llptr2_count - 1] += 3;
+												}
+											}
+										}
 										if (!_stack.empty()) {
 											_stack.back()->itNum++;
 										}
@@ -1965,7 +1994,19 @@ namespace wiz {
 										llptr2[llptr2_count] = ((start_idx + num) << 32) + ((token_last - token_first + 1) << 2) + 0;
 										llptr2_count++;
 
-
+										{
+											if (token_last - token_first + 1 == 1) {
+												if (start[start_idx] == option->Left) {
+													llptr2[llptr2_count - 1] += 1;
+												}
+												if (start[start_idx] == option->Right) {
+													llptr2[llptr2_count - 1] += 2;
+												}
+												if (start[start_idx] == option->Assignment) {
+													llptr2[llptr2_count - 1] += 3;
+												}
+											}
+										}
 										if (!_stack.empty()) {
 											_stack.back()->itNum++;
 										}
@@ -1984,8 +2025,12 @@ namespace wiz {
 								}
 							}
 							else if (0 == state && -1 != (idx = Equal2(option->Left, *x))) {
+								countTotal[no]++;
+
 								if (llptr3) {
-									llptr3[now_idx] = wiz::load_data::Utility::UT_IT_NUM();
+									llptr3[now_idx].eqNum = 0;
+									llptr3[now_idx].itNum = 0;
+									llptr3[now_idx].utNum = 0;
 									llptr3[now_idx].valid = 1;
 									
 									_stack.push_back(&llptr3[now_idx]);
@@ -2006,7 +2051,19 @@ namespace wiz {
 										llptr2[llptr2_count] = ((start_idx + num) << 32) + ((token_last - token_first + 1) << 2) + 0;
 										llptr2_count++;
 
-
+										{
+											if (token_last - token_first + 1 == 1) {
+												if (start[start_idx] == option->Left) {
+													llptr2[llptr2_count - 1] += 1;
+												}
+												if (start[start_idx] == option->Right) {
+													llptr2[llptr2_count - 1] += 2;
+												}
+												if (start[start_idx] == option->Assignment) {
+													llptr2[llptr2_count - 1] += 3;
+												}
+											}
+										}
 										if (_stack.size() >= 2) {
 											_stack[_stack.size() - 2]->itNum++;
 										}
@@ -2045,10 +2102,9 @@ namespace wiz {
 								}
 							}
 							else if (0 == state && -1 != (idx = Equal2(option->Right, *x))) {
+							countTotal[no]++;
 								UT_IT_NUM* top = nullptr;
 								if (llptr3) {
-									llptr3[now_idx] = wiz::load_data::Utility::UT_IT_NUM();
-
 									if (!_stack.empty()) {
 										llptr3[now_idx] = *_stack.back();
 
@@ -2065,8 +2121,20 @@ namespace wiz {
 										//llptr[start_idx] = token_last - token_first + 1;
 										llptr2[llptr2_count] = ((start_idx + num) << 32) + ((token_last - token_first + 1) << 2) + 0;
 										llptr2_count++;
-
-										if (top) {
+										{
+											if (token_last - token_first + 1 == 1) {
+												if (start[start_idx] == option->Left) {
+													llptr2[llptr2_count - 1] += 1;
+												}
+												if (start[start_idx] == option->Right) {
+													llptr2[llptr2_count - 1] += 2;
+												}
+												if (start[start_idx] == option->Assignment) {
+													llptr2[llptr2_count - 1] += 3;
+												}
+											}
+										}
+										if (!_stack.empty()) {
 											_stack.back()->itNum++;
 										}
 									}
@@ -2219,7 +2287,20 @@ namespace wiz {
 
 										//llptr[start_idx] = token_last - token_first + 1;
 										llptr2[llptr2_count] = ((start_idx + num) << 32) + ((token_last - token_first + 1)) << 2 + 0;
-										llptr2_count++;
+										llptr2_count++; 
+										{
+											if (token_last - token_first + 1 == 1) {
+												if (start[start_idx] == option->Left) {
+													llptr2[llptr2_count - 1] += 1;
+												}
+												if (start[start_idx] == option->Right) {
+													llptr2[llptr2_count - 1] += 2;
+												}
+												if (start[start_idx] == option->Assignment) {
+													llptr2[llptr2_count - 1] += 3;
+												}
+											}
+										}
 									}
 									else {
 										count++;
@@ -2272,6 +2353,20 @@ namespace wiz {
 								if (last - 1 - token_first + 1 > 0) {
 									llptr2[llptr2_count] = ((start_idx + num) << 32) + ((last -1  - token_first + 1) << 2) + 0;
 									llptr2_count++;
+
+									{
+										if (token_last - token_first + 1 == 1) {
+											if (start[start_idx] == option->Left) {
+												llptr2[llptr2_count - 1] += 1;
+											}
+											if (start[start_idx] == option->Right) {
+												llptr2[llptr2_count - 1] += 2;
+											}
+											if (start[start_idx] == option->Assignment) {
+												llptr2[llptr2_count - 1] += 3;
+											}
+										}
+									}
 								}
 							}
 							else {
@@ -2548,7 +2643,7 @@ namespace wiz {
 
 					for (int i = 0; i < thr_num; ++i) {
 						//	std::cout << last[i] - start[i] << std::endl;
-						partial_list[i].reserve((last[i] - start[i]) / 10);
+						partial_list[i].reserve((last[i] - start[i]));
 						thr[i] = std::thread(DoThread3(buffer + start[i], buffer + last[i], &partial_list[i], &option));
 					}
 
@@ -3226,11 +3321,11 @@ namespace wiz {
 					inFile.seekg(0, inFile.beg);
 
 					BomType x = ReadBom(inFile);
-					std::cout << "length " << length << "\n";
+				//	std::cout << "length " << length << "\n";
 					if (x == UTF_8) {
 						length = length - 3;
 					}
-					std::cout << "length " << length << "\n";
+				//	std::cout << "length " << length << "\n";
 					file_length = length;
 					if (x == UTF_8) {
 						std::cout << "UTF-8" << "\n";
@@ -3280,11 +3375,11 @@ namespace wiz {
 					inFile.seekg(0, inFile.beg);
 
 					BomType x = ReadBom(inFile);
-					std::cout << "length " << length << "\n";
+					//std::cout << "length " << length << "\n";
 					if (x == UTF_8) {
 						length = length - 3;
 					}
-					std::cout << "length " << length << "\n";
+					//std::cout << "length " << length << "\n";
 					file_length = length;
 					if (x == UTF_8) {
 						std::cout << "UTF-8" << "\n";
@@ -3391,13 +3486,10 @@ namespace wiz {
 					
 					llptr3 = (wiz::load_data::Utility::UT_IT_NUM*)calloc(file_length, sizeof(wiz::load_data::Utility::UT_IT_NUM));
 					int y = clock();
-					std::cout << y - x << "ms \n";
+					//std::cout << y - x << "ms \n";
 
 					std::vector<long long> counter(thr_num, 0);
 					for (int i = 0; i < thr_num; ++i) {
-						//	std::cout << last[i] - start[i] << std::endl;
-						//partial_list[i].reserve((last[i] - start[i]) / 10;
-
 						thr[i] = std::thread(DoThread4(buffer + start[i], buffer + last[i], &option,
 							llptr + start[i], llptr2 + start[i], start[i], &counter[i], llptr3 + start[i], i));
 					}
@@ -3410,15 +3502,16 @@ namespace wiz {
 					std::cout << "parallel lexing " << y - x << "ms\n";
 
 
-					for (int i = 0; i < 8; ++i) {
-						std::cout << timeB[i] - timeA[i] << "ms ";
-					}
-					std::cout << "\n";
+					//for (int i = 0; i < 8; ++i) {
+					//	std::cout << timeB[i] - timeA[i] << "ms ";
+					//}
+				//	std::cout << "\n";
 
 					int a = clock();
 					long long sum = 0;
 					//
 					for (int i = 1; i < counter.size(); ++i) {
+						std::cout << counter[i - 1] << " ";
 						sum += counter[i - 1];
 
 						memcpy(llptr2 + sum, llptr2 + start[i], counter[i] * sizeof(long long) / sizeof(char));
@@ -3427,9 +3520,17 @@ namespace wiz {
 						//	llptr2[sum + j] = llptr2[start[i] + j];
 						//}
 					}
+					//std::cout << counter.back() << "\n";
+
+					//for (int i = 0; i < 8; ++i) {
+					//	std::cout << countTotal[i] << " ";
+					//}
+				//	std::cout << "\n";
+
+
 					*_llptr2_len = sum + counter.back();
 					int b = clock();
-					std::cout << "etc " << b - a << "ms\n";
+					//std::cout << "etc " << b - a << "ms\n";
 					//	int new_size = aq->size() + 2; // chk!
 					//	for (int i = 0; i < thr_num; ++i) {
 					//		new_size = new_size + partial_list[i].size();

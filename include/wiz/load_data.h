@@ -3633,16 +3633,9 @@ namespace wiz {
 
 			inline static int timeA[8], timeB[8];
 			inline static int countReserve[8];
-
-			static long long GetIdx(long long x) {
-				return (x >> 32) & 0x00000000FFFFFFFF;
-			}
-			static long long GetLength(long long x) {
-				return (x & 0x00000000FFFFFFFC) >> 2;
-			}
-			static long long GetType(long long x) {
-				return x & 3; // % 4
-			}
+			public:
+		
+			private:
 			static bool __LoadData5_2(const char* buffer, long long llptr2_len, const long long* llptr, const long long* llptr2, UserType* _global, const wiz::LoadDataOption2* _option,
 				int start_state, int last_state, UserType** next, wiz::load_data::Utility::UT_IT_NUM* llptr3, int no) // first, strVec.empty() must be true!!
 			{
@@ -3724,6 +3717,9 @@ namespace wiz {
 
 								nestedUT[braceNum]->ReserveUserTypeList(llptr3[idx].utNum);
 								nestedUT[braceNum]->ReserveItemList(llptr3[idx].itNum - llptr3[idx].eqNum);
+
+								//std::cout << "chk start " << llptr3[idx].itNum - llptr3[idx].eqNum << "\n";
+
 								nestedUT[braceNum]->ReserveIList(llptr3[idx].utNum + llptr3[idx].itNum - llptr3[idx].eqNum);
 							}
 						}
@@ -3742,6 +3738,7 @@ namespace wiz {
 
 								{
 									nestedUT[braceNum]->AddItem(varVec, valVec, varVec.size());
+									//std::cout << "ends " << nestedUT[braceNum]->GetItemListSize() << "\n";
 								}
 
 								
@@ -3878,6 +3875,8 @@ namespace wiz {
 							if (long long idx = GetIdx(llptr2[i]); llptr3[idx].valid) {
 								countReserve[no]++;
 
+								//std::cout << "chk start " << llptr3[idx].itNum - llptr3[idx].eqNum << "\n";
+
 								nestedUT[braceNum]->ReserveUserTypeList(llptr3[idx].utNum);
 								nestedUT[braceNum]->ReserveItemList(llptr3[idx].itNum - llptr3[idx].eqNum);
 								nestedUT[braceNum]->ReserveIList(llptr3[idx].utNum + llptr3[idx].itNum - llptr3[idx].eqNum);
@@ -3886,6 +3885,8 @@ namespace wiz {
 						else {
 							if (x <= llptr2 + llptr2_len - 1) {
 								val = std::string(buffer + GetIdx(llptr2[i]), len);
+								std::cout << "val " << val << "\n";
+								std::cout << "len " << len << " val.size() " << val.size() << "\n";
 
 								//i += 1;
 
@@ -4045,14 +4046,16 @@ namespace wiz {
 						for (int i = 1; i < pivots.size(); ++i) {
 							long long _llptr2_len = pivots[i] - (pivots[i - 1] + 1) + 1;
 							//__global[i].ReserveUserTypeList(llptr3_total.utNum);
-							thr[i] = std::thread(__LoadData5_2, buffer, _llptr2_len, llptr, llptr2 + pivots[i - 1] + 1, &__global[i], &option, 0, 0, &next[i], llptr3, i);
+							thr[i] = std::thread(__LoadData5_2, buffer, _llptr2_len, llptr, llptr2 + pivots[i - 1] + 1, &__global[i], &option, 0, 0, 
+								&next[i], llptr3, i);
 
 						}
 
 						if (pivots.size() >= 1) {
 							long long _llptr2_len = num - 1 - (pivots.back() + 1) + 1;
 							//__global[pivots.size()].ReserveUserTypeList(llptr3_total.utNum);
-							thr[pivots.size()] = std::thread(__LoadData5_2, buffer, _llptr2_len, llptr, llptr2 + pivots.back() + 1, &__global[pivots.size()],
+							thr[pivots.size()] = std::thread(__LoadData5_2, buffer, _llptr2_len, llptr, llptr2 + pivots.back() + 1,
+								&__global[pivots.size()],
 								&option, 0, 0, &next[pivots.size()], llptr3, pivots.size());
 						}
 
@@ -4062,15 +4065,15 @@ namespace wiz {
 						}
 						c = clock();
 
-						std::cout << "chk " << "\n";
-						for (int i = 0; i < 8; ++i) {
-							std::cout << timeB[i] - timeA[i] << " ";
-						}
-						std::cout << "\n";
-						for (int i = 0; i < 8; ++i) {
-							std::cout << countReserve[i] << " ";
-						}
-						std::cout << "\n";
+						//std::cout << "chk " << "\n";
+						//for (int i = 0; i < 8; ++i) {
+						//	std::cout << timeB[i] - timeA[i] << " ";
+						//}
+						//std::cout << "\n";
+						//for (int i = 0; i < 8; ++i) {
+						//	std::cout << countReserve[i] << " ";
+						//}
+						//std::cout << "\n";
 
 						// Merge
 						try {

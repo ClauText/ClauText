@@ -34,6 +34,19 @@
 namespace wiz {
 	inline bool USE_REMOVE_IN_DATATYPE = false;
 	inline bool USE_EMPTY_VECTOR_IN_LOAD_DATA_TYPES = false;
+
+
+	inline long long GetIdx(long long x)  noexcept {
+		return (x >> 32) & 0x00000000FFFFFFFF;
+	}
+	inline long long GetLength(long long x)  noexcept {
+		return (x & 0x00000000FFFFFFFC) >> 2;
+	}
+	inline long long GetType(long long x) noexcept {
+		return x & 3; // % 4
+	}
+
+
 	// 0~n-2 : sorted, 
 	// 0~n-1 : not sorted(maybe?)
 	template <class T, class COMPARE>
