@@ -13,7 +13,7 @@
 #include "wiz/load_data.h"
 
 namespace wiz {
-	namespace load_data{
+	namespace load_data {
 		bool LoadData::operation(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const WIZ_STRING_TYPE& str,
 			wiz::ArrayStack<WIZ_STRING_TYPE>& operandStack, const ExcuteData& excuteData, wiz::StringBuilder* builder)
 		{
@@ -1617,7 +1617,7 @@ namespace wiz {
 			if (utNames.find(ut.GetItemList(i).GetName()) != utNames.end()) {
 			UserType temp(ut.GetItemList(i).GetName());
 			temp.AddItem("", ut.GetItemList(i).Get(0));
-			ut.AddUserTypeItem(move(temp));
+			ut.AddUserTypeItem(std::move(temp));
 			ut.RemoveItemList(i);
 			--i;
 			}
@@ -1630,12 +1630,12 @@ namespace wiz {
 			for (auto x = excuteData.info.parameters.rbegin(); x != excuteData.info.parameters.rend(); ++x) {
 			WIZ_STRING_TYPE temp;
 			Utility::ChangeStr(result, { "$parameter." + x->first }, { x->second }, temp);
-			result = move(temp);
+			result = std::move(temp);
 			}
 			for (auto x = excuteData.info.locals.rbegin(); x != excuteData.info.locals.rend(); ++x) {
 			WIZ_STRING_TYPE temp;
 			Utility::ChangeStr(result, { "$local." + x->first }, { x->second }, temp);
-			result = move(temp);
+			result = std::move(temp);
 			}
 			}
 			*/

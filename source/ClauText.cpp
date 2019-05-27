@@ -100,7 +100,7 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 			isReDraw = false;
 		}
 
-		// move and chk enterkey. - todo!!
+		// std::move and chk enterkey. - todo!!
 		{
 			FFLUSH();
 			char ch = GETCH();
@@ -3581,7 +3581,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					if (wiz::load_data::LoadData::LoadDataFromFileWithJson(fileName, ut)) {
 						{
 							//for (int i = 0; i < ut.GetCommentListSize(); ++i) {
-							//	utTemp->PushComment(move(ut.GetCommentList(i)));
+							//	utTemp->PushComment(std::move(ut.GetCommentList(i)));
 							//}
 
 							wiz::load_data::UserType* _ut = ut.GetUserTypeList(0);
@@ -3648,7 +3648,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 				if (wiz::load_data::LoadData::LoadDataFromFileFastJson(fileName, ut, 0, 0)) {
 					{
 						//for (int i = 0; i < ut.GetCommentListSize(); ++i) {
-						//	utTemp->PushComment(move(ut.GetCommentList(i)));
+						//	utTemp->PushComment(std::move(ut.GetCommentList(i)));
 						//}
 
 						wiz::load_data::UserType* _ut = &ut;
@@ -3715,7 +3715,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					if (wiz::load_data::LoadData::LoadDataFromFileWithHtml(fileName, ut)) {
 						{
 							for (int i = 0; i < ut.GetCommentListSize(); ++i) {
-								utTemp->PushComment(move(ut.GetCommentList(i)));
+								utTemp->PushComment(std::move(ut.GetCommentList(i)));
 							}
 							int item_count = 0;
 							int userType_count = 0;
