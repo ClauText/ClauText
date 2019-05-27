@@ -1727,7 +1727,7 @@ namespace wiz {
 				return{ count2 > 0, count2 };
 			}
 			// no enter strings? " abc \n def " and problem - one line!?
-
+	
 			class UT_IT_NUM
 			{
 			public:
@@ -1743,6 +1743,14 @@ namespace wiz {
 					: utNum(utNum), itNum(itNum), eqNum(eqNum)
 				{
 
+				}
+
+				UT_IT_NUM& operator=(const UT_IT_NUM& other) {
+					this->eqNum = other.eqNum;
+					this->itNum = other.itNum;
+					this->utNum = other.utNum;
+					this->valid = other.valid;
+					return *this;
 				}
 			};
 
@@ -1777,39 +1785,11 @@ namespace wiz {
 					//
 				}
 			private:
-				int checkDelimiter(const char* start, const char* last, const std::vector<std::string>& delimiter)
-				{
-
-					int sum = 0;
-					for (int delim_num = 0; delim_num < delimiter.size(); ++delim_num) {
-						// size check
-						if (start + delimiter[delim_num].size() - 1 > last) {
-							continue;
-						}
-
-						for (const char* x = start; x <= start + delimiter[delim_num].size() - 1; ++x) {
-							if (*x == delimiter[delim_num][x - start]) {
-
-							}
-							else {
-								sum--;
-								break;
-							}
-						}
-						sum++;
-
-						if (sum > 0) {
-							return delim_num;
-						}
-					}
-
-					return -1;
-				}
 
 				long long chk2(bool make) {
 					{
-						std::vector<UT_IT_NUM*> _stack;
-						_stack.reserve(1024);
+						std::vector<UT_IT_NUM*> _vecStack;
+						_vecStack.reserve(1024);
 						countTotal[no] = 0;
 
 						long long llptr2_count = 0;
@@ -1898,8 +1878,8 @@ namespace wiz {
 											}
 										}
 
-										if (!_stack.empty()) {
-											_stack.back()->itNum++;
+										if (!_vecStack.empty()) {
+											_vecStack.back()->itNum++;
 										}
 									}
 									else {
@@ -1942,8 +1922,8 @@ namespace wiz {
 												}
 											}
 										}
-										if (!_stack.empty()) {
-											_stack.back()->itNum++;
+										if (!_vecStack.empty()) {
+											_vecStack.back()->itNum++;
 										}
 									}
 									else {
@@ -1958,8 +1938,8 @@ namespace wiz {
 										llptr2[llptr2_count] = ((i + num) << 32) + ((1) << 2) + 3;
 										llptr2_count++;
 
-										if (!_stack.empty()) {
-											_stack.back()->eqNum++;
+										if (!_vecStack.empty()) {
+											_vecStack.back()->eqNum++;
 										}
 									}
 									else {
@@ -2007,8 +1987,8 @@ namespace wiz {
 												}
 											}
 										}
-										if (!_stack.empty()) {
-											_stack.back()->itNum++;
+										if (!_vecStack.empty()) {
+											_vecStack.back()->itNum++;
 										}
 									}
 									else {
@@ -2028,16 +2008,14 @@ namespace wiz {
 								countTotal[no]++;
 
 								if (llptr3) {
-									llptr3[now_idx].eqNum = 0;
-									llptr3[now_idx].itNum = 0;
-									llptr3[now_idx].utNum = 0;
+									llptr3[now_idx] = wiz::load_data::Utility::UT_IT_NUM();
 									llptr3[now_idx].valid = 1;
-									
-									_stack.push_back(&llptr3[now_idx]);
+
+									_vecStack.push_back(llptr3 + now_idx);
 									llptr3_count++;
 
-									if (_stack.size() >= 2) {
-										_stack[_stack.size() - 2]->utNum++;
+									if (_vecStack.size() >= 2) {
+										_vecStack[_vecStack.size() - 2]->utNum++;
 									}
 								}
 
@@ -2064,8 +2042,8 @@ namespace wiz {
 												}
 											}
 										}
-										if (_stack.size() >= 2) {
-											_stack[_stack.size() - 2]->itNum++;
+										if (_vecStack.size() >= 2) {
+											_vecStack[_vecStack.size() - 2]->itNum++;
 										}
 									}
 									else {
@@ -2105,11 +2083,11 @@ namespace wiz {
 							countTotal[no]++;
 								UT_IT_NUM* top = nullptr;
 								if (llptr3) {
-									if (!_stack.empty()) {
-										llptr3[now_idx] = *_stack.back();
+									if (!_vecStack.empty()) {
+										llptr3[now_idx] = *_vecStack.back();
 
-										top = _stack.back();
-										_stack.pop_back();
+										top = _vecStack.back();
+										_vecStack.pop_back();
 									}
 								}
 								token_last = x - 1;
@@ -2134,8 +2112,8 @@ namespace wiz {
 												}
 											}
 										}
-										if (!_stack.empty()) {
-											_stack.back()->itNum++;
+										if (!_vecStack.empty()) {
+											_vecStack.back()->itNum++;
 										}
 									}
 									else {
@@ -2355,7 +2333,7 @@ namespace wiz {
 									llptr2_count++;
 
 									{
-										if (token_last - token_first + 1 == 1) {
+										if (last - 1 - token_first + 1 == 1) {
 											if (start[start_idx] == option->Left) {
 												llptr2[llptr2_count - 1] += 1;
 											}
@@ -3335,9 +3313,9 @@ namespace wiz {
 
 												   // read data as a block:
 					inFile.read(buffer, file_length);
-					inFile.seekg(0, inFile.end);
-					char temp;
-					inFile >> temp;
+				//	inFile.seekg(0, inFile.end);
+				//	char temp;
+				//	inFile >> temp;
 					
 					buffer[file_length] = '\0';
 
@@ -3390,9 +3368,9 @@ namespace wiz {
 					inFile.read(buffer, file_length);
 					buffer[file_length] = '\0';
 
-					inFile.seekg(0, inFile.end);
-					char temp;
-					inFile >> temp;
+				//	inFile.seekg(0, inFile.end);
+				//	char temp;
+				//	inFile >> temp;
 
 					start[0] = 0;
 					last[0] = file_length;
@@ -3404,7 +3382,6 @@ namespace wiz {
 				long long* llptr = nullptr;
 				long long* llptr2 = nullptr;
 				UT_IT_NUM* llptr3 = nullptr;
-				long long llptr3_len = -1;
 
 				if (thr_num > 0) {
 					//// in string, there are '\r' or '\n' etc.. - no '\r' or '\n'?
@@ -3484,6 +3461,7 @@ namespace wiz {
 					//llptr = new long long[file_length];
 					llptr2 = new long long[file_length];
 					
+					//llptr3 = new wiz::load_data::Utility::UT_IT_NUM[file_length];
 					llptr3 = (wiz::load_data::Utility::UT_IT_NUM*)calloc(file_length, sizeof(wiz::load_data::Utility::UT_IT_NUM));
 					int y = clock();
 					//std::cout << y - x << "ms \n";
@@ -3671,7 +3649,7 @@ namespace wiz {
 					token = strVec.front();
 					strVec.pop_front();
 					*str = (std::move(token.str));
-					//*str = move(strVec.front().str);
+					//*str = std::move(strVec.front().str);
 				}
 				else {
 					strVec.pop_front();
@@ -3758,7 +3736,7 @@ namespace wiz {
 					token = strVec[next_thread_id].front();
 					strVec[next_thread_id].pop_front();
 					*str = (std::move(token.str));
-					//*str = move(strVec.front().str);
+					//*str = std::move(strVec.front().str);
 				}
 				else {
 					strVec[next_thread_id].pop_front();

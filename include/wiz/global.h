@@ -387,7 +387,7 @@ namespace wiz{
     public:
         void operator()( T& t1, T& t2 )
         {
-            std::swap( t1, t2 ); /// if c++11, maybe move...or make Move
+            std::swap( t1, t2 ); /// if c++11, maybe std::move...or make std::move
         }
     };
     template <class T>
@@ -426,10 +426,10 @@ namespace wiz{
 	}
 
     /// TO DO
-    /// MOVE, NO_MOVE
+    /// std::move, NO_MOVE
     /// ( T& t1, T& t2 )
     /// t1 = t2; // NO_MOVE
-    /// t1 = move( t2 ); // MOVE
+    /// t1 = std::move( t2 ); // std::move
 
 	template <class T>
 	class ASC {

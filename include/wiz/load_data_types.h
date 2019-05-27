@@ -82,8 +82,9 @@ namespace wiz {
 			bool inited;
 		public:
 			
-			ItemType(ItemType<T>&& ta) : Type(std::move(ta))
+			ItemType(ItemType<T>&& ta) 
 			{
+				name = std::move(ta.name);
  				data = std::move(ta.data);
 				inited = ta.inited;
 			}
@@ -105,7 +106,7 @@ namespace wiz {
 				//
 			}
 			virtual ~ItemType() { 
-				//
+				//std::cout << "chk" << "\n";
 			}
 		public:
 			void Remove(const int idx = 0)
@@ -250,7 +251,7 @@ namespace wiz {
 			}
 			void PushComment(std::string&& comment)
 			{
-				commentList.push_back(move(comment));
+				commentList.push_back(std::move(comment));
 			}
 			int GetCommentListSize()const { return commentList.size(); }
 			const std::string& GetCommentList(const int idx) const { return commentList[idx]; }
@@ -585,7 +586,7 @@ namespace wiz {
 						temp.push_back(2);
 					}
 				}
-				ilist = move(temp);
+				ilist = std::move(temp);
 
 				useSortedItemList = false;
 			}
@@ -607,7 +608,7 @@ namespace wiz {
 						k = _GetIndex(ilist, 1, k);
 					}
 				}
-				itemList = move(tempDic);
+				itemList = std::move(tempDic);
 
 				useSortedItemList = false;
 			}
@@ -645,7 +646,7 @@ namespace wiz {
 						temp.push_back(1);
 					}
 				}
-				ilist = move(temp);
+				ilist = std::move(temp);
 
 				useSortedUserTypeList = false;
 			}
@@ -670,7 +671,7 @@ namespace wiz {
 						k = _GetIndex(ilist, 2, k);
 					}
 				}
-				userTypeList = move(tempDic);
+				userTypeList = std::move(tempDic);
 
 				useSortedUserTypeList = false;
 			}
@@ -819,7 +820,7 @@ namespace wiz {
 
 				itemList.emplace_back("", "");
 				for (int i = item_idx + 1; i < itemList.size(); ++i) {
-					itemList[i] = move(itemList[i - 1]);
+					itemList[i] = std::move(itemList[i - 1]);
 				}
 				itemList[item_idx] = ItemType<WIZ_STRING_TYPE>(name, item);
 			}
@@ -834,9 +835,9 @@ namespace wiz {
 
 				itemList.emplace_back("", "");
 				for (int i = item_idx + 1; i < itemList.size(); ++i) {
-					itemList[i] = move(itemList[i - 1]);
+					itemList[i] = std::move(itemList[i - 1]);
 				}
-				itemList[item_idx] = ItemType<WIZ_STRING_TYPE>(move(name), move(item));
+				itemList[item_idx] = ItemType<WIZ_STRING_TYPE>(std::move(name), std::move(item));
 			}
 			// chk
 			void InsertUserType(const int ut_idx, UserType&& item) {
@@ -901,6 +902,7 @@ namespace wiz {
 					userTypeList.reserve(offset);
 				}
 			}
+
 			void AddItem(WIZ_STRING_TYPE&& name, WIZ_STRING_TYPE&& item) {
 				{
 					itemList.emplace_back(std::move(name), std::move(item));
