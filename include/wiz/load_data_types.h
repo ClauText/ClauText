@@ -632,7 +632,7 @@ namespace wiz {
 			void RemoveUserTypeList() { /// chk memory leak test!!
 				for (int i = 0; i < userTypeList.size(); i++) {
 					if (nullptr != userTypeList[i]) {
-						//delete userTypeList[i]; //
+						delete userTypeList[i]; //
 						userTypeList[i] = nullptr;
 					}
 				}
