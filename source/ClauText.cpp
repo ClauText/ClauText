@@ -283,14 +283,25 @@ namespace wiz {
 				while (tokenizer.hasMoreTokens()) {
 					event_name = tokenizer.nextToken();
 
+					std::string y_name = y.GetName().ToString();
+					std::string y_data = y.Get(0).ToString();
+
+					if (y_name.empty()) {
+						y_name = "NONE";
+					}
+					if (y_data.empty()) {
+						y_data = "NONE";
+					}
+
+					
 					// for var // chk no start with __, no end with __ ?
 					wiz::load_data::LoadData::AddData(*schema_eventUT, "/./",
 						"Event = { id = __" + event_name + "__ $call = { id = " + event_name +
-						" name = " + y.GetName().ToString() + " value = " + y.Get(0).ToString() +
+						" name = " + y_name + " value = " + y_data +
 						" is_usertype = FALSE " +
 						" real_dir = " + real_dir +
 						" select = NAME " +
-						" input = " + y.GetName().ToString() +
+						" input = " + y_name +
 						" } }",
 						"TRUE", wiz::ExcuteData(), &builder);
 
@@ -306,14 +317,24 @@ namespace wiz {
 				}
 				while (tokenizer2.hasMoreTokens()) {
 					event_name = tokenizer2.nextToken();
+					std::string y_name = y.GetName().ToString();
+					std::string y_data = y.Get(0).ToString();
+
+					if (y_name.empty()) {
+						y_name = "NONE";
+					}
+					if (y_data.empty()) {
+						y_data = "NONE";
+					}
+
 					// for val
 					wiz::load_data::LoadData::AddData(*schema_eventUT, "/./",
 						"Event = { id = __" + event_name + "__ $call = { id = " + event_name +
-						" name = " + y.GetName().ToString() + " value = " + y.Get(0).ToString() +
+						" name = " + y_name + " value = " + y_data +
 						" is_usertype = FALSE " +
 						" real_dir = " + real_dir +
 						" select = VALUE " +
-						" input = " + y.Get(0).ToString() +
+						" input = " + y_data +
 						" } }",
 						"TRUE", wiz::ExcuteData(), &builder);
 
@@ -367,15 +388,20 @@ namespace wiz {
 				while (tokenizer.hasMoreTokens()) {
 					event_name = tokenizer.nextToken();
 
+					std::string y_name = y->GetName().ToString();
+					if (y_name.empty()) {
+						y_name = "NONE";
+					}
+
 					// for var // chk no start with __, no end with __ ?
 					wiz::load_data::LoadData::AddData(*schema_eventUT, "/./",
 						"Event = { id = __" + event_name + "__ $call = { id = " + event_name +
-						" name = " + y->GetName().ToString() +
+						" name = " + y_name +
 						" is_usertype = TRUE " +
 						" real_dir = " + real_dir +
 						" select = NAME " +
-						" input = " + y->GetName().ToString() +
-						"}  } ",
+						" input = " + y_name +
+						" }  } ",
 						"TRUE", wiz::ExcuteData(), &builder);
 
 					if ("TRUE" == clauText.excute_module("Main = { $call = { id = __" + event_name + "__ } }", schema_eventUT, wiz::ExcuteData(), opt, 1)) {
