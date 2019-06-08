@@ -2264,7 +2264,7 @@ namespace wiz {
 										//	aq->emplace_back(token_first, token_last - token_first + 1, false);
 
 										//llptr[start_idx] = token_last - token_first + 1;
-										llptr2[llptr2_count] = ((start_idx + num) << 32) + ((token_last - token_first + 1)) << 2 + 0;
+										llptr2[llptr2_count] = ((start_idx + num) << 32) + ((token_last - token_first + 1) << 2) + 0;
 										llptr2_count++; 
 										{
 											if (token_last - token_first + 1 == 1) {
@@ -2291,28 +2291,29 @@ namespace wiz {
 
 									last_idx = last_idx + 1;
 								}
-								bool is_i = false;
-								for (; x < last; ++x) {
+								
+								for (; x <= last; ++x) {
 									//llptr[i] = 0;
-									i++;
-									now_idx++;
-									is_i = true;
-									token_last++;
-
-									last_idx++;
+									
 									if (*x == '\n' || *x == '\0') // cf) '\r' ? '\0'?
 									{
 										break;
 									}
+									
+									i++;
+									now_idx++;
+									token_last++;
+
+									last_idx++;
 								}
-								if (is_i) {
-									i--;
-									now_idx--;
-								}
+
 								//aq->emplace_back(token_first, token_last - token_first + 1, true); // cancel?
 								token_first = x + 1;
 								start_idx = now_idx + 1;
-								offset = 1;
+								
+								token_last = x + 1;
+								last_idx = now_idx + 1;
+								continue;
 							}
 							else {
 								//
@@ -2321,6 +2322,7 @@ namespace wiz {
 							token_last = x + offset;
 
 							last_idx = now_idx + offset;
+							
 						}
 
 						if (token_first < last)
@@ -3464,7 +3466,7 @@ namespace wiz {
 					//llptr3 = new wiz::load_data::Utility::UT_IT_NUM[file_length];
 					llptr3 = (wiz::load_data::Utility::UT_IT_NUM*)calloc(file_length, sizeof(wiz::load_data::Utility::UT_IT_NUM));
 					int y = clock();
-					//std::cout << y - x << "ms \n";
+					std::cout << "calloc " << y - x << "ms \n";
 
 					std::vector<long long> counter(thr_num, 0);
 					for (int i = 0; i < thr_num; ++i) {
