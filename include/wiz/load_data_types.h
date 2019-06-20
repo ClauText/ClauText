@@ -1156,7 +1156,7 @@ namespace wiz {
 					std::regex rgx(str);
 
 					for (int i = 0; i < itemList.size(); ++i) {
-						if (regex_match(wiz::ToString(itemList[i].GetName()), rgx)) {
+						if (std::regex_match(wiz::ToString(itemList[i].GetName()), rgx)) {
 							temp.push_back(i);
 						}
 					}
@@ -1247,6 +1247,21 @@ namespace wiz {
 			//// O(N) -> O(logN)?
 			std::vector<UserType*> GetUserTypeItem(const WIZ_STRING_TYPE& name) const { /// chk...
 				std::vector<UserType*> temp;
+				std::string _name = name.ToString();
+
+				if (String::startsWith(_name, "$.") && _name.size() >= 5) {
+					// later, change to binary search?
+					std::string str = _name.substr(3, _name.size() - 4);
+					std::regex rgx(str);
+
+					for (int i = 0; i < userTypeList.size(); ++i) {
+						if (std::regex_match(wiz::ToString(userTypeList[i]->GetName()), rgx)) {
+							temp.push_back(userTypeList[i]);
+						}
+					}
+
+					return temp;
+				}
 
 				if (false == useSortedUserTypeList) {
 					// make sortedUserTypeList.
@@ -2157,13 +2172,46 @@ namespace wiz {
 				return temp;
 			}
 		public:
-			// find userType! not itemList!,// this has bug
 			static std::pair<bool, std::vector< UserType*> > Find(UserType* global, const std::string& _position, StringBuilder* builder) /// option, option_offset
 			{
 				std::string position = _position;
-				std::vector< UserType* > temp;
 
 				if (!position.empty() && position[0] == '@') { position.erase(position.begin()); }
+				
+				wiz::StringTokenizer tokenizer(position, std::vector<std::string>{ "/" }, builder);
+				std::vector<std::string> x;
+
+				while (tokenizer.hasMoreTokens()) {
+					std::string temp = tokenizer.nextToken();
+					if (temp == ".") {
+						continue;
+					}
+
+					if (x.empty()) {
+						x.push_back(temp);
+					}
+					else if (x.back() != ".." && temp == "..") {
+						x.pop_back();
+					}
+					else {
+						x.push_back(temp);
+					}
+				}
+
+				std::string result = "/./";
+				for (const auto& _x : x) {
+					result += _x;
+					result += "/";
+				}
+
+				return _Find(std::move(result), global, builder);
+			}
+		private:	
+			// find userType! not itemList!,// this has bug
+			static std::pair<bool, std::vector< UserType*> > _Find(std::string&& position, UserType* global, StringBuilder* builder) /// option, option_offset
+			{
+				std::vector< UserType* > temp;
+
 				if (position.empty()) { temp.push_back(global); return{ true, temp }; }
 				if (position == ".") { temp.push_back(global); return{ true, temp }; }
 				if (position == "/./") { temp.push_back(global); return{ true, temp }; } // chk..
