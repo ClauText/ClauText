@@ -64,7 +64,7 @@ namespace wiz {
 				return *this;
 			}
 			Option& Event(const std::string& event_id) {
-				this->event_ids += " ";
+				this->event_ids += "|";
 				this->event_ids += event_id;
 				return *this;
 			}
@@ -276,12 +276,23 @@ namespace wiz {
 			if (name_do && val_do) {
 				// event check.
 				wiz::ClauText clauText;
-				wiz::StringTokenizer tokenizer(var_option.event_ids, &builder);
-				wiz::StringTokenizer tokenizer2(val_option.event_ids, &builder);
+				wiz::StringTokenizer tokenizer(var_option.event_ids, "|", &builder);
+				wiz::StringTokenizer tokenizer2(val_option.event_ids, "|", &builder);
 				std::string event_name;
 
 				while (tokenizer.hasMoreTokens()) {
 					event_name = tokenizer.nextToken();
+
+					wiz::StringTokenizer tokenizer3(event_name, std::vector<std::string>{ "@" }, &builder);
+
+					event_name = tokenizer3.nextToken();
+					std::string parameters;
+
+					while (tokenizer3.hasMoreTokens()) {
+						std::string token = tokenizer3.nextToken();
+						token = token.substr(1, token.size() - 2);
+						parameters += token + " ";
+					}
 
 					std::string y_name = y.GetName().ToString();
 					std::string y_data = y.Get(0).ToString();
@@ -301,7 +312,8 @@ namespace wiz {
 						" is_usertype = FALSE " +
 						" real_dir = " + real_dir +
 						" select = NAME " +
-						" input = " + y_name +
+						" input = " + y_name + " "
+						+ parameters + " " +
 						" } }",
 						"TRUE", wiz::ExcuteData(), &builder);
 
@@ -317,6 +329,18 @@ namespace wiz {
 				}
 				while (tokenizer2.hasMoreTokens()) {
 					event_name = tokenizer2.nextToken();
+					
+					wiz::StringTokenizer tokenizer3(event_name, std::vector<std::string>{ "@" }, &builder);
+
+					event_name = tokenizer3.nextToken();
+					std::string parameters;
+
+					while (tokenizer3.hasMoreTokens()) {
+						std::string token = tokenizer3.nextToken();
+						token = token.substr(1, token.size() - 2);
+						parameters += token + " ";
+					}
+
 					std::string y_name = y.GetName().ToString();
 					std::string y_data = y.Get(0).ToString();
 
@@ -334,7 +358,8 @@ namespace wiz {
 						" is_usertype = FALSE " +
 						" real_dir = " + real_dir +
 						" select = VALUE " +
-						" input = " + y_data +
+						" input = " + y_data + " " 
+						+ parameters + " " +
 						" } }",
 						"TRUE", wiz::ExcuteData(), &builder);
 
@@ -382,11 +407,22 @@ namespace wiz {
 			if (name_do) {
 				// event check.
 				wiz::ClauText clauText;
-				wiz::StringTokenizer tokenizer(var_option.event_ids, &builder);
+				wiz::StringTokenizer tokenizer(var_option.event_ids, "|", &builder);
 				std::string event_name;
 
 				while (tokenizer.hasMoreTokens()) {
 					event_name = tokenizer.nextToken();
+
+					wiz::StringTokenizer tokenizer3(event_name, std::vector<std::string>{ "@" }, &builder);
+
+					event_name = tokenizer3.nextToken();
+					std::string parameters;
+
+					while (tokenizer3.hasMoreTokens()) {
+						std::string token = tokenizer3.nextToken();
+						token = token.substr(1, token.size() - 2);
+						parameters += token + " ";
+					}
 
 					std::string y_name = y->GetName().ToString();
 					if (y_name.empty()) {
@@ -400,7 +436,8 @@ namespace wiz {
 						" is_usertype = TRUE " +
 						" real_dir = " + real_dir +
 						" select = NAME " +
-						" input = " + y_name +
+						" input = " + y_name + " " +
+						parameters + " " +
 						" }  } ",
 						"TRUE", wiz::ExcuteData(), &builder);
 
@@ -2022,22 +2059,22 @@ public:
 
 std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::UserType* _global, const ExcuteData& excuteData, Option& opt, int chk)
 {
-	wiz::ArrayMap<std::string, std::pair<std::vector<std::string>, bool>>* __map = opt._map;
-	opt._map = Node<wiz::ArrayMap<std::string, std::pair<std::vector<std::string>, bool>>>::f(__map);
-	wiz::ArrayMap<std::string, std::pair<std::vector<std::string>, bool>>& _map = *opt._map;
+	wiz::Map2<std::string, std::pair<std::vector<std::string>, bool>>* __map = opt._map;
+	opt._map = Node<wiz::Map2<std::string, std::pair<std::vector<std::string>, bool>>>::f(__map);
+	wiz::Map2<std::string, std::pair<std::vector<std::string>, bool>>& _map = *opt._map;
 																		   //
 	wiz::load_data::UserType& global = *_global;
 	//std::vector<std::thread*> waits;
-	wiz::ArrayMap<std::string, wiz::load_data::UserType>* _objectMap = opt.objectMap;
-	opt.objectMap = Node<wiz::ArrayMap<std::string, wiz::load_data::UserType>>::f(_objectMap);
-	wiz::ArrayMap<std::string, wiz::load_data::UserType>& objectMap = *opt.objectMap;
+	wiz::Map2<std::string, wiz::load_data::UserType>* _objectMap = opt.objectMap;
+	opt.objectMap = Node<wiz::Map2<std::string, wiz::load_data::UserType>>::f(_objectMap);
+	wiz::Map2<std::string, wiz::load_data::UserType>& objectMap = *opt.objectMap;
 
-	wiz::ArrayMap<std::string, wiz::load_data::UserType>* _moduleMap = opt.moduleMap;
-	opt.moduleMap = Node<wiz::ArrayMap<std::string, wiz::load_data::UserType>>::f(_moduleMap);
-	wiz::ArrayMap<std::string, wiz::load_data::UserType>& moduleMap = *opt.moduleMap;
+	wiz::Map2<std::string, wiz::load_data::UserType>* _moduleMap = opt.moduleMap;
+	opt.moduleMap = Node<wiz::Map2<std::string, wiz::load_data::UserType>>::f(_moduleMap);
+	wiz::Map2<std::string, wiz::load_data::UserType>& moduleMap = *opt.moduleMap;
 
-	wiz::ArrayMap<std::string, wiz::load_data::UserType>* objectMapPtr = nullptr;
-	wiz::ArrayMap<std::string, wiz::load_data::UserType>* moduleMapPtr = nullptr;
+	wiz::Map2<std::string, wiz::load_data::UserType>* objectMapPtr = nullptr;
+	wiz::Map2<std::string, wiz::load_data::UserType>* moduleMapPtr = nullptr;
 
 	std::string* _module_value = opt.module_value;
 	opt.module_value = Node<std::string>::f(_module_value);
@@ -2048,9 +2085,9 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 	opt.eventStack = Node<wiz::ArrayStack<EventInfo>>::f(_eventStack);
 	wiz::ArrayStack<EventInfo>& eventStack = *opt.eventStack;
 
-	wiz::ArrayMap<std::string, int>* _convert = opt.convert;
-	opt.convert = Node<wiz::ArrayMap<std::string, int>>::f(_convert);
-	wiz::ArrayMap<std::string, int>& convert = *opt.convert;
+	wiz::Map2<std::string, int>* _convert = opt.convert;
+	opt.convert = Node<wiz::Map2<std::string, int>>::f(_convert);
+	wiz::Map2<std::string, int>& convert = *opt.convert;
 
 	std::vector<wiz::load_data::UserType*>* __events = opt._events;
 	opt._events = Node<std::vector<wiz::load_data::UserType*>>::f(__events);

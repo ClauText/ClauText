@@ -1296,25 +1296,10 @@ namespace wiz {
 		{
 			std::string result = temp;
 
-			if (false == result.empty() && '^' == result[0]) { // for pass ToBool4
+			if (false == result.empty() && ('^' == result[0])) { // for pass ToBool4
 				result.erase(result.begin());
 				return result;
 			}
-			//cout << "temp is " << temp << endl;
-			/*set<WIZ_STRING_TYPE> utNames; // rename?
-			{ // removal??
-			UserType utTemp;
-			LoadData::LoadDataFromString(result, utTemp);
-
-			for (int i = 0; i < utTemp.GetUserTypeListSize(); ++i) {
-			if (utTemp.GetUserTypeList(i)->GetName().empty() == false
-			&& utTemp.GetUserTypeList(i)->GetName()[0] == '$'
-			) {
-			utNames.insert(utTemp.GetUserTypeList(i)->GetName());
-			}
-			}
-			}*/
-			//	cout << "result is " << result << endl;
 
 			wiz::ArrayStack<std::string> resultStack;
 			//wiz::load_data::UserType ut;
