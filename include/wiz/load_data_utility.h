@@ -2406,6 +2406,8 @@ namespace wiz {
 				size_t readSize = file.gcount();
 
 				if (0 == readSize) {
+					file.clear();
+					file.seekg(0, std::ios_base::beg);
 					return UNDEFINED;
 				}
 
@@ -2422,6 +2424,7 @@ namespace wiz {
 				file.seekg(stBom.bom_size, std::ios_base::beg);
 				return type;
 			}
+
 			static BomType ReadBom(const char* contents, size_t length, BomInfo& outInfo) {
 				char btBom[5] = { 0, };
 				size_t testLength = length < 5 ? length : 5;

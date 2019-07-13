@@ -61,8 +61,8 @@ namespace wiz {
 		wiz::load_data::UserType* pEvents;
 		EventInfo info; // chk!
 		bool chkInfo;
-		wiz::ArrayMap<std::string, wiz::load_data::UserType>* pObjectMap;
-		wiz::ArrayMap<std::string, wiz::load_data::UserType>* pModule;
+		wiz::Map2<std::string, wiz::load_data::UserType>* pObjectMap;
+		wiz::Map2<std::string, wiz::load_data::UserType>* pModule;
 
 		long long depth;
 
@@ -160,14 +160,14 @@ namespace wiz {
 	class Option
 	{
 	public:
-		wiz::ArrayMap<std::string, std::pair<std::vector<std::string>, bool>>* _map = nullptr; // todo - fixed max size? and rename
+		wiz::Map2<std::string, std::pair<std::vector<std::string>, bool>>* _map = nullptr; // todo - fixed max size? and rename
 		//std::vector<std::thread*> waits;
-		wiz::ArrayMap<std::string, wiz::load_data::UserType>* objectMap = nullptr; // std::string -> wiz::load_data::UserType
-		wiz::ArrayMap<std::string, wiz::load_data::UserType>* moduleMap = nullptr;
+		wiz::Map2<std::string, wiz::load_data::UserType>* objectMap = nullptr; // std::string -> wiz::load_data::UserType
+		wiz::Map2<std::string, wiz::load_data::UserType>* moduleMap = nullptr;
 		std::string* module_value = nullptr;
 		// data, event load..
 		wiz::ArrayStack<EventInfo>* eventStack = nullptr;
-		wiz::ArrayMap<std::string, int>* convert = nullptr;
+		wiz::Map2<std::string, int>* convert = nullptr;
 		std::vector<wiz::load_data::UserType*>* _events = nullptr;
 		wiz::load_data::UserType* events = nullptr;
 		wiz::load_data::UserType* Main = nullptr;
@@ -3974,7 +3974,7 @@ namespace wiz {
 					int a = clock();
 					end = !reserver(option, lex_thr_num, buffer, llptr, &buffer_total_len, llptr2, &llptr2_len, llptr3);
 					int b = clock();
-					std::cout << b - a << "ms \n";
+					std::cout << "lexing " <<  b - a << "ms \n";
 
 					{
 

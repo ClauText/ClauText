@@ -155,9 +155,9 @@ namespace wiz {
 			return (*this)[key];
 		}
 	};
-	/*
+	
 	template <class Key, class Data>
-	class ArrayMap
+	class Map2
 	{
 	private:
 		std::unordered_map<Key, Data> _map;
@@ -232,7 +232,7 @@ namespace wiz {
 		auto at(const Key& key) const {
 			return _map.at(key);
 		}
-	};*/
+	};
 }
 
 #endif

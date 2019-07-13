@@ -954,7 +954,7 @@ namespace wiz {
 					useSortedItemList = false;
 				}
 			}
-			void AddItem(const std::vector<WIZ_STRING_TYPE>& name, const std::vector<WIZ_STRING_TYPE>& item, const int n) {
+			void AddItem(std::vector<WIZ_STRING_TYPE>& name, std::vector<WIZ_STRING_TYPE>& item, const int n) {
 				// name.size() == item.size()
 				int start_idx = itemList.size();
 				itemList.reserve(itemList.size() + n);
@@ -963,7 +963,7 @@ namespace wiz {
 
 				{
 					for (int i = start_idx; i < end_idx; ++i) {
-						itemList.emplace_back(name[i-start_idx], item[i-start_idx]);
+						itemList.emplace_back(std::move(name[i-start_idx]), std::move(item[i-start_idx]));
 						ilist.push_back(1);
 					}
 				}

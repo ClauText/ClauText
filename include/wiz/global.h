@@ -340,7 +340,7 @@ namespace wiz {
 		}
 		return -1;
 	}
-	inline int Equal2(const char& option, const char ch)
+	inline int Equal2(const char option, const char ch)
 	{
 		if (ch == option) {
 			return 0;
