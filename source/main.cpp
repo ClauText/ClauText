@@ -191,20 +191,20 @@ int main(int argc, char* argv[])
 		std::cout << str << std::endl;
 		GETCH();
 	}
-	catch (const wiz::Error& e) {
-		std::cout << e << std::endl;
-		GETCH();
-	}
+	//catch (const wiz::Error& e) {
+	//	std::cout << e << std::endl;
+	//	GETCH();
+	//}
 	catch (const std::exception&e) {
 		std::cout << e.what() << std::endl;
 		GETCH();
 	}
 
 #ifndef _DEBUG
-	catch (...) {
-		std::cout << "UnKnown Error.." << std::endl;
-		GETCH();
-	}
+	//catch (...) {
+	//	std::cout << "UnKnown Error.." << std::endl;
+	//	GETCH();
+	//}
 #endif
 
    	return 0;

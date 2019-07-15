@@ -1360,7 +1360,7 @@ namespace wiz {
 
 			}
 
-			std::vector<std::string> tokenVec;
+			std::vector <std::pair<WIZ_STRING_TYPE, bool> > tokenVec;
 			tokenVec.reserve(result.size());
 
 			{
@@ -1388,31 +1388,31 @@ namespace wiz {
 				*/
 				tokenVec.reserve(tokenizer.countTokens());
 				while (tokenizer.hasMoreTokens()) {
-					tokenVec.push_back(tokenizer.nextToken());
+					tokenVec.push_back({ tokenizer.nextToken(), false });
 				}
 				
 
 				for (int i = tokenVec.size() - 1; i >= 0; --i)
 				{
-					std::string before = tokenVec[i];
-					if ('/' == tokenVec[i][0] && tokenVec[i].size() > 1)
+					std::string before = tokenVec[i].first.ToString();
+					if ('/' == tokenVec[i].first.ToString()[0] && tokenVec[i].first.ToString().size() > 1)
 					{
-						std::string _temp = Find(&global, tokenVec[i], builder);
+						std::string _temp = Find(&global, tokenVec[i].first.ToString(), builder);
 
 						if ("" != _temp) {
-							tokenVec[i] = std::move(_temp);
+							tokenVec[i] = { std::move(_temp), true };
 						}
 					}
-					else if (wiz::String::startsWith(tokenVec[i], "$local.")) { // && length?
-						std::string _temp = FindLocals(excuteData.info.locals, tokenVec[i]);
+					else if (wiz::String::startsWith(tokenVec[i].first.ToString(), "$local.")) { // && length?
+						std::string _temp = FindLocals(excuteData.info.locals, tokenVec[i].first.ToString());
 						if (!_temp.empty()) {
-							tokenVec[i] = std::move(_temp);
+							tokenVec[i] = { std::move(_temp), true };
 						}
 					}
-					else if (wiz::String::startsWith(tokenVec[i], "$parameter.")) { // && length?
-						std::string _temp = FindParameters(excuteData.info.parameters, tokenVec[i]);
+					else if (wiz::String::startsWith(tokenVec[i].first.ToString(), "$parameter.")) { // && length?
+						std::string _temp = FindParameters(excuteData.info.parameters, tokenVec[i].first.ToString());
 						if (!_temp.empty()) {
-							tokenVec[i] = std::move(_temp);
+							tokenVec[i] = { std::move(_temp), true };
 						}
 					}
 				}
@@ -1443,7 +1443,7 @@ namespace wiz {
 			//cout << "result is " << result << endl;
 			//
 			wiz::ArrayStack<WIZ_STRING_TYPE> operandStack;
-			wiz::ArrayStack<std::string> operatorStack;
+			wiz::ArrayStack<std::pair<WIZ_STRING_TYPE, bool>> operatorStack;
 
 			operandStack.reserve(tokenVec.size());
 			operatorStack.reserve(tokenVec.size());
@@ -1457,15 +1457,18 @@ namespace wiz {
 
 			for (int i = tokenVec.size() - 1; i >= 0; --i) {
 				// todo - chk first? functions in Event
-				if (String::startsWith(tokenVec[i], "$parameter.") ||
-					String::startsWith(tokenVec[i], "$.") || // for regex? $."regular expression"
+				if (String::startsWith(tokenVec[i].first.ToString(), "$parameter.") ||
+					String::startsWith(tokenVec[i].first.ToString(), "$.") || // for regex? $."regular expression"
 					//	tokenVec[i] == "$parameter" || // for lambda
 					//	tokenVec[i] == "$local" || // for lambda
-					String::startsWith(tokenVec[i], "$local.") ||
+					String::startsWith(tokenVec[i].first.ToString(), "$local.") ||
 					//	"$return" == tokenVec[i] || // for lambda
-					'$' != tokenVec[i][0] || ('$' == tokenVec[i][0] && tokenVec[i].size() == 1)
+					'$' != tokenVec[i].first.ToString()[0] || ('$' == tokenVec[i].first.ToString()[0] && tokenVec[i].first.ToString().size() == 1)
+
+					|| tokenVec[i].second // if) /./data == $print
+
 					) {
-					operandStack.push(tokenVec[i]);
+					operandStack.push(tokenVec[i].first);
 				}
 				else
 				{
@@ -1474,7 +1477,7 @@ namespace wiz {
 					operandStack.pop(); // {
 					operatorStack.push(tokenVec[i]);
 
-					if (false == operation(now, global, tokenVec[i], operandStack, excuteData, builder)) // chk!!
+					if (false == operation(now, global, tokenVec[i].first, operandStack, excuteData, builder)) // chk!!
 					{
 						// chk removal here?
 						std::cout << " false " << std::endl;
@@ -1484,7 +1487,7 @@ namespace wiz {
 						operatorStack.pop();
 						operandStack.push("{");
 						operandStack.push("=");
-						operandStack.push(tokenVec[i]);
+						operandStack.push(tokenVec[i].first);
 						continue;
 					}
 
