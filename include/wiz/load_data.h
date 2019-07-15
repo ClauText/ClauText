@@ -9047,6 +9047,7 @@ namespace wiz {
 			static std::string ToBool3(wiz::load_data::UserType& global, const wiz::ArrayMap<std::string, std::string>& parameters, std::string&& temp,
 				const EventInfo& info, StringBuilder* builder);
 			// remove - 4_A, 4_B ?
+			/*
 			static std::pair<std::vector<std::string>, bool> ToBool4_A(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const std::string& temp, const ExcuteData& excuteData, wiz::StringBuilder* builder)
 			{
 				std::string result = temp;
@@ -9141,7 +9142,7 @@ namespace wiz {
 
 				std::string result;
 				//
-				wiz::ArrayStack<WIZ_STRING_TYPE> operandStack;
+				wiz::ArrayStack<std::pair<WIZ_STRING_TYPE, bool>> operandStack;
 				wiz::ArrayStack<std::string> operatorStack;
 				//wiz::StringTokenizer tokenizer(result, { " ", "\n", "\t", "\r" }, builder, 1);
 				//vector<std::string> tokenVec;
@@ -9158,6 +9159,7 @@ namespace wiz {
 						String::startsWith(tokenVec[i], "$local.") ||
 						//"$return" == tokenVec[i] ||
 						'$' != tokenVec[i][0] || ('$' == tokenVec[i][0] && tokenVec[i].size() == 1)
+						|| tokenVec[i].second
 						) {
 						operandStack.push(std::move(tokenVec[i]));
 					}
@@ -9248,6 +9250,7 @@ namespace wiz {
 
 				return std::move(result);
 			}
+			*/
 
 			static std::string ToBool4(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const std::string& temp, const ExcuteData& excuteData, wiz::StringBuilder* builder);
 		};
