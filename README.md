@@ -27,5 +27,5 @@
   6. DOING - std::map -> wiz::ArrayMap
   7. DONE - makefile added!
   8. TODO - with LGTM, fix warnings. https://lgtm.com/projects/g/ClauText/ClauText/
-  9. NOTYET - UTF-8 Support?
+  9. NOTYET - UTF-8 Support? (with C++20?)
   10. $iterate is very slow. - maybe need big change in code.. or use ClauToCpp
