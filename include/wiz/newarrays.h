@@ -75,9 +75,9 @@ public:
 			p = new T[N];
 		}
 		catch (const std::bad_alloc& e) {
-			std::cout << N << std::endl;
-			std::cout << e.what() << std::endl; 
-			std::cout << "memory alloc error in array" << std::endl;
+			wiz::Out << N << ENTER;
+			wiz::Out << e.what() << ENTER; 
+			wiz::Out << "memory alloc error in array" << ENTER;
 		}
 		//reset( reset_val );
 		if (!std::is_class<T>::value)

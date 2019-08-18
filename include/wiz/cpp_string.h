@@ -388,7 +388,7 @@ namespace wiz{
 					else if (!pass && i == str.size() - 1) {
 						if (right - left + 1 > 0) {
 							_m_str.emplace_back(builder->Divide(right - left + 1), right - left + 1);
-						//	std::cout << "chk " << separator[0] << " | " << str << " " << _m_str.back() << std::endl;
+						//	wiz::Out << "chk " << separator[0] << " | " << str << " " << _m_str.back() << ENTER;
 							builder->LeftShift(right - left + 1);
 						}
 						else {
@@ -556,7 +556,7 @@ namespace wiz{
 					else if (!pass && i == str.size() - 1) {
 						if (right - left + 1 > 0) {
 							_m_str.emplace_back(builder->Divide(right - left + 1), right - left + 1);
-							//	std::cout << "chk " << separator[0] << " | " << str << " " << _m_str.back() << std::endl;
+							//	wiz::Out << "chk " << separator[0] << " | " << str << " " << _m_str.back() << ENTER;
 							builder->LeftShift(right - left + 1);
 						}
 						else {
@@ -824,7 +824,7 @@ namespace wiz{
 					else if (!pass && i == str.size() - 1) {
 						if (right - left + 1 > 0) {
 							_m_str.emplace_back(builder->Divide(right - left + 1), right - left + 1);
-							//	std::cout << "chk " << separator[0] << " | " << str << " " << _m_str.back() << std::endl;
+							//	wiz::Out << "chk " << separator[0] << " | " << str << " " << _m_str.back() << ENTER;
 							builder->LeftShift(right - left + 1);
 						}
 						else {
@@ -993,7 +993,7 @@ namespace wiz{
 					else if (!pass && i == str.size() - 1) {
 						if (right - left + 1 > 0) {
 							_m_str.emplace_back(builder->Divide(right - left + 1), right - left + 1);
-							//	std::cout << "chk " << separator[0] << " | " << str << " " << _m_str.back() << std::endl;
+							//	wiz::Out << "chk " << separator[0] << " | " << str << " " << _m_str.back() << ENTER;
 							builder->LeftShift(right - left + 1);
 						}
 						else {

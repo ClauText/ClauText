@@ -508,9 +508,9 @@ namespace wiz {
 						++i;
 					}
 				}
-				catch (const char* err) { std::cout << err << std::endl; return false; }
-				catch (const std::string& err) { std::cout << err << std::endl; return false; }
-				catch (Error& e) { std::cout << e << std::endl; return false; }
+				catch (const char* err) { wiz::Out << err << ENTER; return false; }
+				catch (const std::string& err) { wiz::Out << err << ENTER; return false; }
+				catch (Error& e) { wiz::Out << e << ENTER; return false; }
 				return true;
 			}
 		public:

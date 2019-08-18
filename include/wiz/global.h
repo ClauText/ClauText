@@ -6,6 +6,7 @@
 #include <vector>
 #include <list>
 #include <string>
+#include <fstream>
 #include <iostream>
 #include <cmath>
 #include <deque>
@@ -32,6 +33,58 @@
 ///
 
 namespace wiz {
+
+	#define ENTER '\n' // cf) ENTER
+
+	class _Out {
+	private:
+		std::string LOG_FILE_NAME = "clautext_log.txt";
+		
+		long policy = 0; // default 0 - only console, 1 - only file, 2 - file and console.
+ 	public:
+		_Out& operator = (const _Out& other) {
+			policy = other.policy;
+			return *this;
+		}
+
+		template<class T>
+		_Out& operator << (const T& data) 
+		{
+			if (0 == policy || 2 == policy) {
+				std::cout << data;
+			}
+			if (1 == policy || 2 == policy) {
+				std::ofstream outFile;
+				outFile.open(LOG_FILE_NAME, std::ios::app);
+				outFile << data;
+				outFile.close();
+			}
+
+			return *this;
+		}
+
+		void clear_file()
+		{
+			if (1 == policy || 2 == policy) {
+				std::ofstream outFile;
+				outFile.open(LOG_FILE_NAME);
+				outFile.close();
+			}
+		}
+	public:
+		_Out(std::string log_file_name = "clautext_log.txt", long policy = 0) 
+			: LOG_FILE_NAME(log_file_name), policy(policy) {
+			//
+		}
+
+		void SetFileName(const std::string& fileName) {
+			LOG_FILE_NAME = fileName;
+		}
+		void SetPolicy(long policy) {
+			this->policy = policy;
+		}
+	};
+	inline _Out Out;
 	inline bool USE_REMOVE_IN_DATATYPE = false;
 	inline bool USE_EMPTY_VECTOR_IN_LOAD_DATA_TYPES = false;
 

@@ -1183,7 +1183,7 @@ namespace wiz {
 							}
 							else if (0 == state && -1 != (idx = checkDelimiter(statement, i, option.Assignment))) {
 								token_last = i - 1;
-							//	std::cout << "chk " << std::endl;
+							//	wiz::Out << "chk " << ENTER;
 								if (token_last >= 0 && token_last - token_first + 1 > 0) {
 									statement.Divide(i);
 				
@@ -1648,7 +1648,7 @@ namespace wiz {
 				//aq.push(std::move(doThread.aq));
 				//int b = clock();
 
-				//std::cout << b - a << "ms" << std::endl;
+				//wiz::Out << b - a << "ms" << ENTER;
 				return{ count > 0, count };
 			}
 
@@ -1731,7 +1731,7 @@ namespace wiz {
 			class UT_IT_NUM
 			{
 			public:
-				int utNum = 0;
+				int utNum = 0; // int -> unsigned char?
 				int itNum = 0;
 				int eqNum = 0;
 				int valid = 0;
@@ -2369,7 +2369,7 @@ namespace wiz {
 					timeA[no] = clock();
 					long long size = chk2(true);
 					timeB[no] = clock();
-					//std::cout << b - a << "ms\n";
+					//wiz::Out << b - a << "ms\n";
 					/*aq->reserve(size);
 					std::vector<long long>& length = *_length;
 					int count = 0;
@@ -2483,7 +2483,7 @@ namespace wiz {
 
 					BomType x = ReadBom(inFile);
 					if (x == UTF_8) {
-						std::cout << "UTF-8" << "\n";
+						wiz::Out << "UTF-8" << "\n";
 					}
 					length = length - inFile.tellg();
 					
@@ -2507,7 +2507,7 @@ namespace wiz {
 							// here bug is..  " check "
 							if ('\r' == buffer[x] || '\n' == (buffer[x]) || x == length) {
 								start[i] = x;
-								//	std::cout << "start " << start[i] << std::endl;
+								//	wiz::Out << "start " << start[i] << ENTER;
 								break;
 							}
 						}
@@ -2517,13 +2517,13 @@ namespace wiz {
 						for (int x = last[i]; x <= length; ++x) {
 							if ('\r' == buffer[x] || '\n' == (buffer[x]) || x == length) {
 								last[i] = x;
-								//	std::cout << "start " << start[i] << std::endl;
+								//	wiz::Out << "start " << start[i] << ENTER;
 								break;
 							}
 						}
 					}
 					last[thr_num - 1] = length;
-					//	std::cout << last[thr_num - 1] << std::endl;
+					//	wiz::Out << last[thr_num - 1] << ENTER;
 				}
 				else {
 					inFile.seekg(0, inFile.end);
@@ -2625,7 +2625,7 @@ namespace wiz {
 					std::vector<std::thread> thr(thr_num);
 
 					for (int i = 0; i < thr_num; ++i) {
-						//	std::cout << last[i] - start[i] << std::endl;
+						//	wiz::Out << last[i] - start[i] << ENTER;
 						partial_list[i].reserve((last[i] - start[i]));
 						thr[i] = std::thread(DoThread3(buffer + start[i], buffer + last[i], &partial_list[i], &option));
 					}
@@ -2663,14 +2663,14 @@ namespace wiz {
 				// debug!
 				{
 					//	for (int i = 0; i < aq->size(); ++i) {
-					//		std::cout << i + 1 << " " << std::string((*aq)[i].str, (*aq)[i].len) << std::endl;
+					//		wiz::Out << i + 1 << " " << std::string((*aq)[i].str, (*aq)[i].len) << ENTER;
 					//	}
 				}
 
 				//delete[] buffer;
 
 			//				log_result = log_result + clock() - a;
-				//std::cout << "lexing " << clock() - a << "ms" << std::endl;
+				//wiz::Out << "lexing " << clock() - a << "ms" << ENTER;
 
 				_buffer = buffer;
 
@@ -3115,7 +3115,7 @@ namespace wiz {
 							// here bug is..  " check "
 							if ('\r' == buffer[x] || '\n' == (buffer[x]) || '\0' == buffer[x]) {
 								start[i] = x;
-								//	std::cout << "start " << start[i] << std::endl;
+								//	wiz::Out << "start " << start[i] << ENTER;
 								break;
 							}
 						}
@@ -3125,13 +3125,13 @@ namespace wiz {
 						for (int x = last[i]; x <= length; ++x) {
 							if ('\r' == buffer[x] || '\n' == (buffer[x]) || '\0' == buffer[x]) {
 								last[i] = x;
-								//	std::cout << "start " << start[i] << std::endl;
+								//	wiz::Out << "start " << start[i] << ENTER;
 								break;
 							}
 						}
 					}
 					last[thr_num - 1] = length;
-					//	std::cout << last[thr_num - 1] << std::endl;
+					//	wiz::Out << last[thr_num - 1] << ENTER;
 				}
 				else {
 					inFile.seekg(0, inFile.end);
@@ -3236,7 +3236,7 @@ namespace wiz {
 						//length[i].resize(last[i] - start[i] + 1);
 					}
 					for (int i = 0; i < thr_num; ++i) {
-						//	std::cout << last[i] - start[i] << std::endl;
+						//	wiz::Out << last[i] - start[i] << ENTER;
 						//partial_list[i].reserve((last[i] - start[i]) / 10;
 						thr[i] = std::thread(DoThread3_2(buffer + start[i], buffer + last[i], &partial_list[i], &option, &length[i]));
 					}
@@ -3274,7 +3274,7 @@ namespace wiz {
 				//delete[] buffer;
 
 				//				log_result = log_result + clock() - a;
-				//std::cout << "lexing " << clock() - a << "ms" << std::endl;
+				//wiz::Out << "lexing " << clock() - a << "ms" << ENTER;
 
 				_buffer = buffer;
 
@@ -3304,14 +3304,14 @@ namespace wiz {
 					inFile.seekg(0, inFile.beg);
 
 					BomType x = ReadBom(inFile);
-				//	std::cout << "length " << length << "\n";
+				//	wiz::Out << "length " << length << "\n";
 					if (x == UTF_8) {
 						length = length - 3;
 					}
-				//	std::cout << "length " << length << "\n";
+				//	wiz::Out << "length " << length << "\n";
 					file_length = length;
 					if (x == UTF_8) {
-						std::cout << "UTF-8" << "\n";
+						wiz::Out << "UTF-8" << "\n";
 					}
 
 					buffer = new char[file_length + 1]; // 
@@ -3334,7 +3334,7 @@ namespace wiz {
 							// here bug is..  " check "
 							if ('\r' == buffer[x] || '\n' == (buffer[x]) || '\0' == buffer[x]) {
 								start[i] = x;
-								//	std::cout << "start " << start[i] << std::endl;
+								//	wiz::Out << "start " << start[i] << ENTER;
 								break;
 							}
 						}
@@ -3344,13 +3344,13 @@ namespace wiz {
 						for (int x = last[i]; x <= file_length; ++x) {
 							if ('\r' == buffer[x] || '\n' == (buffer[x]) || '\0' == buffer[x]) {
 								last[i] = x;
-								//	std::cout << "start " << start[i] << std::endl;
+								//	wiz::Out << "start " << start[i] << ENTER;
 								break;
 							}
 						}
 					}
 					last[thr_num - 1] = file_length;
-					//	std::cout << last[thr_num - 1] << std::endl;
+					//	wiz::Out << last[thr_num - 1] << ENTER;
 				}
 				else {
 					inFile.seekg(0, inFile.end);
@@ -3358,14 +3358,14 @@ namespace wiz {
 					inFile.seekg(0, inFile.beg);
 
 					BomType x = ReadBom(inFile);
-					//std::cout << "length " << length << "\n";
+					//wiz::Out << "length " << length << "\n";
 					if (x == UTF_8) {
 						length = length - 3;
 					}
-					//std::cout << "length " << length << "\n";
+					//wiz::Out << "length " << length << "\n";
 					file_length = length;
 					if (x == UTF_8) {
-						std::cout << "UTF-8" << "\n";
+						wiz::Out << "UTF-8" << "\n";
 					}
 					buffer = new char[file_length + 1]; // 
 
@@ -3382,7 +3382,7 @@ namespace wiz {
 				}
 
 				int b = clock();
-				std::cout << "load file to char array " << b - a << "ms\n";
+				wiz::Out << "load file to char array " << b - a << "ms\n";
 
 				long long* llptr = nullptr;
 				long long* llptr2 = nullptr;
@@ -3467,14 +3467,14 @@ namespace wiz {
 					llptr2 = new long long[file_length];
 					
 					//llptr3 = new wiz::load_data::Utility::UT_IT_NUM[file_length];
-					llptr3 = (wiz::load_data::Utility::UT_IT_NUM*)calloc(file_length, sizeof(wiz::load_data::Utility::UT_IT_NUM));
+					llptr3 = nullptr;// (wiz::load_data::Utility::UT_IT_NUM*)calloc(file_length, sizeof(wiz::load_data::Utility::UT_IT_NUM));
 					int y = clock();
-					std::cout << "calloc " << y - x << "ms \n";
+					wiz::Out << "calloc " << y - x << "ms \n";
 
 					std::vector<long long> counter(thr_num, 0);
 					for (int i = 0; i < thr_num; ++i) {
 						thr[i] = std::thread(DoThread4(buffer + start[i], buffer + last[i], &option,
-							llptr + start[i], llptr2 + start[i], start[i], &counter[i], llptr3 + start[i], i));
+							llptr + start[i], llptr2 + start[i], start[i], &counter[i], nullptr, i));// llptr3 + start[i], i));
 					}
 
 					for (int i = 0; i < thr_num; ++i) {
@@ -3482,38 +3482,39 @@ namespace wiz {
 					}
 
 					y = clock();
-					std::cout << "parallel lexing " << y - x << "ms\n";
+					wiz::Out << "parallel lexing " << y - x << "ms\n";
 
 
 					//for (int i = 0; i < 8; ++i) {
-					//	std::cout << timeB[i] - timeA[i] << "ms ";
+					//	wiz::Out << timeB[i] - timeA[i] << "ms ";
 					//}
-				//	std::cout << "\n";
+				//	wiz::Out << "\n";
 
 					int a = clock();
 					long long sum = 0;
 					//
 					for (int i = 1; i < counter.size(); ++i) {
-						std::cout << counter[i - 1] << " ";
+						//wiz::Out << counter[i - 1] << " ";
 						sum += counter[i - 1];
 
-						memcpy(llptr2 + sum, llptr2 + start[i], counter[i] * sizeof(long long) / sizeof(char));
+						// memcpy?
+						memmove(llptr2 + sum, llptr2 + start[i], counter[i] * sizeof(long long) / sizeof(char));
 
 						//for (int j = 0; j < counter[i]; ++j) {
 						//	llptr2[sum + j] = llptr2[start[i] + j];
 						//}
 					}
-					//std::cout << counter.back() << "\n";
+					//wiz::Out << counter.back() << "\n";
 
 					//for (int i = 0; i < 8; ++i) {
-					//	std::cout << countTotal[i] << " ";
+					//	wiz::Out << countTotal[i] << " ";
 					//}
-				//	std::cout << "\n";
+				//	wiz::Out << "\n";
 
 
 					*_llptr2_len = sum + counter.back();
 					int b = clock();
-					//std::cout << "etc " << b - a << "ms\n";
+					//wiz::Out << "etc " << b - a << "ms\n";
 					//	int new_size = aq->size() + 2; // chk!
 					//	for (int i = 0; i < thr_num; ++i) {
 					//		new_size = new_size + partial_list[i].size();
@@ -3546,7 +3547,7 @@ namespace wiz {
 				//delete[] buffer;
 
 				//				log_result = log_result + clock() - a;
-				//std::cout << "lexing " << clock() - a << "ms" << std::endl;
+				//wiz::Out << "lexing " << clock() - a << "ms" << ENTER;
 
 				_buffer = buffer;
 				_llptr = llptr;
@@ -3692,7 +3693,7 @@ namespace wiz {
 					*thread_id = next_thread_id;
 					ok++;
 					if (ok == strVec.size() && strVec[next_thread_id].empty()) {
-						//std::cout << "errorA" << std::endl;
+						//wiz::Out << "errorA" << ENTER;
 						break;
 					}
 				}
@@ -3720,7 +3721,7 @@ namespace wiz {
 					*thread_id = next_thread_id;
 					ok++;
 					if (ok == strVec.size() && strVec[next_thread_id].empty()) {
-						//std::cout << "errorB" << std::endl;
+						//wiz::Out << "errorB" << ENTER;
 						break;
 					}
 				}
@@ -3765,7 +3766,7 @@ namespace wiz {
 					*thread_id = next_thread_id;
 					ok++;
 					if (ok == strVec.size() && strVec[next_thread_id].empty()) {
-						//std::cout << "errorC" << std::endl;
+						//wiz::Out << "errorC" << ENTER;
 						break;
 					}
 				}

@@ -149,8 +149,8 @@ namespace wiz {
 				return idx < info.idx;
 			}
 			else {
-				std::cout << "sortInfo2" << std::endl;
-				std::cout << data << " " << info.data << std::endl;
+				wiz::Out << "sortInfo2" << ENTER;
+				wiz::Out << data << " " << info.data << ENTER;
 				throw "temp is not valid in sortinfo2";
 			}
 		}
@@ -621,7 +621,7 @@ namespace wiz {
 					if (strVec.size() < 10) {
 						b = clock();
 						sum += std::chrono::steady_clock::duration(b - a).count();
-						//std::cout << b - a << "ms" << std::endl;
+						//wiz::Out << b - a << "ms" << ENTER;
 
 						reserver(strVec, option);
 
@@ -647,7 +647,7 @@ namespace wiz {
 				}
 				 b = clock();
 
-				//std::cout << sum << "ms" << std::endl;
+				//wiz::Out << sum << "ms" << ENTER;
 				return true;
 			}
 
@@ -719,13 +719,13 @@ namespace wiz {
 				}
 
 				//for (int i = 0; i < strVec[0].size(); ++i) {
-				//	std::cout << strVec[0][i].str << std::endl;
+				//	wiz::Out << strVec[0][i].str << ENTER;
 				//	GETCH();
 				//}
 
 				while (false == _Empty(strVec)) {
 
-					//std::cout << state << " " << Utility::Top(strVec, nestedUT[braceNum], reserver, option, &now_thread) << " " << now_thread << std::endl;
+					//wiz::Out << state << " " << Utility::Top(strVec, nestedUT[braceNum], reserver, option, &now_thread) << " " << now_thread << ENTER;
 					//GETCH();
 
 					switch (state)
@@ -1081,7 +1081,7 @@ namespace wiz {
 				long long i = start_idx;
 				bool end_state = false;
 				while (i <= last_idx && !end_state) {
-					//std::cout << state << " ";
+					//wiz::Out << state << " ";
 					//	cout << state << " " << Utility::Top(strVec, nestedUT[braceNum], reserver, option) << endl;
 					
 					switch (state)
@@ -2808,21 +2808,21 @@ namespace wiz {
 							}
 						}
 
-						//std::cout << _pivots.size() << std::endl;
+						//wiz::Out << _pivots.size() << ENTER;
 						for (auto& x : _pivots) {
 							pivots.push_back(x);
-							//	std::cout << x << " ";
+							//	wiz::Out << x << " ";
 						}
-						//std::cout << last_idx << std::endl;
-						//std::cout << std::endl;
+						//wiz::Out << last_idx << ENTER;
+						//wiz::Out << ENTER;
 					}
 
 
-					//std::cout << pivot << "\t" << pivot3 << "\t" << pivot2 << "\t" << last_idx << "\t" << strVec.size() - 1 << std::endl;
-					//std::cout << strVec[pivot + 1].str << "\t";
-					//std::cout << strVec[pivot3 + 1].str << "\t";
-					//std::cout << strVec[pivot2 + 1].str << "\t";
-					//std::cout << std::endl;
+					//wiz::Out << pivot << "\t" << pivot3 << "\t" << pivot2 << "\t" << last_idx << "\t" << strVec.size() - 1 << ENTER;
+					//wiz::Out << strVec[pivot + 1].str << "\t";
+					//wiz::Out << strVec[pivot3 + 1].str << "\t";
+					//wiz::Out << strVec[pivot2 + 1].str << "\t";
+					//wiz::Out << ENTER;
 
 
 					std::vector<UserType*> next(pivots.size() + 1, nullptr);
@@ -2875,12 +2875,12 @@ namespace wiz {
 
 						for (int i = 1; i < pivots.size() + 1; ++i) {
 							if (-1 == Merge(next[i - 1], &__global[i], &next[i])) {
-								std::cout << "not valid file\n";
+								wiz::Out << "not valid file\n";
 								throw 2;
 							}
 						}
 
-						//std::cout << "merge " << clock() - merge_start << "ms" << std::endl;
+						//wiz::Out << "merge " << clock() - merge_start << "ms" << ENTER;
 
 						//int pop_start = clock();
 						//
@@ -2896,13 +2896,13 @@ namespace wiz {
 						}
 					
 
-						//std::cout << "pop " << clock() - pop_start << "ms" << std::endl;
+						//wiz::Out << "pop " << clock() - pop_start << "ms" << ENTER;
 
 						before_next = next.back();
 					}
 
 					int b = clock();
-					sum += std::chrono::steady_clock::duration(b - a).count(); //std::cout << b - a << "ms" << std::endl;
+					sum += std::chrono::steady_clock::duration(b - a).count(); //wiz::Out << b - a << "ms" << ENTER;
 
 					if (!end) {
 
@@ -2931,9 +2931,9 @@ namespace wiz {
 					buffer = nullptr;
 				}
 				//// todo - option?
-				//std::cout << "lexing " << log_result << "ms" << std::endl;
+				//wiz::Out << "lexing " << log_result << "ms" << ENTER;
 				//log_result = 0;
-				//std::cout << "parse " << sum << "ms" << std::endl;
+				//wiz::Out << "parse " << sum << "ms" << ENTER;
 				return true;
 			}
 		
@@ -2999,21 +2999,21 @@ namespace wiz {
 							}
 						}
 
-						//std::cout << _pivots.size() << std::endl;
+						//wiz::Out << _pivots.size() << ENTER;
 						for (auto& x : _pivots) {
 							pivots.push_back(x);
-							//	std::cout << x << " ";
+							//	wiz::Out << x << " ";
 						}
-						//std::cout << last_idx << std::endl;
-						//std::cout << std::endl;
+						//wiz::Out << last_idx << ENTER;
+						//wiz::Out << ENTER;
 					}
 
 
-					//std::cout << pivot << "\t" << pivot3 << "\t" << pivot2 << "\t" << last_idx << "\t" << strVec.size() - 1 << std::endl;
-					//std::cout << strVec[pivot + 1].str << "\t";
-					//std::cout << strVec[pivot3 + 1].str << "\t";
-					//std::cout << strVec[pivot2 + 1].str << "\t";
-					//std::cout << std::endl;
+					//wiz::Out << pivot << "\t" << pivot3 << "\t" << pivot2 << "\t" << last_idx << "\t" << strVec.size() - 1 << ENTER;
+					//wiz::Out << strVec[pivot + 1].str << "\t";
+					//wiz::Out << strVec[pivot3 + 1].str << "\t";
+					//wiz::Out << strVec[pivot2 + 1].str << "\t";
+					//wiz::Out << ENTER;
 
 
 					std::vector<UserType*> next(pivots.size() + 1, nullptr);
@@ -3062,7 +3062,7 @@ namespace wiz {
 							Merge(next[i - 1], &__global[i], &next[i]);
 						}
 
-						//std::cout << "merge " << clock() - merge_start << "ms" << std::endl;
+						//wiz::Out << "merge " << clock() - merge_start << "ms" << ENTER;
 
 						//int pop_start = clock();
 						//
@@ -3072,13 +3072,13 @@ namespace wiz {
 
 						strVec.erase(strVec.begin(), strVec.begin() + last_idx + 1);
 
-						//std::cout << "pop " << clock() - pop_start << "ms" << std::endl;
+						//wiz::Out << "pop " << clock() - pop_start << "ms" << ENTER;
 
 						before_next = next.back();
 					}
 
 					int b = clock();
-					sum += std::chrono::steady_clock::duration(b - a).count(); //std::cout << b - a << "ms" << std::endl;
+					sum += std::chrono::steady_clock::duration(b - a).count(); //wiz::Out << b - a << "ms" << ENTER;
 
 					if (!end) {
 
@@ -3106,9 +3106,9 @@ namespace wiz {
 				outBuffer = buffer;
 
 				//// todo - option?
-				//std::cout << "lexing " << log_result << "ms" << std::endl;
+				//wiz::Out << "lexing " << log_result << "ms" << ENTER;
 				//				log_result = 0;
-				//std::cout << "parse " << sum << "ms" << std::endl;
+				//wiz::Out << "parse " << sum << "ms" << ENTER;
 				return true;
 			}
 			*/
@@ -3586,7 +3586,7 @@ namespace wiz {
 
 					if (ut_next && _ut == *ut_next) {
 						*ut_next = _next;
-						//std::cout << "_ut == *ut_next" << "\n";
+						//wiz::Out << "_ut == *ut_next" << "\n";
 						chk_ut_next = true;
 					}
 
@@ -3712,13 +3712,13 @@ namespace wiz {
 
 							state = 0;
 
-							if (long long idx = GetIdx(llptr2[i]); llptr3[idx].valid) {
+							if (long long idx = GetIdx(llptr2[i]); llptr3 && llptr3[idx].valid) {
 								countReserve[no]++;
 
 								nestedUT[braceNum]->ReserveUserTypeList(llptr3[idx].utNum);
 								nestedUT[braceNum]->ReserveItemList(llptr3[idx].itNum - llptr3[idx].eqNum);
 
-								//std::cout << "chk start " << llptr3[idx].itNum - llptr3[idx].eqNum << "\n";
+								//wiz::Out << "chk start " << llptr3[idx].itNum - llptr3[idx].eqNum << "\n";
 
 								nestedUT[braceNum]->ReserveIList(llptr3[idx].utNum + llptr3[idx].itNum - llptr3[idx].eqNum);
 							}
@@ -3738,7 +3738,7 @@ namespace wiz {
 
 								{
 									nestedUT[braceNum]->AddItem(varVec, valVec, varVec.size());
-									//std::cout << "ends " << nestedUT[braceNum]->GetItemListSize() << "\n";
+									//wiz::Out << "ends " << nestedUT[braceNum]->GetItemListSize() << "\n";
 								}
 
 								
@@ -3755,7 +3755,7 @@ namespace wiz {
 								int utCount = 0;
 								int itCount = 0;
 								auto max = nestedUT[braceNum]->GetIListSize();
-								for (auto i = 0; i < max; ++i) {
+								for (auto i = 0LL; i < max; ++i) {
 									if (nestedUT[braceNum]->IsUserTypeList(i)) {
 										ut.GetUserTypeList(0)->AddUserTypeItem(std::move(*(nestedUT[braceNum]->GetUserTypeList(utCount))));
 										utCount++;
@@ -3871,10 +3871,10 @@ namespace wiz {
 							state = 0;
 
 
-							if (long long idx = GetIdx(llptr2[i]); llptr3[idx].valid) {
+							if (long long idx = GetIdx(llptr2[i]); llptr3 && llptr3[idx].valid) {
 								countReserve[no]++;
 
-								//std::cout << "chk start " << llptr3[idx].itNum - llptr3[idx].eqNum << "\n";
+								//wiz::Out << "chk start " << llptr3[idx].itNum - llptr3[idx].eqNum << "\n";
 
 								nestedUT[braceNum]->ReserveUserTypeList(llptr3[idx].utNum);
 								nestedUT[braceNum]->ReserveItemList(llptr3[idx].itNum - llptr3[idx].eqNum);
@@ -3884,8 +3884,8 @@ namespace wiz {
 						else {
 							if (x <= llptr2 + llptr2_len - 1) {
 								val = std::string(buffer + GetIdx(llptr2[i]), len);
-								//std::cout << "val " << val << "\n";
-								//std::cout << "len " << len << " val.size() " << val.size() << "\n";
+								//wiz::Out << "val " << val << "\n";
+								//wiz::Out << "len " << len << " val.size() " << val.size() << "\n";
 
 								//i += 1;
 
@@ -3974,12 +3974,12 @@ namespace wiz {
 					int a = clock();
 					end = !reserver(option, lex_thr_num, buffer, llptr, &buffer_total_len, llptr2, &llptr2_len, llptr3);
 					int b = clock();
-					std::cout << "lexing " <<  b - a << "ms \n";
+					wiz::Out << "lexing " <<  b - a << "ms \n";
 
 					{
 
 						//for (int i = 0; i < llptr2_len; ++i) {
-						//	std::cout << std::string(buffer + GetIdx(llptr2[i]), GetLength(llptr2[i])) << "\n";
+						//	wiz::Out << std::string(buffer + GetIdx(llptr2[i]), GetLength(llptr2[i])) << "\n";
 						//}
 						//}
 					}
@@ -4014,7 +4014,7 @@ namespace wiz {
 							pivot.push_back(FindRight3(buffer, llptr, llptr2, (num / (pivot_num + 1)) * (i), (num / (pivot_num + 1)) * (i + 1) - 1, option));
 						}
 						int v = clock();
-						//std::cout << "divide data " <<  v - w << "ms" << "\n";
+						//wiz::Out << "divide data " <<  v - w << "ms" << "\n";
 
 						for (int i = 0; i < pivot.size(); ++i) {
 							if (pivot[i] != -1) {
@@ -4064,30 +4064,30 @@ namespace wiz {
 						}
 						c = clock();
 
-						//std::cout << "chk " << "\n";
+						//wiz::Out << "chk " << "\n";
 						//for (int i = 0; i < 8; ++i) {
-						//	std::cout << timeB[i] - timeA[i] << " ";
+						//	wiz::Out << timeB[i] - timeA[i] << " ";
 						//}
-						//std::cout << "\n";
+						//wiz::Out << "\n";
 						//for (int i = 0; i < 8; ++i) {
-						//	std::cout << countReserve[i] << " ";
+						//	wiz::Out << countReserve[i] << " ";
 						//}
-						//std::cout << "\n";
+						//wiz::Out << "\n";
 
 						// Merge
 						try {
 							if (__global[0].GetUserTypeListSize() > 0 && __global[0].GetUserTypeList(0)->GetName() == "#") {
-								std::cout << "not valid file1\n";
+								wiz::Out << "not valid file1\n";
 								throw 1;
 							}
 							if (next.back()->GetParent() != nullptr) {
-								std::cout << "not valid file2\n";
+								wiz::Out << "not valid file2\n";
 								throw 2;
 							}
 
 							int err = Merge_2(&_global, &__global[0], &next[0]);
 							if (-1 == err || (pivots.size() == 0 && 1 == err)) {
-								std::cout << "not valid file3\n";
+								wiz::Out << "not valid file3\n";
 								throw 3;
 							}
 
@@ -4095,11 +4095,11 @@ namespace wiz {
 								// linearly merge and error check...
 								int err = Merge_2(next[i - 1], &__global[i], &next[i]);
 								if (-1 == err) {
-									std::cout << "not valid file4\n";
+									wiz::Out << "not valid file4\n";
 									throw 4;
 								}
 								else if (i == pivots.size() && 1 == err) {
-									std::cout << "not valid file5\n";
+									wiz::Out << "not valid file5\n";
 									throw 5;
 								}
 							}
@@ -4135,8 +4135,8 @@ namespace wiz {
 				if (llptr3) { free(llptr3); }
 				int d = clock();
 				global = std::move(_global);
-				std::cout << "parsing " << b - a << "ms" << " merge " << b - c << "ms" << "\n";
-				std::cout << "delete and free " << d - b << "ms\n";
+				wiz::Out << "parsing " << b - a << "ms" << " merge " << b - c << "ms" << "\n";
+				wiz::Out << "delete and free " << d - b << "ms\n";
 
 				return true;
 			}
@@ -4651,7 +4651,7 @@ namespace wiz {
 					int a = clock();
 					end = !reserver(&strVec, option, lex_thr_num, buffer);
 					int b = clock();
-					std::cout << b - a << "ms ";
+					wiz::Out << b - a << "ms ";
 				}
 
 				Node* before_next = nullptr;
@@ -4728,7 +4728,7 @@ namespace wiz {
 
 							for (int i = 1; i < pivots.size() + 1; ++i) {
 								if (-1 == Merge2(next[i - 1], &__global[i], &next[i])) {
-									std::cout << "not valid file\n";
+									wiz::Out << "not valid file\n";
 									throw 2;
 								}
 							}
@@ -4746,8 +4746,8 @@ namespace wiz {
 					}
 
 					int b = clock();
-					std::cout << b - a << "ms";
-					std::cout << " " << b - c << "ms\n";
+					wiz::Out << b - a << "ms";
+					wiz::Out << " " << b - c << "ms\n";
 					if (!end) {
 						//
 					}
@@ -4778,7 +4778,7 @@ namespace wiz {
 					int a = clock();
 					end = !reserver(&strVec, option, lex_thr_num, buffer);
 					int b = clock();
-					std::cout << b - a << "ms ";
+					wiz::Out << b - a << "ms ";
 
 					strVec.push_back(_end);
 					strVec.front().isEnd = true;
@@ -4812,7 +4812,7 @@ namespace wiz {
 					}
 
 					int b = clock();
-					std::cout << b - a << "ms" << "\n";
+					wiz::Out << b - a << "ms" << "\n";
 					if (!end) {
 						//
 					}
@@ -4868,7 +4868,7 @@ namespace wiz {
 					end = !reserver(&strVec, option, lex_thr_num, buffer);
 				}
 				b = clock();
-				std::cout << b - a << "ms ";
+				wiz::Out << b - a << "ms ";
 				c = clock();
 				UserType* before_next = nullptr;
 				UserType _global;
@@ -4928,7 +4928,7 @@ namespace wiz {
 							thr[i].join();
 						}
 						a = clock();
-						std::cout << a - c << "ms ";
+						wiz::Out << a - c << "ms ";
 						b = clock();
 						// Merge
 						try {
@@ -4942,7 +4942,7 @@ namespace wiz {
 
 							for (int i = 1; i < pivots.size() + 1; ++i) {
 								if (-1 == Merge(next[i - 1], &__global[i], &next[i])) {
-									std::cout << "not valid file\n";
+									wiz::Out << "not valid file\n";
 									throw 2;
 								}
 
@@ -4973,7 +4973,7 @@ namespace wiz {
 
 				global = std::move(_global); 
 				c = clock();
-				std::cout << c - d << "ms \n";
+				wiz::Out << c - d << "ms \n";
 				return true;
 			}
 
@@ -5026,10 +5026,10 @@ namespace wiz {
 
 					inFile.close();
 				}
-				catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
-				catch (const std::string& e) { std::cout << e << std::endl; inFile.close(); return false; }
-				catch (std::exception e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
-				catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
+				catch (const char* err) { wiz::Out << err << ENTER; inFile.close(); return false; }
+				catch (const std::string& e) { wiz::Out << e << ENTER; inFile.close(); return false; }
+				catch (std::exception e) { wiz::Out << e.what() << ENTER; inFile.close(); return false; }
+				catch (...) { wiz::Out << "not expected error" << ENTER; inFile.close(); return false; }
 
 				global = std::move(globalTemp);
 				return true;
@@ -5162,10 +5162,10 @@ namespace wiz {
 
 					inFile.close();
 				}
-				catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
-				catch (const std::string & e) { std::cout << e << std::endl; inFile.close(); return false; }
-				catch (std::exception e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
-				catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
+				catch (const char* err) { wiz::Out << err << ENTER; inFile.close(); return false; }
+				catch (const std::string & e) { wiz::Out << e << ENTER; inFile.close(); return false; }
+				catch (std::exception e) { wiz::Out << e.what() << ENTER; inFile.close(); return false; }
+				catch (...) { wiz::Out << "not expected error" << ENTER; inFile.close(); return false; }
 
 
 				global = std::move(globalTemp);
@@ -5224,10 +5224,10 @@ namespace wiz {
 
 					inFile.close();
 				}
-				catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
-				catch (const std::string & e) { std::cout << e << std::endl; inFile.close(); return false; }
-				catch (std::exception e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
-				catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
+				catch (const char* err) { wiz::Out << err << ENTER; inFile.close(); return false; }
+				catch (const std::string & e) { wiz::Out << e << ENTER; inFile.close(); return false; }
+				catch (std::exception e) { wiz::Out << e.what() << ENTER; inFile.close(); return false; }
+				catch (...) { wiz::Out << "not expected error" << ENTER; inFile.close(); return false; }
 
 
 				global = globalTemp;
@@ -5280,10 +5280,10 @@ namespace wiz {
 
 					inFile.close();
 				}
-				catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
-				catch (const std::string & e) { std::cout << e << std::endl; inFile.close(); return false; }
-				catch (std::exception e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
-				catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
+				catch (const char* err) { wiz::Out << err << ENTER; inFile.close(); return false; }
+				catch (const std::string & e) { wiz::Out << e << ENTER; inFile.close(); return false; }
+				catch (std::exception e) { wiz::Out << e.what() << ENTER; inFile.close(); return false; }
+				catch (...) { wiz::Out << "not expected error" << ENTER; inFile.close(); return false; }
 
 
 				global = std::move(globalTemp);
@@ -5343,16 +5343,16 @@ namespace wiz {
 
 						inFile.close();
 					}
-					catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
-					catch (const std::string& e) { std::cout << e << std::endl; inFile.close(); return false; }
-					catch (const std::exception&e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
-					catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
+					catch (const char* err) { wiz::Out << err << ENTER; inFile.close(); return false; }
+					catch (const std::string& e) { wiz::Out << e << ENTER; inFile.close(); return false; }
+					catch (const std::exception&e) { wiz::Out << e.what() << ENTER; inFile.close(); return false; }
+					catch (...) { wiz::Out << "not expected error" << ENTER; inFile.close(); return false; }
 
 					global = std::move(globalTemp);
 				}
 				//std::chrono::steady_clock::time_point b = std::chrono::steady_clock::now();
-				//std::cout << (double)std::chrono::steady_clock::duration(b - a).count() 
-				//	* std::chrono::steady_clock::period().num / std::chrono::steady_clock::period().den << "s" << std::endl;
+				//wiz::Out << (double)std::chrono::steady_clock::duration(b - a).count() 
+				//	* std::chrono::steady_clock::period().num / std::chrono::steady_clock::period().den << "s" << ENTER;
 				return true;
 			}
 			/*
@@ -5410,16 +5410,16 @@ namespace wiz {
 
 					inFile.close();
 				}
-				catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
-				catch (const std::string& e) { std::cout << e << std::endl; inFile.close(); return false; }
-				catch (const std::exception&e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
-				catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
+				catch (const char* err) { wiz::Out << err << ENTER; inFile.close(); return false; }
+				catch (const std::string& e) { wiz::Out << e << ENTER; inFile.close(); return false; }
+				catch (const std::exception&e) { wiz::Out << e.what() << ENTER; inFile.close(); return false; }
+				catch (...) { wiz::Out << "not expected error" << ENTER; inFile.close(); return false; }
 
 				global = std::move(globalTemp);
 
 				std::chrono::steady_clock::time_point b = std::chrono::steady_clock::now();
-				std::cout << (double)std::chrono::steady_clock::duration(b - a).count()
-					* std::chrono::steady_clock::period().num / std::chrono::steady_clock::period().den << "s" << std::endl;
+				wiz::Out << (double)std::chrono::steady_clock::duration(b - a).count()
+					* std::chrono::steady_clock::period().num / std::chrono::steady_clock::period().den << "s" << ENTER;
 				return true;
 			}
 			*/
@@ -5463,7 +5463,7 @@ namespace wiz {
 
 				while (false == strVec.empty()) {
 
-					//	std::cout << state << " " << Utility::Top(strVec, now, reserver, option) << std::endl;
+					//	wiz::Out << state << " " << Utility::Top(strVec, now, reserver, option) << ENTER;
 
 					switch (state)
 					{
@@ -5689,7 +5689,7 @@ namespace wiz {
 				}
 
 				if (state != 0) {
-					std::cout << global.ToString() << std::endl;
+					wiz::Out << global.ToString() << ENTER;
 					throw std::string("error final state is not 0!  : ") + toStr(state);
 				}
 
@@ -5829,11 +5829,11 @@ namespace wiz {
 
 					inFile.close();
 				}
-				catch (const Error& e) { std::cout << e << std::endl; inFile.close(); return false; }
-				catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
-				catch (const std::string& e) { std::cout << e << std::endl; inFile.close(); return false; }
-				catch (const std::exception&e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
-				catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
+				catch (const Error& e) { wiz::Out << e << ENTER; inFile.close(); return false; }
+				catch (const char* err) { wiz::Out << err << ENTER; inFile.close(); return false; }
+				catch (const std::string& e) { wiz::Out << e << ENTER; inFile.close(); return false; }
+				catch (const std::exception&e) { wiz::Out << e.what() << ENTER; inFile.close(); return false; }
+				catch (...) { wiz::Out << "not expected error" << ENTER; inFile.close(); return false; }
 
 				global = std::move(globalTemp);
 				return true;
@@ -5876,11 +5876,11 @@ namespace wiz {
 					inFile.close();
 				}
 				/*
-				catch (const Error& e) { std::cout << e << std::endl; inFile.close(); return false; }
-				catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
-				catch (const std::string& e) { std::cout << e << std::endl; inFile.close(); return false; }
-				catch (const std::exception&e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
-				catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
+				catch (const Error& e) { wiz::Out << e << ENTER; inFile.close(); return false; }
+				catch (const char* err) { wiz::Out << err << ENTER; inFile.close(); return false; }
+				catch (const std::string& e) { wiz::Out << e << ENTER; inFile.close(); return false; }
+				catch (const std::exception&e) { wiz::Out << e.what() << ENTER; inFile.close(); return false; }
+				catch (...) { wiz::Out << "not expected error" << ENTER; inFile.close(); return false; }
 				*/
 				global = std::move(globalTemp);
 
@@ -5937,11 +5937,11 @@ namespace wiz {
 
 					inFile.close();
 				}
-				catch (const Error& e) { std::cout << e << std::endl; inFile.close(); return false; }
-				catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
-				catch (const std::string& e) { std::cout << e << std::endl; inFile.close(); return false; }
-				catch (const std::exception&e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
-				catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
+				catch (const Error& e) { wiz::Out << e << ENTER; inFile.close(); return false; }
+				catch (const char* err) { wiz::Out << err << ENTER; inFile.close(); return false; }
+				catch (const std::string& e) { wiz::Out << e << ENTER; inFile.close(); return false; }
+				catch (const std::exception&e) { wiz::Out << e.what() << ENTER; inFile.close(); return false; }
+				catch (...) { wiz::Out << "not expected error" << ENTER; inFile.close(); return false; }
 
 				global = std::move(globalTemp);
 				return true;
@@ -6026,11 +6026,11 @@ namespace wiz {
 
 					inFile.close();
 				}
-				catch (const Error& e) { std::cout << e << std::endl; inFile.close(); return false; }
-				catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
-				catch (const std::string& e) { std::cout << e << std::endl; inFile.close(); return false; }
-				catch (const std::exception&e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
-				catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
+				catch (const Error& e) { wiz::Out << e << ENTER; inFile.close(); return false; }
+				catch (const char* err) { wiz::Out << err << ENTER; inFile.close(); return false; }
+				catch (const std::string& e) { wiz::Out << e << ENTER; inFile.close(); return false; }
+				catch (const std::exception&e) { wiz::Out << e.what() << ENTER; inFile.close(); return false; }
+				catch (...) { wiz::Out << "not expected error" << ENTER; inFile.close(); return false; }
 
 				RemoveQuotation(&globalTemp);
 				RemoveUnderbar(&globalTemp);
@@ -6125,11 +6125,11 @@ namespace wiz {
 
 					inFile.close();
 				}
-				catch (const Error& e) { std::cout << e << std::endl; inFile.close(); return false; }
-				catch (const char* err) { std::cout << err << std::endl; inFile.close(); return false; }
-				catch (const std::string& e) { std::cout << e << std::endl; inFile.close(); return false; }
-				catch (const std::exception&e) { std::cout << e.what() << std::endl; inFile.close(); return false; }
-				catch (...) { std::cout << "not expected error" << std::endl; inFile.close(); return false; }
+				catch (const Error& e) { wiz::Out << e << ENTER; inFile.close(); return false; }
+				catch (const char* err) { wiz::Out << err << ENTER; inFile.close(); return false; }
+				catch (const std::string& e) { wiz::Out << e << ENTER; inFile.close(); return false; }
+				catch (const std::exception&e) { wiz::Out << e.what() << ENTER; inFile.close(); return false; }
+				catch (...) { wiz::Out << "not expected error" << ENTER; inFile.close(); return false; }
 
 				ConvertHtmlToClau(&globalTemp, &global);
 
@@ -6143,7 +6143,7 @@ namespace wiz {
 				char LEFT = '{';
 				char RIGHT = '}';
 
-				std::cout << str.size() << " ";
+				wiz::Out << str.size() << " ";
 				UserType utTemp = ut;
 				VECTOR<Token2> strVec;
 				long long thread_num = 1; // std::thread::hardware_concurrency();
@@ -6174,7 +6174,7 @@ namespace wiz {
 							// here bug is..  " check "
 							if ('\r' == buffer[x] || '\n' == (buffer[x]) || length == x) {
 								start[i] = x;
-								//	std::cout << "start " << start[i] << std::endl;
+								//	wiz::Out << "start " << start[i] << ENTER;
 								break;
 							}
 						}
@@ -6184,13 +6184,13 @@ namespace wiz {
 						for (int x = last[i]; x <= length; ++x) {
 							if ('\r' == buffer[x] || '\n' == (buffer[x]) || length == x) {
 								last[i] = x;
-								//	std::cout << "start " << start[i] << std::endl;
+								//	wiz::Out << "start " << start[i] << ENTER;
 								break;
 							}
 						}
 					}
 					last[thread_num - 1] = length;
-					//	std::cout << last[thread_num - 1] << std::endl;
+					//	wiz::Out << last[thread_num - 1] << ENTER;
 				}
 				else {
 					start[0] = 0;
@@ -6275,7 +6275,7 @@ namespace wiz {
 					std::vector<std::thread> thr(thread_num);
 
 					for (int i = 0; i < thread_num; ++i) {
-						//	std::cout << last[i] - start[i] << std::endl;
+						//	wiz::Out << last[i] - start[i] << ENTER;
 						partial_list[i].reserve((last[i] - start[i]) / 10);
 						thr[i] = std::thread(wiz::load_data::Utility::DoThread3(buffer + start[i], buffer + last[i], &partial_list[i], &option));
 					}
@@ -6331,11 +6331,11 @@ namespace wiz {
 						return true;
 					}
 				}
-				catch (Error& e) { std::cout << e << std::endl; return false; }
-				catch (const char* err) { std::cout << err << std::endl; return false; }
-				catch (std::exception& e) { std::cout << e.what() << std::endl; return false; }
-				catch (const std::string& estr) { std::cout << str << std::endl; return false; }
-				catch (...) { std::cout << "not expected error" << std::endl; return  false; }
+				catch (Error& e) { wiz::Out << e << ENTER; return false; }
+				catch (const char* err) { wiz::Out << err << ENTER; return false; }
+				catch (std::exception& e) { wiz::Out << e.what() << ENTER; return false; }
+				catch (const std::string& estr) { wiz::Out << str << ENTER; return false; }
+				catch (...) { wiz::Out << "not expected error" << ENTER; return  false; }
 
 				ut = std::move(utTemp);
 				delete[] buffer;
@@ -6387,11 +6387,11 @@ namespace wiz {
 						return true;
 					}
 				}
-				catch (Error& e) { std::cout << e << std::endl; return false; }
-				catch (const char* err) { std::cout << err << std::endl; return false; }
-				catch (std::exception& e) { std::cout << e.what() << std::endl; return false; }
-				catch (const std::string& e) { std::cout << str << std::endl; return false; }
-				catch (...) { std::cout << "not expected error" << std::endl; return  false; }
+				catch (Error& e) { wiz::Out << e << ENTER; return false; }
+				catch (const char* err) { wiz::Out << err << ENTER; return false; }
+				catch (std::exception& e) { wiz::Out << e.what() << ENTER; return false; }
+				catch (const std::string& e) { wiz::Out << str << ENTER; return false; }
+				catch (...) { wiz::Out << "not expected error" << ENTER; return  false; }
 
 				{
 					long long itCount = 0;
@@ -6533,6 +6533,44 @@ namespace wiz {
 			{
 				std::vector<std::string> real_dir;
 				std::string result;
+				const wiz::load_data::UserType* before;
+
+				before = ut;
+				ut = ut->GetParent();
+				if (ut) {
+					for (auto i = 0LL; i < ut->GetUserTypeListSize(); ++i) {
+						if (ut->GetUserTypeList(i) == before) {
+							real_dir.push_back("$ut" + wiz::toStr(i));
+							break;
+						}
+					}
+				}
+
+				while (nullptr != ut) {
+					before = ut;
+					ut = ut->GetParent();
+					if (ut) {
+						for (auto i = 0LL; i < ut->GetUserTypeListSize(); ++i) {
+							if (ut->GetUserTypeList(i) == before) {
+								real_dir.push_back("$ut" + wiz::toStr(i));
+								break;
+							}
+						}
+					}
+				}
+
+				result += "/./";
+
+				for (int i = real_dir.size() - 1; i >= 0; --i) {
+					result += real_dir[i] + "/";
+				}
+
+				return result;
+			}
+			/*
+			{
+				std::vector<std::string> real_dir;
+				std::string result;
 
 
 				while (nullptr != ut->GetParent()) {
@@ -6555,6 +6593,7 @@ namespace wiz {
 
 				return result;
 			}
+			*/
 
 			static void _Iterate(Option& opt, UserType& global, const std::string& dir, const std::vector<wiz::load_data::UserType*>& ut, UserType* eventsTemp, const std::string& recursive, const ExcuteData& excuteData, wiz::StringBuilder* builder)
 			{
@@ -6681,7 +6720,7 @@ namespace wiz {
 						statements2 += " is_user_type = __is_user_type ";
 						statements2 += " real_dir = __real_dir ";
 						statements2 += " before_value = { $local.temp } ";
-						statements2 += " idx = __idx  ";
+						statements2 += " idx = __idx  "; // removal?
 						statements2 += " } ";
 
 						statements2 += " $assign = { $local.temp data = { $return_value = { } } } ";
@@ -7257,7 +7296,7 @@ namespace wiz {
 
 							if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0]) // || cond.Now().size()  != 1
 							{
-								//std::cout << cond.Now()[0] << endl;
+								//wiz::Out << cond.Now()[0] << endl;
 								continue;
 							}
 						}
@@ -7308,7 +7347,7 @@ namespace wiz {
 
 							if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0]) // || cond.Now().size()  != 1
 							{
-								//std::cout << cond.Now()[0] << endl;
+								//wiz::Out << cond.Now()[0] << endl;
 								continue;
 							}
 						}
@@ -7359,7 +7398,7 @@ namespace wiz {
 
 							if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0]) // || cond.Now().size()  != 1
 							{
-								//std::cout << cond.Now()[0] << endl;
+								//wiz::Out << cond.Now()[0] << endl;
 								continue;
 							}
 						}
@@ -7411,7 +7450,7 @@ namespace wiz {
 
 							if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
 							{
-								//std::cout << cond.Now()[0] << endl;
+								//wiz::Out << cond.Now()[0] << endl;
 								continue;
 							}
 						}
@@ -7496,7 +7535,7 @@ namespace wiz {
 
 									if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
 									{
-										//std::cout << cond.Now()[0] << endl;
+										//wiz::Out << cond.Now()[0] << endl;
 										continue;
 									}
 								}
@@ -7550,7 +7589,7 @@ namespace wiz {
 
 									if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
 									{
-										//	std::cout << cond.Now()[0] << endl;
+										//	wiz::Out << cond.Now()[0] << endl;
 										continue;
 									}
 								}
@@ -7606,7 +7645,7 @@ namespace wiz {
 
 										if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
 										{
-											//	std::cout << cond.Now()[0] << endl;
+											//	wiz::Out << cond.Now()[0] << endl;
 											continue;
 										}
 									}
@@ -7660,7 +7699,7 @@ namespace wiz {
 
 								if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
 								{
-									//	std::cout << cond.Now()[0] << endl;
+									//	wiz::Out << cond.Now()[0] << endl;
 									continue;
 								}
 							}
@@ -7694,7 +7733,7 @@ namespace wiz {
 
 							if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
 							{
-								//	std::cout << cond.Now()[0] << endl;
+								//	wiz::Out << cond.Now()[0] << endl;
 								continue;
 							}
 						}
@@ -7723,7 +7762,7 @@ namespace wiz {
 
 							if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
 							{
-								//	std::cout << cond.Now()[0] << endl;
+								//	wiz::Out << cond.Now()[0] << endl;
 								continue;
 							}
 						}
@@ -7752,7 +7791,7 @@ namespace wiz {
 
 							if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
 							{
-								//	std::cout << cond.Now()[0] << endl;
+								//	wiz::Out << cond.Now()[0] << endl;
 								continue;
 							}
 						}
@@ -7781,7 +7820,7 @@ namespace wiz {
 
 							if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
 							{
-								//	std::cout << cond.Now()[0] << endl;
+								//	wiz::Out << cond.Now()[0] << endl;
 								continue;
 							}
 						}
@@ -7821,7 +7860,7 @@ namespace wiz {
 
 							if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
 							{
-								//	std::cout << cond.Now()[0] << endl;
+								//	wiz::Out << cond.Now()[0] << endl;
 								continue;
 							}
 						}
@@ -7897,7 +7936,7 @@ namespace wiz {
 
 									if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
 									{
-										// std::cout << cond.Now()[0] << endl;
+										// wiz::Out << cond.Now()[0] << endl;
 										continue;
 									}
 								}
@@ -7936,7 +7975,7 @@ namespace wiz {
 
 							if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
 							{
-								// std::cout << cond.Now()[0] << endl;
+								// wiz::Out << cond.Now()[0] << endl;
 								continue;
 							}
 						}
@@ -7969,7 +8008,7 @@ namespace wiz {
 
 							if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
 							{
-								// std::cout << cond.Now()[0] << endl;
+								// wiz::Out << cond.Now()[0] << endl;
 								continue;
 							}
 						}
@@ -8004,7 +8043,7 @@ namespace wiz {
 
 							if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
 							{
-								// std::cout << cond.Now()[0] << endl;
+								// wiz::Out << cond.Now()[0] << endl;
 								continue;
 							}
 						}
@@ -8039,7 +8078,7 @@ namespace wiz {
 
 							if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
 							{
-								// std::cout << cond.Now()[0] << endl;
+								// wiz::Out << cond.Now()[0] << endl;
 								continue;
 							}
 						}
@@ -8059,7 +8098,7 @@ namespace wiz {
 
 				// Scan + Parse 
 				if (false == LoadDataFromFile(fileName, globalTemp)) { return false; }
-				std::cout << "LoadData End" << std::endl;
+				wiz::Out << "LoadData End" << ENTER;
 
 				global = std::move(globalTemp);
 				return true;
@@ -8127,7 +8166,7 @@ namespace wiz {
 
 							if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
 							{
-								//	std::cout << cond.Now()[0] << endl;
+								//	wiz::Out << cond.Now()[0] << endl;
 								continue;
 							}
 						}
@@ -8161,7 +8200,7 @@ namespace wiz {
 
 							if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
 							{
-								//	std::cout << cond.Now()[0] << endl;
+								//	wiz::Out << cond.Now()[0] << endl;
 								continue;
 							}
 						}
@@ -8192,7 +8231,7 @@ namespace wiz {
 
 							if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
 							{
-								//	std::cout << cond.Now()[0] << endl;
+								//	wiz::Out << cond.Now()[0] << endl;
 								continue;
 							}
 						}
@@ -8222,7 +8261,7 @@ namespace wiz {
 
 							if (cond.Now().size() != 1 || "TRUE" != cond.Now()[0])
 							{
-								//	std::cout << cond.Now()[0] << endl;
+								//	wiz::Out << cond.Now()[0] << endl;
 								continue;
 							}
 						}
@@ -8611,9 +8650,9 @@ namespace wiz {
 
 						while (cond.Next()) {
 						//	for (int i = 0; i < cond.Now().size(); ++i) {
-						//		std::cout << cond.Now()[i] << " ";
+						//		wiz::Out << cond.Now()[i] << " ";
 						//	}
-						//	std::cout << std::endl;
+						//	wiz::Out << ENTER;
 							//GETCH();
 						}
 
@@ -8634,9 +8673,9 @@ namespace wiz {
 						else {
 						//	if (cond.Now().size() != 1 || "Error" == cond.Now()[0]) {
 							//	for (int i = 0; i < cond.Now().size(); ++i) {
-							//		std::cout << cond.Now()[i] << " ";
+							//		wiz::Out << cond.Now()[i] << " ";
 							//	}
-							//	std::cout << std::endl;
+							//	wiz::Out << ENTER;
 							//	GETCH();
 							//}
 						}
@@ -9173,7 +9212,7 @@ namespace wiz {
 						if (false == operation(now, global, tokenVec[i], operandStack, excuteData, builder)) // chk!!
 						{
 							// chk removal here?
-							std::cout << " false " << std::endl;
+							wiz::Out << " false " << ENTER;
 							GETCH();
 							// todo - exit ? or throw?
 							operatorStack.pop();

@@ -21,8 +21,8 @@ namespace wiz {
 			void chk() {
 				/*
 				if ("_" == name || (String::startsWith(name, "$ut") && name.size() > 3) || (String::startsWith(name, "$it") && name.size() > 3)) {
-					std::cout << "name is " << name << std::endl;
-					std::cout << "in funciton chk() in Type" << std::endl;
+					std::cout << "name is " << name << ENTER;
+					std::cout << "in funciton chk() in Type" << ENTER;
 					GETCH();
 					throw "ERROR for name in Type";
 				}
@@ -531,7 +531,7 @@ namespace wiz {
 				if (chk && userTypeList[idx]) {
 					delete userTypeList[idx];
 				}
-				//std::cout << GetUserTypeListSize() << std::endl;
+				//std::cout << GetUserTypeListSize() << ENTER;
 				// left shift start idx, to end, at itemList. and resize!
 				for (int i = idx + 1; i < GetUserTypeListSize(); ++i) {
 					userTypeList[i - 1] = std::move(userTypeList[i]);
@@ -1128,7 +1128,7 @@ namespace wiz {
 							}
 						}
 						else {
-							//std::cout << "no found" << std::endl;
+							//std::cout << "no found" << ENTER;
 						}
 					}
 
@@ -1205,7 +1205,7 @@ namespace wiz {
 							}
 						}
 						else {
-							//std::cout << "no found" << std::endl;
+							//std::cout << "no found" << ENTER;
 						}
 					}
 
@@ -1301,7 +1301,7 @@ namespace wiz {
 						}
 					}
 					else {
-						//std::cout << "no found" << std::endl;
+						//std::cout << "no found" << ENTER;
 					}
 				}
 
@@ -1361,7 +1361,7 @@ namespace wiz {
 						}
 					}
 					else {
-						//std::cout << "no found" << std::endl;
+						//std::cout << "no found" << ENTER;
 					}
 				}
 
@@ -1417,7 +1417,7 @@ namespace wiz {
 						}
 					}
 					else {
-						//std::cout << "no found" << std::endl;
+						//std::cout << "no found" << ENTER;
 					}
 				}
 
