@@ -367,7 +367,7 @@ namespace wiz {
 				//parent = ut.parent;
 				commentList = ut.commentList;
 				
-				sortedItemList = ut.sortedItemList;
+				//sortedItemList = ut.sortedItemList;
 				sortedUserTypeList = ut.sortedUserTypeList;
 
 				useSortedItemList = false; // ut.useSortedItemList; - fixed!
@@ -399,7 +399,7 @@ namespace wiz {
 				itemList = std::move(ut.itemList);
 				commentList = std::move(ut.commentList);
 
-				sortedItemList = std::move(ut.sortedItemList);
+				//sortedItemList = std::move(ut.sortedItemList);
 				sortedUserTypeList = std::move(ut.sortedUserTypeList);
 
 				std::swap(this->noRemove, ut.noRemove);
