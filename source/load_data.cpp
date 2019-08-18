@@ -1138,7 +1138,7 @@ namespace wiz {
 
 			else {
 				if (wiz::String::startsWith(str.ToString(), "$") && str.ToString().size() >= 2) {
-					std::cout << "no exist in load-data " << str.ToString() << std::endl;
+					wiz::Out << "no exist in load-data " << str.ToString() << ENTER;
 					return false;
 				}
 				return true;
@@ -1480,7 +1480,7 @@ namespace wiz {
 					if (false == operation(now, global, tokenVec[i].first, operandStack, excuteData, builder)) // chk!!
 					{
 						// chk removal here?
-						std::cout << " false " << std::endl;
+						wiz::Out << " false " << ENTER;
 						throw "interal error";
 						GETCH();
 						//

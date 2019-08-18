@@ -11,52 +11,6 @@
 #include <string>
 #include <fstream>
 
-namespace wiz 
-{
-	const std::string LOG_FILE_NAME = "clautext_log.txt";
-	const std::string ENTER = "\n";
-
-	class Log {
-	private:
-		std::ofstream outFile;
-	public:
-		Log() {
-			// 
-		}
-		virtual ~Log() {
-			//
-		}
-
-		Log& Open(const std::string& fileName)
-		{
-			outFile.open(fileName);
-			if (!outFile) {
-				throw "outFile error in open function in Log class";
-			}
-			return *this;
-		}
-		Log& Error() {
-			outFile << "[ERROR] ";
-			return *this;
-		}
-		Log& Message() {
-			outFile << "[Message] ";
-			return *this;
-		}
-		friend Log& operator<<(Log& log, const std::string& str)
-		{
-			log.outFile << str;
-			return log;
-		}
-		void Close()
-		{
-			outFile.close();
-		}
-	};
-
-	Log log;
-}
-
 
 // Array idx chk test.
 //#define ARRAYS_DEBUG
@@ -98,12 +52,13 @@ int main(int argc, char* argv[])
 		while (tokenizer.hasMoreTokens()) {
 			static int count = 0;
 			count++;
-			std::cout << count << " th " << tokenizer.nextToken() << std::endl;
+			wiz::Out << count << " th " << tokenizer.nextToken() << ENTER;
 		} 
 	}	
 	
 
 	*/
+
 	//srand(0);
 	srand(time(nullptr)); // 
 
@@ -136,7 +91,7 @@ int main(int argc, char* argv[])
 			//	wiz::load_data::LoadData::LoadDataFromFile(fileName, global);
 		}
 		int b = clock();
-		//std::cout << "time " << b - a << "ms" << std::endl;
+		//wiz::Out << "time " << b - a << "ms" << ENTER;
 
 	//	global.Remove();
 
@@ -158,7 +113,7 @@ int main(int argc, char* argv[])
 			
 			}
 			b = clock();
-			std::cout << "time " << b - a << "ms" << std::endl;
+			wiz::Out << "time " << b - a << "ms" << ENTER;
 		}
 		//global.Remove();
 
@@ -167,42 +122,43 @@ int main(int argc, char* argv[])
 			//wiz::load_data::LoadData::LoadDataFromFile4(fileName, global); // parallel lexing + parallel parsing
 		}
 		b = clock();
-		//std::cout << "time " << b - a << "ms" << std::endl;
+		//wiz::Out << "time " << b - a << "ms" << ENTER;
 
-		std::cout << "fileName is " << fileName << std::endl;
+		wiz::Out << "fileName is " << fileName << ENTER;
 
 		//wiz::load_data::LoadData::SaveWizDB(global, "test2.eu4", "3"); // 3 : JSON
 
 		wiz::Option opt;
 		{
 			int a = clock();
+			wiz::Out.clear_file();
 			std::string result = clauText.excute_module("", &global, wiz::ExcuteData(), opt, 0);
 			int b = clock();
-			std::cout << "excute result is " << result << "\n";
-			std::cout << b - a << "ms" << "\n"; //
+			wiz::Out << "excute result is " << result << "\n";
+			wiz::Out << b - a << "ms" << "\n"; //
 		}
 	}
 	catch (const char* str) {
-		std::cout << str << std::endl;
+		wiz::Out << str << ENTER;
 
 		GETCH();
 	}
 	catch (const std::string& str) {
-		std::cout << str << std::endl;
+		wiz::Out << str << ENTER;
 		GETCH();
 	}
 	//catch (const wiz::Error& e) {
-	//	std::cout << e << std::endl;
+	//	wiz::Out << e << ENTER;
 	//	GETCH();
 	//}
 	catch (const std::exception&e) {
-		std::cout << e.what() << std::endl;
+		wiz::Out << e.what() << ENTER;
 		GETCH();
 	}
 
 #ifndef _DEBUG
 	//catch (...) {
-	//	std::cout << "UnKnown Error.." << std::endl;
+	//	wiz::Out << "UnKnown Error.." << ENTER;
 	//	GETCH();
 	//}
 #endif

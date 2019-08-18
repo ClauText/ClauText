@@ -4,8 +4,6 @@
 
 namespace wiz {
 
-#define ENTER '\n' // cf) std::endl
-
 	namespace Lint {
 		wiz::StringBuilder builder(102400);
 		bool cout_off = false; // print yes or no?
@@ -152,7 +150,7 @@ namespace wiz {
 					option.Event(std::move(event_name));
 				}
 				else {
-					std::cout << "wrong option" << ENTER;
+					wiz::Out << "wrong option" << ENTER;
 					exit(-2);
 				}
 
@@ -190,7 +188,7 @@ namespace wiz {
 						//
 					}
 					else {
-						std::cout << str << " is not integer" << ENTER;
+						wiz::Out << str << " is not integer" << ENTER;
 						count--;
 					}
 					break;
@@ -199,7 +197,7 @@ namespace wiz {
 						//
 					}
 					else {
-						std::cout << str << " is not double" << ENTER;
+						wiz::Out << str << " is not double" << ENTER;
 						count--;
 					}
 					break;
@@ -208,7 +206,7 @@ namespace wiz {
 						//
 					}
 					else {
-						std::cout << str << " is not date" << ENTER;
+						wiz::Out << str << " is not date" << ENTER;
 						count--;
 					}
 					break;
@@ -217,7 +215,7 @@ namespace wiz {
 						//
 					}
 					else {
-						std::cout << str << " is not datetime A" << ENTER;
+						wiz::Out << str << " is not datetime A" << ENTER;
 						count--;
 					}
 					break;
@@ -226,7 +224,7 @@ namespace wiz {
 						//
 					}
 					else {
-						std::cout << str << " is not datetime B" << ENTER;
+						wiz::Out << str << " is not datetime B" << ENTER;
 						count--;
 					}
 					break;
@@ -235,7 +233,7 @@ namespace wiz {
 						//
 					}
 					else {
-						std::cout << str << " is not quoted string" << ENTER;
+						wiz::Out << str << " is not quoted string" << ENTER;
 						count--;
 					}
 					break;
@@ -323,7 +321,7 @@ namespace wiz {
 					else {
 						schema_eventUT->RemoveUserTypeList(schema_eventUT->GetUserTypeListSize() - 1);
 
-						std::cout << "clauText is not valid1" << ENTER;
+						wiz::Out << "clauText is not valid1" << ENTER;
 						return { false, var_option, val_option };
 					}
 				}
@@ -369,7 +367,7 @@ namespace wiz {
 					else {
 						schema_eventUT->RemoveUserTypeList(schema_eventUT->GetUserTypeListSize() - 1);
 
-						std::cout << "clauText is not valid2" << ENTER;
+						wiz::Out << "clauText is not valid2" << ENTER;
 						return { false, var_option, val_option };
 					}
 				}
@@ -447,7 +445,7 @@ namespace wiz {
 					else {
 						schema_eventUT->RemoveUserTypeList(schema_eventUT->GetUserTypeListSize() - 1);
 
-						std::cout << "clauText is not valid3" << ENTER;
+						wiz::Out << "clauText is not valid3" << ENTER;
 						return { false, var_option };
 					}
 				}
@@ -542,7 +540,7 @@ namespace wiz {
 					}
 					else if (schemaUT->GetItemList(itCount).ToString() == "%multiple_on") {
 						//	if (order == Option::Order_::OFF) {
-						//		std::cout << "to do %multple_on, need to %order_on!" << ENTER;
+						//		wiz::Out << "to do %multple_on, need to %order_on!" << ENTER;
 						//		throw "ERROR1";
 						//	}
 						multiple_flag = 1;
@@ -552,7 +550,7 @@ namespace wiz {
 					}
 					else if (schemaUT->GetItemList(itCount).ToString() == "%multiple_off") {
 						//if (order == Option::Order_::OFF) {
-						//	std::cout << "to do %multple_off, need to %order_on!" << ENTER;
+						//	wiz::Out << "to do %multple_off, need to %order_on!" << ENTER;
 						//	throw "ERROR2";
 						//}
 						multiple_flag = 0;
@@ -577,10 +575,10 @@ namespace wiz {
 
 					// log
 					if (log_on) {
-						std::cout << ENTER << "<itemtype> ";
-						std::cout << "[depth] : " << depth << " ";
-						std::cout << "[~th] : " << itCount << " ";
-						std::cout << "[schema] : " << schemaUT->GetItemList(itCount).ToString() << " ";
+						wiz::Out << ENTER << "<itemtype> ";
+						wiz::Out << "[depth] : " << depth << " ";
+						wiz::Out << "[~th] : " << itCount << " ";
+						wiz::Out << "[schema] : " << schemaUT->GetItemList(itCount).ToString() << " ";
 					}
 
 
@@ -602,7 +600,7 @@ namespace wiz {
 							}
 
 							if (log_on) {
-								std::cout << ENTER << "\t" << "[clau ~th] : " << j << " "
+								wiz::Out << ENTER << "\t" << "[clau ~th] : " << j << " "
 									<< "[clautext] : " << clautextUT->GetItemList(j).ToString() << ENTER;
 							}
 
@@ -635,13 +633,13 @@ namespace wiz {
 										check_id.insert(key);
 									}
 									else {
-										std::cout << "clauText is not valid - ID1" << ENTER;
+										wiz::Out << "clauText is not valid - ID1" << ENTER;
 										return false;
 									}
 								}
 								else if (std::get<1>(temp).id == Option::Id_::TOTAL_ID) {
 									if (0 == depth) {
-										std::cout << "ERROR schema is not valid1" << ENTER;
+										wiz::Out << "ERROR schema is not valid1" << ENTER;
 										return false;
 									}
 									const std::string key_1 = clautextUT->GetItemList(j).GetName().ToString();
@@ -654,7 +652,7 @@ namespace wiz {
 										check_total_id.insert(key);
 									}
 									else {
-										std::cout << "clauText is not valid _ ID2" << ENTER;
+										wiz::Out << "clauText is not valid _ ID2" << ENTER;
 										return false;
 									}
 								}
@@ -667,13 +665,13 @@ namespace wiz {
 										check_id.insert(key);
 									}
 									else {
-										std::cout << "clauText is not valid - ID3" << ENTER;
+										wiz::Out << "clauText is not valid - ID3" << ENTER;
 										return false;
 									}
 								}
 								else if (std::get<2>(temp).id == Option::Id_::TOTAL_ID) {
 									if (0 == depth) {
-										std::cout << "ERROR schema is not valid2" << ENTER;
+										wiz::Out << "ERROR schema is not valid2" << ENTER;
 										return false;
 									}
 
@@ -687,7 +685,7 @@ namespace wiz {
 										check_total_id.insert(key);
 									}
 									else {
-										std::cout << "clauText is not valid _ ID4" << ENTER;
+										wiz::Out << "clauText is not valid _ ID4" << ENTER;
 										return false;
 									}
 								}
@@ -695,7 +693,7 @@ namespace wiz {
 								// check justone, (onemore)
 								if (std::get<1>(temp).onemore == Option::OneMore_::JUSTONE) { // justone -> only for name! , not for value!
 									if (check_justone > 0) {
-										std::cout << "clauText is not valid, justone is set, but not justone. 1" << ENTER;
+										wiz::Out << "clauText is not valid, justone is set, but not justone. 1" << ENTER;
 										return false;
 									}
 									else {
@@ -719,14 +717,14 @@ namespace wiz {
 								validVisit[i] = true;
 							}
 							else {
-								std::cout << "clauText is not valid4" << ENTER;
+								wiz::Out << "clauText is not valid4" << ENTER;
 								return false;
 							}
 						}
 					}
 					else if (order == Option::Order_::ON) {
 						if (!chk_ct_it) {
-							std::cout << "chk_ct_it is false" << ENTER;
+							wiz::Out << "chk_ct_it is false" << ENTER;
 
 							if (1 == multiple_run) {
 								itCount++;
@@ -738,7 +736,7 @@ namespace wiz {
 						}
 
 						if (log_on) {
-							std::cout << "[clau ~th] : " << ct_itCount << " "
+							wiz::Out << "[clau ~th] : " << ct_itCount << " "
 								<< "[clautext] : " << clautextUT->GetItemList(ct_itCount).ToString() << ENTER;
 						}
 
@@ -750,7 +748,7 @@ namespace wiz {
 						temp = _Check(schema_eventUT, schemaUT->GetItemList(itCount), clautextUT->GetItemList(ct_itCount), wiz::load_data::LoadData::GetRealDir(clautextUT->GetItemList(ct_itCount).GetName().ToString(), clautextUT, &builder));
 
 						if (mark[ct_itCount]) {
-							std::cout << "mark " << ENTER;
+							wiz::Out << "mark " << ENTER;
 							return false;
 						}
 						else if (std::get<0>(temp)) {
@@ -766,13 +764,13 @@ namespace wiz {
 									check_id.insert(key);
 								}
 								else {
-									std::cout << "clauText is not valid - ID5" << ENTER;
+									wiz::Out << "clauText is not valid - ID5" << ENTER;
 									return false;
 								}
 							}
 							else if (std::get<1>(temp).id == Option::Id_::TOTAL_ID) {
 								if (0 == depth) {
-									std::cout << "ERROR schema is not valid3" << ENTER;
+									wiz::Out << "ERROR schema is not valid3" << ENTER;
 									return false;
 								}
 
@@ -786,7 +784,7 @@ namespace wiz {
 									check_total_id.insert(key);
 								}
 								else {
-									std::cout << "clauText is not valid _ ID6" << ENTER;
+									wiz::Out << "clauText is not valid _ ID6" << ENTER;
 									return false;
 								}
 							}
@@ -800,13 +798,13 @@ namespace wiz {
 									check_id.insert(key);
 								}
 								else {
-									std::cout << "clauText is not valid - ID7" << ENTER;
+									wiz::Out << "clauText is not valid - ID7" << ENTER;
 									return false;
 								}
 							}
 							else if (std::get<2>(temp).id == Option::Id_::TOTAL_ID) {
 								if (0 == depth) {
-									std::cout << "ERROR schema is not valid4" << ENTER; // use id!
+									wiz::Out << "ERROR schema is not valid4" << ENTER; // use id!
 									return false;
 								}
 
@@ -820,7 +818,7 @@ namespace wiz {
 									check_total_id.insert(key);
 								}
 								else {
-									std::cout << "clauText is not valid _ ID8" << ENTER;
+									wiz::Out << "clauText is not valid _ ID8" << ENTER;
 									return false;
 								}
 							}
@@ -830,7 +828,7 @@ namespace wiz {
 								//
 							}
 							else if (std::get<1>(temp).onemore == Option::OneMore_::ONEMORE) {
-								std::cout << "clauText is not valid, in order_on no onemore! 1" << ENTER;
+								wiz::Out << "clauText is not valid, in order_on no onemore! 1" << ENTER;
 								return false;
 							}
 							else {
@@ -858,7 +856,7 @@ namespace wiz {
 							check_pass = false;
 						}
 						else {
-							std::cout << "clauText is not valid6" << ENTER;
+							wiz::Out << "clauText is not valid6" << ENTER;
 							return false;
 						}
 
@@ -876,10 +874,10 @@ namespace wiz {
 				else { // usertype
 					// log
 					if (log_on) {
-						std::cout << ENTER << "<usertype> ";
-						std::cout << "[depth] : " << depth << " ";
-						std::cout << "[~th] : " << utCount << " ";
-						std::cout << "[schema] : " << schemaUT->GetUserTypeList(utCount)->GetName().ToString() << " ";
+						wiz::Out << ENTER << "<usertype> ";
+						wiz::Out << "[depth] : " << depth << " ";
+						wiz::Out << "[~th] : " << utCount << " ";
+						wiz::Out << "[schema] : " << schemaUT->GetUserTypeList(utCount)->GetName().ToString() << " ";
 					}
 
 					// off -> no order? : slow??
@@ -900,7 +898,7 @@ namespace wiz {
 							}
 
 							if (log_on) {
-								std::cout << ENTER << "\t" << "[clau ~th] : " << j << " "
+								wiz::Out << ENTER << "\t" << "[clau ~th] : " << j << " "
 									<< "[clautext] : " << clautextUT->GetUserTypeList(j)->GetName().ToString() << ENTER;
 							}
 
@@ -910,7 +908,7 @@ namespace wiz {
 								count_iter++;
 
 								if (log_on) {
-									std::cout << " { " << ENTER;
+									wiz::Out << " { " << ENTER;
 								}
 								if (std::get<1>(temp3).empty_ut == Option::EmptyUT_::ON && 0 == clautextUT->GetUserTypeList(j)->GetIListSize()) {
 									validVisit[i] = true;
@@ -922,12 +920,12 @@ namespace wiz {
 									validVisit[i] = true;
 								}
 								else {
-									std::cout << "clauText is not valid8" << ENTER;
+									wiz::Out << "clauText is not valid8" << ENTER;
 									return false;
 								}
 
 								if (log_on) {
-									std::cout << " } " << ENTER;
+									wiz::Out << " } " << ENTER;
 								}
 
 								// visit vector? chk?
@@ -947,13 +945,13 @@ namespace wiz {
 										check_id.insert(key);
 									}
 									else {
-										std::cout << "clauText is not valid - ID9" << ENTER;
+										wiz::Out << "clauText is not valid - ID9" << ENTER;
 										return false;
 									}
 								}
 								else if (std::get<1>(temp3).id == Option::Id_::TOTAL_ID) {
 									if (0 == depth) {
-										std::cout << "ERROR schema is not valid5" << ENTER;
+										wiz::Out << "ERROR schema is not valid5" << ENTER;
 										return false;
 									}
 
@@ -967,7 +965,7 @@ namespace wiz {
 										check_total_id.insert(key);
 									}
 									else {
-										std::cout << "clauText is not valid _ ID10" << ENTER;
+										wiz::Out << "clauText is not valid _ ID10" << ENTER;
 										return false;
 									}
 								}
@@ -976,7 +974,7 @@ namespace wiz {
 								if (std::get<1>(temp3).onemore == Option::OneMore_::JUSTONE) { // justone -> only for name! , not for value!
 									if (check_justone > 0) {
 
-										std::cout << "clauText is not valid, justone is set, but not justone. 3" << ENTER;
+										wiz::Out << "clauText is not valid, justone is set, but not justone. 3" << ENTER;
 										return false;
 									}
 									else {
@@ -1001,7 +999,7 @@ namespace wiz {
 								break;
 							}
 							else {
-								std::cout << "clauText is not valid9 " << schemaUT->GetUserTypeList(utCount)->GetName().ToString() << ENTER;
+								wiz::Out << "clauText is not valid9 " << schemaUT->GetUserTypeList(utCount)->GetName().ToString() << ENTER;
 								return false;
 							}
 						}
@@ -1009,7 +1007,7 @@ namespace wiz {
 					else if (order == Option::Order_::ON) {
 						if (!chk_ct_ut)
 						{
-							std::cout << "chk_ct_ut is false" << ENTER;
+							wiz::Out << "chk_ct_ut is false" << ENTER;
 
 							std::tuple<bool, Option> temp = _Check(schema_eventUT,
 								schemaUT->GetUserTypeList(utCount), nullptr, "");
@@ -1027,7 +1025,7 @@ namespace wiz {
 						}
 
 						if (log_on) {
-							std::cout << "[clau ~th] : " << ct_utCount << " "
+							wiz::Out << "[clau ~th] : " << ct_utCount << " "
 								<< "[clautext] : " << clautextUT->GetUserTypeList(ct_utCount)->GetName().ToString() << ENTER;
 						}
 
@@ -1041,12 +1039,12 @@ namespace wiz {
 						);
 
 						if (mark2[ct_utCount]) {
-							std::cout << "mark2" << ENTER;
+							wiz::Out << "mark2" << ENTER;
 							return false;
 						}
 						else if (std::get<0>(temp)) {
 							if (log_on) {
-								std::cout << " { " << ENTER;
+								wiz::Out << " { " << ENTER;
 							}
 
 
@@ -1067,13 +1065,13 @@ namespace wiz {
 										check_id.insert(key);
 									}
 									else {
-										std::cout << "clauText is not valid - ID11" << ENTER;
+										wiz::Out << "clauText is not valid - ID11" << ENTER;
 										return false;
 									}
 								}
 								else if (std::get<1>(temp).id == Option::Id_::TOTAL_ID) {
 									if (0 == depth) {
-										std::cout << "ERROR schema is not valid6" << ENTER;
+										wiz::Out << "ERROR schema is not valid6" << ENTER;
 										return false;
 									}
 
@@ -1087,7 +1085,7 @@ namespace wiz {
 										check_total_id.insert(key);
 									}
 									else {
-										std::cout << "clauText is not valid _ ID12" << ENTER;
+										wiz::Out << "clauText is not valid _ ID12" << ENTER;
 										return false;
 									}
 								}
@@ -1097,7 +1095,7 @@ namespace wiz {
 									//
 								}
 								else if (std::get<1>(temp).onemore == Option::OneMore_::ONEMORE) {
-									std::cout << "clauText is not valid, in order_on no onemore! 2" << ENTER;
+									wiz::Out << "clauText is not valid, in order_on no onemore! 2" << ENTER;
 									return false;
 								}
 								else {
@@ -1112,11 +1110,11 @@ namespace wiz {
 								validVisit[i] = true;
 							}
 							else {
-								std::cout << "clauText is not valid11" << ENTER;
+								wiz::Out << "clauText is not valid11" << ENTER;
 								return false;
 							}
 							if (log_on) {
-								std::cout << " } " << ENTER;
+								wiz::Out << " } " << ENTER;
 							}
 						}
 						else if (std::get<1>(temp).required == Option::Required_::OPTIONAL_) {
@@ -1141,7 +1139,7 @@ namespace wiz {
 							check_pass = false;
 						}
 						else {
-							std::cout << "clauText is not valid12" << ENTER;
+							wiz::Out << "clauText is not valid12" << ENTER;
 							return false;
 						}
 
@@ -1174,32 +1172,32 @@ namespace wiz {
 				//itCount++;
 			}
 			else if (multiple_flag) {
-				std::cout << "multiple_flag is wrong.. " << ENTER;
+				wiz::Out << "multiple_flag is wrong.. " << ENTER;
 				return false;
 			}
 
 			if (ct_itCount != clautextUT->GetItemListSize()) {
-				std::cout << "clauText is not valid13 : " << ct_itCount << " " << clautextUT->GetItemListSize() << ENTER;
+				wiz::Out << "clauText is not valid13 : " << ct_itCount << " " << clautextUT->GetItemListSize() << ENTER;
 				return false;
 			}
 			if (ct_utCount != clautextUT->GetUserTypeListSize()) {
-				std::cout << "clauText is not valid14 : " << ct_utCount << " " << clautextUT->GetUserTypeListSize() << ENTER;
+				wiz::Out << "clauText is not valid14 : " << ct_utCount << " " << clautextUT->GetUserTypeListSize() << ENTER;
 				return false;
 			}
 
 			if (itCount != schemaUT->GetItemListSize()) {
-				std::cout << "clauText is not valid15 : " << itCount << ENTER;
+				wiz::Out << "clauText is not valid15 : " << itCount << ENTER;
 				return false;
 			}
 
 			if (utCount != schemaUT->GetUserTypeListSize()) {
-				std::cout << "clauText is not valid16 : " << utCount << " " << schemaUT->GetUserTypeListSize() << ENTER;
+				wiz::Out << "clauText is not valid16 : " << utCount << " " << schemaUT->GetUserTypeListSize() << ENTER;
 				return false;
 			}
 
 			for (long long i = 0; i < validVisit.size(); ++i) {
 				if (false == validVisit[i]) {
-					std::cout << "clauText is not valid17" << ENTER;
+					wiz::Out << "clauText is not valid17" << ENTER;
 					return false;
 				}
 			}
@@ -1328,19 +1326,19 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 					if (mdVec[i].isDir) { setcolor(0, 10); }
 					else { setcolor(0, 7); }
 					if (false == mdVec[i].varName.empty()) {
-						std::cout << "  " << mdVec[i].varName;
+						wiz::Out << "  " << mdVec[i].varName;
 					}
 					else
 					{
-						std::cout << "  " << " ";
+						wiz::Out << "  " << " ";
 					}
-					if (i != mdVec.size() - 1) { std::cout << std::endl; }
+					if (i != mdVec.size() - 1) { wiz::Out << ENTER; }
 				}
 
 				gotoxy(0, idx - Start);
 
 				setcolor(0, 12);
-				std::cout << "●";
+				wiz::Out << "●";
 				setcolor(0, 0);
 				gotoxy(0, 0);
 			}
@@ -1373,25 +1371,25 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 					for (int i = Start; i <= End; ++i) {
 						if (mdVec[i].isDir) { setcolor(0, 10); }
 						else { setcolor(0, 7); }
-						std::cout << "  " << mdVec[i].varName;
-						if (mdVec[i].varName.empty()) { std::cout << " "; }
-						if (i != mdVec.size() - 1) { std::cout << std::endl; }
+						wiz::Out << "  " << mdVec[i].varName;
+						if (mdVec[i].varName.empty()) { wiz::Out << " "; }
+						if (i != mdVec.size() - 1) { wiz::Out << ENTER; }
 						count++;
 					}
 					gotoxy(0, idx - Start);
 					setcolor(0, 12);
-					std::cout << "●";
+					wiz::Out << "●";
 					setcolor(0, 0);
 				}
 				else {
 					gotoxy(0, idx - Start);
 					setcolor(0, 0);
-					std::cout << "  ";
+					wiz::Out << "  ";
 					idx--;
 
 					gotoxy(0, idx - Start);
 					setcolor(0, 12);
-					std::cout << "●";
+					wiz::Out << "●";
 					setcolor(0, 0);
 				}
 			}
@@ -1413,24 +1411,24 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 					for (int i = Start; i <= End; ++i) {
 						if (mdVec[i].isDir) { setcolor(0, 10); }
 						else { setcolor(0, 7); }
-						std::cout << "  " << mdVec[i].varName;
-						if (i != mdVec.size() - 1) { std::cout << std::endl; }
+						wiz::Out << "  " << mdVec[i].varName;
+						if (i != mdVec.size() - 1) { wiz::Out << ENTER; }
 						count++;
 					}
 					gotoxy(0, 0);
 					setcolor(0, 12);
-					std::cout << "●";
+					wiz::Out << "●";
 					setcolor(0, 0);
 				}
 				else {
 					gotoxy(0, idx - Start);
 					setcolor(0, 0);
-					std::cout << "  ";
+					wiz::Out << "  ";
 					idx++;
 
 					gotoxy(0, idx - Start);
 					setcolor(0, 12);
-					std::cout << "●";
+					wiz::Out << "●";
 					setcolor(0, 0);
 				}
 			}
@@ -1449,24 +1447,24 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 
 					for (int i = Start; i <= End; ++i) {
 						setcolor(0, 7);
-						std::cout << "  " << strVec[i];
-						if (i != strVec.size() - 1) { std::cout << std::endl; }
+						wiz::Out << "  " << strVec[i];
+						if (i != strVec.size() - 1) { wiz::Out << ENTER; }
 						count++;
 					}
 					gotoxy(0, idx - Start);
 					setcolor(0, 12);
-					std::cout << "●";
+					wiz::Out << "●";
 					setcolor(0, 0);
 				}
 				else {
 					gotoxy(0, idx - Start);
 					setcolor(0, 0);
-					std::cout << "  ";
+					wiz::Out << "  ";
 					idx--;
 
 					gotoxy(0, idx - Start);
 					setcolor(0, 12);
-					std::cout << "●";
+					wiz::Out << "●";
 					setcolor(0, 0);
 				}
 			}
@@ -1488,24 +1486,24 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 
 					for (int i = Start; i <= End; ++i) {
 						setcolor(0, 7);
-						std::cout << "  " << strVec[i];
-						if (i != strVec.size() - 1) { std::cout << std::endl; }
+						wiz::Out << "  " << strVec[i];
+						if (i != strVec.size() - 1) { wiz::Out << ENTER; }
 						count++;
 					}
 					gotoxy(0, 0);
 					setcolor(0, 12);
-					std::cout << "●";
+					wiz::Out << "●";
 					setcolor(0, 0);
 				}
 				else {
 					gotoxy(0, idx - Start);
 					setcolor(0, 0);
-					std::cout << "  ";
+					wiz::Out << "  ";
 					idx++;
 
 					gotoxy(0, idx - Start);
 					setcolor(0, 12);
-					std::cout << "●";
+					wiz::Out << "●";
 					setcolor(0, 0);
 				}
 			}
@@ -1571,10 +1569,10 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 
 							auto x = utVec[braceNum].Get(mdVec[idx].no)->GetItemList(idx - count_userType);
 							std::string temp = wiz::ToString(x.Get(0));
-							std::cout << "  " << temp;
+							wiz::Out << "  " << temp;
 							strVec.push_back(temp);
 							//}
-							if (i != count - 1) { std::cout << std::endl; }
+							if (i != count - 1) { wiz::Out << ENTER; }
 						}
 					}
 
@@ -1588,7 +1586,7 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 						Start = 0;
 
 						setcolor(0, 12);
-						std::cout << "●";
+						wiz::Out << "●";
 						setcolor(0, 0);
 					}
 					else if (state == 1) { /// cf) state = 2;
@@ -1613,7 +1611,7 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 				int x = 0;
 				system("cls");
 				setcolor(0, 7);
-				std::cout << "row input : ";
+				wiz::Out << "row input : ";
 				std::cin >> temp;
 				FFLUSH();
 
@@ -1723,8 +1721,8 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 					system("cls");
 					setcolor(7, 0);
 
-					std::cout << "edit mode" << std::endl;
-					std::cout << "add - a, change - c, remove - r, save - s" << std::endl;
+					wiz::Out << "edit mode" << ENTER;
+					wiz::Out << "add - a, change - c, remove - r, save - s" << ENTER;
 					
 					//GETCH(); // why '\0' or 0?
 					ch = GETCH();
@@ -1737,14 +1735,14 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 
 						setcolor(0, 7);
 						// need more test!!
-						std::cout << "add UserType : 1, add Item : 2, add usertype that name is \"\": 3 your input : ";
+						wiz::Out << "add UserType : 1, add Item : 2, add usertype that name is \"\": 3 your input : ";
 						std::cin >> select;
 						FFLUSH();
 
 						// add userType?
 						if (1 == select) {
 							// name of UserType.
-							std::cout << "what is new UserType name? : ";
+							wiz::Out << "what is new UserType name? : ";
 							std::cin >> var;
 							FFLUSH();
 							utVec2[braceNum]->AddUserTypeItem(wiz::load_data::UserType(var));
@@ -1752,9 +1750,9 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 						// addd Item?
 						else if (2 == select) {
 							// var, val /// state에 따라?
-							std::cout << "var : ";
+							wiz::Out << "var : ";
 							std::cin >> var;
-							std::cout << "val : ";
+							wiz::Out << "val : ";
 							FFLUSH();
 							std::getline(std::cin, val);
 							utVec2[braceNum]->AddItem(var, val);
@@ -1769,7 +1767,7 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 						if (idx < count_userType) {
 							std::string temp;
 							setcolor(0, 7);
-							std::cout << "change userType name : ";
+							wiz::Out << "change userType name : ";
 
 							FFLUSH();
 							std::getline(std::cin, temp);
@@ -1790,7 +1788,7 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 
 							std::string name, value;
 							if (1 == state) { // val
-								std::cout << "change val : " << std::endl;
+								wiz::Out << "change val : " << ENTER;
 								std::getline(std::cin, temp);
 
 								value = temp;
@@ -1825,7 +1823,7 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 								state = 0;
 							}
 							else if (0 == state) { // var
-								std::cout << "change var : " << std::endl;
+								wiz::Out << "change var : " << ENTER;
 								std::cin >> temp;
 								FFLUSH();
 								name = temp;
@@ -1931,7 +1929,7 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 						std::string temp;
 
 						setcolor(0, 7);
-						std::cout << "save file name : ";
+						wiz::Out << "save file name : ";
 						FFLUSH();
 						std::getline(std::cin, temp);
 
@@ -1966,7 +1964,7 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 					system("cls");
 
 					setcolor(7, 0);
-					std::cout << "text edit mode" << std::endl;
+					wiz::Out << "text edit mode" << ENTER;
 
 					// Add, AddUserType, Set, Remove, RemoveAll ?.
 					std::string temp;
@@ -1985,7 +1983,7 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 							{
 								if (false == wiz::load_data::LoadData::AddData(*utTemp, strVecTemp[1], strVecTemp[2], strVecTemp[3], ExcuteData(), nullptr))
 								{
-									std::cout << "fail to add" << std::endl; /// To Do to following code.
+									wiz::Out << "fail to add" << ENTER; /// To Do to following code.
 								}
 							}
 							else if ("addusertype" == strVecTemp[0])
@@ -2010,12 +2008,12 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 							}
 							else if ("searchitem" == strVecTemp[0])
 							{
-								std::cout << wiz::load_data::LoadData::SearchItem(*utTemp, strVecTemp[1], strVecTemp[2], ExcuteData(), nullptr) << std::endl;
+								wiz::Out << wiz::load_data::LoadData::SearchItem(*utTemp, strVecTemp[1], strVecTemp[2], ExcuteData(), nullptr) << ENTER;
 								GETCH();
 							}
 							else if ("searchusertype" == strVecTemp[0])
 							{
-								std::cout << wiz::load_data::LoadData::SearchUserType(*utTemp, strVecTemp[1], strVecTemp[2], ExcuteData(), nullptr) << std::endl;
+								wiz::Out << wiz::load_data::LoadData::SearchUserType(*utTemp, strVecTemp[1], strVecTemp[2], ExcuteData(), nullptr) << ENTER;
 								GETCH();
 							}
 						}
@@ -2112,7 +2110,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 	if (excuteData.chkInfo == false) { /// chk smartpointer.
 		if (global.GetUserTypeItem("Main").empty() && MainStr.empty())
 		{
-			std::cout << "do not exist Main" << std::endl;
+			wiz::Out << "do not exist Main" << ENTER;
 			return "ERROR -1";
 		}
 
@@ -2192,7 +2190,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						//	if (!_Main.empty())
 						//	{
 						// error!
-						//		std::cout << "err" << std::endl;
+						//		wiz::Out << "err" << ENTER;
 
 						//			return "ERROR -2"; /// exit?
 						//		}
@@ -2269,7 +2267,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						//	if (!_Main.empty())
 						//	{
 						// error!
-						//		std::cout << "err" << std::endl;
+						//		wiz::Out << "err" << ENTER;
 
 						//			return "ERROR -2"; /// exit?
 						//		}
@@ -2313,7 +2311,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 		{
 			auto x = eventPtr->GetUserTypeList(i)->GetItem("id");
 			if (!x.empty()) {
-				//std::cout <<	x[0] << std::endl;
+				//wiz::Out <<	x[0] << ENTER;
 				auto temp = std::pair<std::string, int>(wiz::ToString(x[0].Get(0)), i);
 				convert.insert(temp);
 			}
@@ -2505,7 +2503,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 
 				if (_cond.Now().size() != 1 || "TRUE" != _cond.Now()[0]) // || cond.Now().size()  != 1
 				{
-				//std::std::cout << cond.Now()[0] << std::endl;
+				//std::wiz::Out << cond.Now()[0] << ENTER;
 				continue;
 				}
 
@@ -2584,7 +2582,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					wiz::load_data::UserType* from_ut = wiz::load_data::UserType::Find(&global, from, &builder).second[0];
 
 					if (to_ut == from_ut) {
-						std::cout << "to_ut == from_ut\n";
+						wiz::Out << "to_ut == from_ut\n";
 
 						eventStack.top().userType_idx.top()++;
 						break;
@@ -2899,7 +2897,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 
 					std::string rex = wiz::load_data::LoadData::ToBool4(nullptr, global, val->GetUserTypeList(0)->ToString(), _excuteData, &builder);
 					rex = rex.substr(1, rex.size() - 2);
-					//std::cout << val->GetUserTypeList(1)->ToString() << std::endl;
+					//wiz::Out << val->GetUserTypeList(1)->ToString() << ENTER;
 					std::vector<std::string> sval;
 					std::vector<std::string> scondition;
 					std::string start_dir = "root";
@@ -2921,8 +2919,8 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					if (val->GetUserTypeListSize() >= 5) {
 						recursive = wiz::load_data::LoadData::ToBool4(nullptr, global, val->GetUserTypeList(val->GetUserTypeListSize() - 2)->ToString(), _excuteData, &builder) == "TRUE" ? true : false;
 					}
-					//std::cout << scondition << std::endl;
-					//std::cout << "sval " << sval << std::endl;
+					//wiz::Out << scondition << ENTER;
+					//wiz::Out << "sval " << sval << ENTER;
 					wiz::load_data::LoadData::ReplaceDataType2(global, rex, sval, scondition, start_dir, _excuteData, recursive, &builder);
 
 					eventStack.top().userType_idx.top()++;
@@ -3556,6 +3554,72 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 				}
 				*/
 				
+				else if ("$print_option" == val->GetName()) {
+				ExcuteData _excuteData; _excuteData.depth = excuteData.depth;
+					_excuteData.chkInfo = true;
+					_excuteData.info = eventStack.top();
+					_excuteData.pObjectMap = objectMapPtr;
+					_excuteData.pEvents = eventPtr;
+					_excuteData.pModule = moduleMapPtr;
+					
+					std::vector<std::string> data(val->GetItemListSize());
+					for (long long i = 0; i < val->GetItemListSize(); ++i) {
+						data[i] = val->GetItemList(i).ToString();
+					}
+
+					bool x = false , y = false;
+					for (long long i = 0; i < data.size(); ++i) {
+						if ("CONSOLE" == data[i]) {
+							x = true;
+						}
+						else if ("FILE" == data[i]) {
+							y = true;
+						}
+					}
+
+
+					if (x && y) {
+						wiz::Out.SetPolicy(2);
+					}
+					else if (x) {
+						wiz::Out.SetPolicy(0);
+					}
+					else { // y
+						wiz::Out.SetPolicy(1);
+					}
+
+					eventStack.top().userType_idx.top()++;
+					break;
+				}
+				else if ("$print_file_option" == val->GetName()) {
+					ExcuteData _excuteData; _excuteData.depth = excuteData.depth;
+					_excuteData.chkInfo = true;
+					_excuteData.info = eventStack.top();
+					_excuteData.pObjectMap = objectMapPtr;
+					_excuteData.pEvents = eventPtr;
+					_excuteData.pModule = moduleMapPtr;
+
+					std::string fileName = val->GetItemList(0).ToString();
+					wiz::Out.SetFileName(fileName.substr(1, fileName.size() - 2));
+
+
+					eventStack.top().userType_idx.top()++;
+					break;
+				}
+				else if ("$print_file_clear" == val->GetName()) {
+					ExcuteData _excuteData; _excuteData.depth = excuteData.depth;
+					_excuteData.chkInfo = true;
+					_excuteData.info = eventStack.top();
+					_excuteData.pObjectMap = objectMapPtr;
+					_excuteData.pEvents = eventPtr;
+					_excuteData.pModule = moduleMapPtr;
+
+					wiz::Out.clear_file();
+
+
+					eventStack.top().userType_idx.top()++;
+					break;
+				}
 				// todo - remove??
 				else if ("$call_lambda" == val->GetName())
 				{
@@ -4258,12 +4322,12 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 									}
 								}
 							}
-							std::cout << data;*/
-							std::cout << listName;
+							wiz::Out << data;*/
+							wiz::Out << listName;
 						}
 						else if (listName.size() == 2 && listName[0] == '\\' && listName[1] == 'n')
 						{
-							std::cout << '\n';
+							wiz::Out << '\n';
 						}
 						else if (wiz::String::startsWith(listName, "$local.")
 							|| wiz::String::startsWith(listName, "$parameter.")
@@ -4271,10 +4335,10 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						{
 							std::string temp = wiz::load_data::LoadData::ToBool4(nullptr, global, listName, _excuteData, &builder);
 							if (temp.empty()) {
-								std::cout << "EMPTY";
+								wiz::Out << "EMPTY";
 							}
 							else {
-								std::cout << temp;
+								wiz::Out << temp;
 							}
 						}
 						else if (wiz::String::startsWith(listName, "/") && listName.size() > 1)
@@ -4282,12 +4346,12 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 							std::string temp = wiz::load_data::LoadData::ToBool4(nullptr, global, listName, _excuteData, &builder);
 							if (temp != listName) // chk 
 							{
-								std::cout << temp;
+								wiz::Out << temp;
 							}
 							else {
 								wiz::load_data::UserType* ut = wiz::load_data::UserType::Find(&global, listName, &builder).second[0];
 								if (ut->GetItemListSize() == 0 && wiz::ToString(ut->GetItemList(0).GetName()).empty()) {
-									std::cout << wiz::ToString(ut->GetItemList(0).Get(0));
+									wiz::Out << wiz::ToString(ut->GetItemList(0).Get(0));
 								}
 							}
 						}
@@ -4296,10 +4360,10 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 							auto x = wiz::load_data::UserType::Find(&global, listName, &builder);
 							if (x.first) {
 								wiz::load_data::UserType* ut = x.second[0];
-								std::cout << ut->ToString();
+								wiz::Out << ut->ToString();
 							}
 							else {
-								std::cout << listName;
+								wiz::Out << listName;
 							}
 						}
 					}
@@ -4312,7 +4376,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 
 						std::string name = wiz::load_data::LoadData::ToBool4(nullptr, global,
 							temp, _excuteData, &builder);
-						std::cout << name;
+						wiz::Out << name;
 					}
 					else
 					{
@@ -4328,8 +4392,8 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						wiz::load_data::UserType* ut = wiz::load_data::UserType::Find(&global, listName, &builder).second[0];
 						for (int i = _start; i <= _last; ++i)
 						{
-							if (i != _start) { std::cout << " "; }
-							std::cout << wiz::ToString(ut->GetItemList(i).Get(0));
+							if (i != _start) { wiz::Out << " "; }
+							wiz::Out << wiz::ToString(ut->GetItemList(i).Get(0));
 						}
 					}
 
@@ -4353,9 +4417,9 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					auto x = wiz::load_data::UserType::Find(&global, dir, &builder);
 
 					for (int idx = 0; idx < x.second.size(); ++idx) {
-						std::cout << x.second[idx]->ToString();
+						wiz::Out << x.second[idx]->ToString();
 						if (idx < x.second.size() - 1) {
-							std::cout << "\n";
+							wiz::Out << "\n";
 						}
 					}
 
@@ -4401,7 +4465,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 							if (!_Main.empty())
 							{
 								// error!
-								std::cout << "err" << std::endl;
+								wiz::Out << "err" << ENTER;
 
 								return "ERROR -2"; /// exit?
 							}
@@ -4424,7 +4488,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						{
 							auto x = eventPtr->GetUserTypeList(i)->GetItem("id");
 							if (!x.empty()) {
-								//std::cout <<	x[0] << std::endl;
+								//wiz::Out <<	x[0] << ENTER;
 								auto temp = std::pair<std::string, int>(wiz::ToString(x[0].Get(0)), i);
 								convert.insert(temp);
 							}
@@ -4494,7 +4558,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						//	if (!_Main.empty())
 						//	{
 						// error!
-						//		std::cout << "err" << std::endl;
+						//		wiz::Out << "err" << ENTER;
 
 						//			return "ERROR -2"; /// exit?
 						//		}
@@ -4573,7 +4637,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						//	if (!_Main.empty())
 						//	{
 						// error!
-						//		std::cout << "err" << std::endl;
+						//		wiz::Out << "err" << ENTER;
 
 						//			return "ERROR -2"; /// exit?
 						//		}
@@ -4652,7 +4716,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						//	if (!_Main.empty())
 						//	{
 						// error!
-						//		std::cout << "err" << std::endl;
+						//		wiz::Out << "err" << ENTER;
 
 						//			return "ERROR -2"; /// exit?
 						//		}
@@ -4707,7 +4771,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					if (wiz::load_data::LoadData::LoadDataFromFile5_2(fileName, ut, lex_thr_num, parse_thr_num)) {
 						{
 							int b = clock();
-							std::cout << b - a << "ms" << "\n";
+							wiz::Out << b - a << "ms" << "\n";
 
 							for (int i = 0; i < ut.GetCommentListSize(); ++i) {
 								utTemp->PushComment(std::move(ut.GetCommentList(i)));
@@ -4733,7 +4797,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						//	if (!_Main.empty())
 						//	{
 						// error!
-						//		std::cout << "err" << std::endl;
+						//		wiz::Out << "err" << ENTER;
 
 						//			return "ERROR -2"; /// exit?
 						//		}
@@ -4786,7 +4850,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 							if (!_Main.empty())
 							{
 								// error!
-								std::cout << "err" << std::endl;
+								wiz::Out << "err" << ENTER;
 
 								return "ERROR -2"; /// exit?
 							}
@@ -4809,7 +4873,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						{
 							auto x = eventPtr->GetUserTypeList(i)->GetItem("id");
 							if (!x.empty()) {
-								//std::cout <<	x[0] << std::endl;
+								//wiz::Out <<	x[0] << ENTER;
 								convert.insert(std::pair<std::string, int>(x[0].Get(0), i));
 							}
 							else {
@@ -4868,7 +4932,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						//	if (!_Main.empty())
 						//	{
 						// error!
-						//		std::cout << "err" << std::endl;
+						//		wiz::Out << "err" << ENTER;
 
 						//			return "ERROR -2"; /// exit?
 						//		}
@@ -4936,7 +5000,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						//	if (!_Main.empty())
 						//	{
 						// error!
-						//		std::cout << "err" << std::endl;
+						//		wiz::Out << "err" << ENTER;
 
 						//			return "ERROR -2"; /// exit?
 						//		}
@@ -5003,7 +5067,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					//	if (!_Main.empty())
 					//	{
 					// error!
-					//		std::cout << "err" << std::endl;
+					//		wiz::Out << "err" << ENTER;
 
 					//			return "ERROR -2"; /// exit?
 					//		}
@@ -5067,7 +5131,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						//	if (!_Main.empty())
 						//	{
 						// error!
-						//		std::cout << "err" << std::endl;
+						//		wiz::Out << "err" << ENTER;
 
 						//			return "ERROR -2"; /// exit?
 						//		}
@@ -5504,7 +5568,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					else
 					{
 						// debug..
-						std::cout << "Error Debug : " << temp << std::endl;
+						wiz::Out << "Error Debug : " << temp << ENTER;
 						return "ERROR -3";
 					}
 				}
@@ -5528,7 +5592,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					}
 				}
 				else { //
-					std::cout << "it does not work. : " << wiz::ToString(val->GetName()) << std::endl;
+					wiz::Out << "it does not work. : " << wiz::ToString(val->GetName()) << ENTER;
 
 					eventStack.top().userType_idx.top()++;
 					break;
@@ -5590,7 +5654,7 @@ void SaveWithOutEvent(std::ostream& stream, wiz::load_data::UserType* ut, int de
 	}
 
 	for (int i = 0; i < ut->GetIListSize(); ++i) {
-		//std::cout << "ItemList" << endl;
+		//wiz::Out << "ItemList" << endl;
 		if (ut->IsItemList(i)) {
 			for (int j = 0; j < ut->GetItemList(itemListCount).size(); j++) {
 				std::string temp;
@@ -5619,7 +5683,7 @@ void SaveWithOutEvent(std::ostream& stream, wiz::load_data::UserType* ut, int de
 				continue;
 			}
 
-			// std::cout << "UserTypeList" << endl;
+			// wiz::Out << "UserTypeList" << endl;
 			for (int k = 0; k < depth; ++k) {
 				stream << "\t";
 			}
@@ -5654,7 +5718,7 @@ void ClauText::ShellMode(wiz::load_data::UserType& global) {
 
 	while (true)
 	{
-		std::cout << "<< : "; //
+		wiz::Out << "<< : "; //
 		std::getline(std::cin, command);
 
 		if (command.empty()) {
@@ -5665,15 +5729,15 @@ void ClauText::ShellMode(wiz::load_data::UserType& global) {
 		//		$call = { id = 0 } # tab or 들여쓰기!!
 		if (!command.empty() && '$' == command[0]) {
 			if ("$print" == command) {
-				std::cout << ">> : global" << std::endl;
+				wiz::Out << ">> : global" << ENTER;
 				//cout << global.ToString() << endl;
 				global.Save1(std::cout);
-				std::cout << std::endl;
+				wiz::Out << ENTER;
 			}
 			else if ("$print_data_only" == command) {
-				std::cout << ">> : global" << std::endl;
+				wiz::Out << ">> : global" << ENTER;
 				SaveWithOutEvent(std::cout, &global, 0);
-				std::cout << std::endl;
+				wiz::Out << ENTER;
 			}
 			else if ("$exit" == command) {
 				break;
@@ -5686,7 +5750,10 @@ void ClauText::ShellMode(wiz::load_data::UserType& global) {
 				gotoxy(0, 0);
 				setcolor(7, 0);
 #endif
-				std::cout << ">> : $M end" << std::endl;
+				wiz::Out << ">> : $M end" << ENTER;
+			}
+			else if ("$option" == command) {
+
 			}
 			else if (wiz::String::startsWith(command, "$call"))
 			{
@@ -5702,19 +5769,19 @@ void ClauText::ShellMode(wiz::load_data::UserType& global) {
 							const std::string result = excute_module("Main = { $call = { id = " + id + "} }", &ut, ExcuteData(), opt, 1);
 
 							global = std::move(ut);
-							std::cout << std::endl << "excute result is : " << result << std::endl;
+							wiz::Out << ENTER << "excute result is : " << result << ENTER;
 						}
 						catch (...) // any exception..
 						{
-							std::cout << ">> : $call id or excute module error" << std::endl;
+							wiz::Out << ">> : $call id or excute module error" << ENTER;
 						}
 					}
 					else {
-						std::cout << ">> : $call Error" << std::endl;
+						wiz::Out << ">> : $call Error" << ENTER;
 					}
 				}
 				catch (...) {
-					std::cout << ">> : $call load data from string error" << std::endl;
+					wiz::Out << ">> : $call load data from string error" << ENTER;
 				}
 			}
 			else if (wiz::String::startsWith(command, "$load"))
@@ -5729,16 +5796,16 @@ void ClauText::ShellMode(wiz::load_data::UserType& global) {
 
 						if (wiz::load_data::LoadData::LoadDataFromFile(result, global)) {}
 						else {
-							std::cout << ">> : load data from file error" << std::endl;
+							wiz::Out << ">> : load data from file error" << ENTER;
 						}
 					}
 					catch (...) // any exception..
 					{
-						std::cout << ">> : load error" << std::endl;
+						wiz::Out << ">> : load error" << ENTER;
 					}
 				}
 				else {
-					std::cout << ">> : $load syntax Error" << std::endl;
+					wiz::Out << ">> : $load syntax Error" << ENTER;
 				}
 			}
 			else if (wiz::String::startsWith(command, "$save_event_only"))
@@ -5773,11 +5840,11 @@ void ClauText::ShellMode(wiz::load_data::UserType& global) {
 						if (outFile.is_open()) {
 							outFile.close();
 						}
-						std::cout << ">> : $save_event_only error" << std::endl;
+						wiz::Out << ">> : $save_event_only error" << ENTER;
 					}
 				}
 				else {
-					std::cout << ">> : $save_event_only syntax Error" << std::endl;
+					wiz::Out << ">> : $save_event_only syntax Error" << ENTER;
 				}
 			}
 
@@ -5807,7 +5874,7 @@ void ClauText::ShellMode(wiz::load_data::UserType& global) {
 						if (outFile.is_open()) {
 							outFile.close();
 						}
-						std::cout << ">> : $save_data_only error" << std::endl;
+						wiz::Out << ">> : $save_data_only error" << ENTER;
 					}
 				}
 			}
@@ -5823,11 +5890,11 @@ void ClauText::ShellMode(wiz::load_data::UserType& global) {
 
 					}
 					else {
-						std::cout << ">> : $save error" << std::endl;
+						wiz::Out << ">> : $save error" << ENTER;
 					}
 				}
 				else {
-					std::cout << ">> : $save syntax Error" << std::endl;
+					wiz::Out << ">> : $save syntax Error" << ENTER;
 				}
 			}
 			else if ("$cls" == command) {
@@ -5840,17 +5907,17 @@ void ClauText::ShellMode(wiz::load_data::UserType& global) {
 
 				totalCommand.append(command);
 				if (wiz::load_data::LoadData::LoadDataFromString(totalCommand, global)) {
-					std::cout << ">> : Data Added!" << std::endl;
+					wiz::Out << ">> : Data Added!" << ENTER;
 				}
 				else {
-					std::cout << ">> : Error : loaddata from string " << std::endl;
+					wiz::Out << ">> : Error : loaddata from string " << ENTER;
 				}
 				command = "";
 				totalCommand = "";
 			}
 			else {
 				if (chk_brace[0] == 1) {
-					std::cout << ">> : Error in command, reset command" << std::endl;
+					wiz::Out << ">> : Error in command, reset command" << ENTER;
 					totalCommand = "";
 					command = "";
 					chk_brace.clear();
