@@ -343,7 +343,7 @@ namespace wiz {
 			UserType& operator=(UserType&& ut) {
 				if (this == &ut) { return *this; }
 
-				Type::operator=(std::move(ut));
+				Type::operator=((ut));
 				RemoveUserTypeList();
 				Reset2(std::move(ut));
 				return *this;
