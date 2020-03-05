@@ -29,3 +29,4 @@
   8. TODO - with LGTM, fix warnings. https://lgtm.com/projects/g/ClauText/ClauText/
   9. NOTYET - UTF-8 Support? (with C++20?)
   10. $iterate is very slow. - maybe need big change in code.. or use ClauToCpp
+  11. Update Parallel Parser. - see https://github.com/ClauText/ClauParser
