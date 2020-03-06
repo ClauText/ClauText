@@ -747,6 +747,11 @@ namespace wiz {
 						std::tuple<bool, Option, Option> temp;
 						temp = _Check(schema_eventUT, schemaUT->GetItemList(itCount), clautextUT->GetItemList(ct_itCount), wiz::load_data::LoadData::GetRealDir(clautextUT->GetItemList(ct_itCount).GetName().ToString(), clautextUT, &builder));
 
+
+						if (false == std::get<0>(temp)) {
+							return false;
+						}
+
 						if (mark[ct_itCount]) {
 							wiz::Out << "mark " << ENTER;
 							return false;
@@ -1037,6 +1042,10 @@ namespace wiz {
 							schemaUT->GetUserTypeList(utCount), clautextUT->GetUserTypeList(ct_utCount),
 							wiz::load_data::LoadData::GetRealDir(clautextUT->GetUserTypeList(ct_utCount)->GetName().ToString(), clautextUT->GetUserTypeList(ct_utCount), &builder)
 						);
+
+						if (false == std::get<0>(temp)) {
+							return false;
+						}
 
 						if (mark2[ct_utCount]) {
 							wiz::Out << "mark2" << ENTER;
@@ -2592,7 +2601,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						int utCount = 0;
 						for (int i = 0; i < from_ut->GetIListSize(); ++i) {
 							if (from_ut->IsItemList(i)) {
-								to_ut->AddItemList(from_ut->GetItemList(itCount));
+								to_ut->AddItemType(from_ut->GetItemList(itCount));
 								itCount++;
 							}
 							else {
@@ -4610,7 +4619,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					}
 
 
-					if (wiz::load_data::LoadData::LoadDataFromFile3(fileName, ut, parse_thr_num - 1, lex_thr_num)) {
+					if (wiz::load_data::LoadData2::LoadDataFromFile(fileName, ut, lex_thr_num, parse_thr_num)) {
 						{
 						
 							for (int i = 0; i < ut.GetCommentListSize(); ++i) {
