@@ -276,13 +276,13 @@ namespace wiz {
 				return ilist[idx] == 2;
 			}
 
-			void AddItemList(const ItemType<WIZ_STRING_TYPE>& strTa)
+			void AddItemType(const ItemType<WIZ_STRING_TYPE>& strTa)
 			{
 				for (int i = 0; i < strTa.size(); ++i) {
 					this->AddItem(strTa.GetName(), strTa.Get(i));
 				}
 			}
-			void AddItemList(ItemType<WIZ_STRING_TYPE>&& strTa)
+			void AddItemType(ItemType<WIZ_STRING_TYPE>&& strTa)
 			{
 				for (int i = 0; i < strTa.size(); ++i) {
 					this->AddItem(std::move(strTa.GetName()), std::move(strTa.Get(i)));
@@ -1436,20 +1436,12 @@ namespace wiz {
 				ref = userTypeList[idx];
 				return true;
 			}
-			bool GetLastUserTypeItemRef(const WIZ_STRING_TYPE& name, UserType*& ref) {
-				int idx = -1;
-
-				for (int i = userTypeList.size()-1; i >= 0; --i)
-				{
-					if (name == userTypeList[i]->GetName()) {
-						idx = i;
-						break;
-					}
+			bool GetLastUserTypeItemRef(UserType*& ref) {
+				if (false == userTypeList.empty()) {
+					ref = userTypeList.back();
+					return true;
 				}
-				if (idx > -1) {
-					ref = userTypeList[idx];
-				}
-				return idx > -1;
+				return false;
 			}
 		private:
 			/// save1 - like EU4 savefiles.
