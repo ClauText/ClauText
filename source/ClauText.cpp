@@ -33,8 +33,8 @@ namespace wiz {
 
 			std::string prefix;
 		public:
-			Option() : type(), //id(Id_::NONE), 
-				//onemore(OneMore_::NONE), 
+			Option() : type(), id(Id_::NONE), 
+				onemore(OneMore_::NONE), 
 				required(Required_::REQUIRED),
 				empty_ut(EmptyUT_::NONE)
 			{
