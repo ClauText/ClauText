@@ -9297,13 +9297,18 @@ namespace wiz {
 
 		class LoadData2
 		{
+			static enum {
+				TYPE_LEFT = 1,
+				TYPE_RIGHT = 2,
+				TYPE_ASSIGN = 3
+			};
 		private:
 			static long long check_syntax_error1(long long str, int* err) {
 				long long len = GetLength(str);
 				long long type = GetType(str);
 
-				if (1 == len && (type == 1 || type == 2 ||
-					type == 3)) {
+				if (1 == len && (type == TYPE_LEFT || type == TYPE_RIGHT ||
+					type == TYPE_ASSIGN)) {
 					*err = -4;
 				}
 				return str;
@@ -9427,7 +9432,7 @@ namespace wiz {
 					case 0:
 					{
 						// Left 1
-						if (len == 1 && (-1 != Equal2(1, GetType(token_arr[i])) || -1 != Equal2(1, GetType(token_arr[i])))) {
+						if (len == 1 && (-1 != Equal2(TYPE_LEFT, GetType(token_arr[i])))) {
 							if (!varVec.empty()) {
 								nestedUT[braceNum]->ReserveIList(nestedUT[braceNum]->GetIListSize() + varVec.size());
 								nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
@@ -9461,7 +9466,7 @@ namespace wiz {
 							state = 0;
 						}
 						// Right 2
-						else if (len == 1 && (-1 != Equal2(2, GetType(token_arr[i])) || -1 != Equal2(2, GetType(token_arr[i])))) {
+						else if (len == 1 && (-1 != Equal2(TYPE_RIGHT, GetType(token_arr[i])))) {
 							state = 0;
 
 							if (!varVec.empty()) {
@@ -9516,7 +9521,7 @@ namespace wiz {
 							if (x < token_arr + token_arr_len - 1) {
 								long long _len = GetLength(token_arr[i + 1]);
 								// EQ 3
-								if (_len == 1 && -1 != Equal2(3, GetType(token_arr[i + 1]))) {
+								if (_len == 1 && -1 != Equal2(TYPE_ASSIGN, GetType(token_arr[i + 1]))) {
 									var = token_arr[i];
 
 									state = 1;
@@ -9560,7 +9565,7 @@ namespace wiz {
 					case 1:
 					{
 						// LEFT 1
-						if (len == 1 && (-1 != Equal2(1, GetType(token_arr[i])) || -1 != Equal2(1, GetType(token_arr[i])))) {
+						if (len == 1 && (-1 != Equal2(TYPE_LEFT, GetType(token_arr[i])))) {
 							nestedUT[braceNum]->ReserveIList(nestedUT[braceNum]->GetIListSize() + varVec.size());
 							nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
 
@@ -9645,17 +9650,6 @@ namespace wiz {
 				return true;
 			}
 
-			static bool __STR(const long long token) {
-				return GetType(token) == 0; // General (not {, }, =)
-			}
-			static bool __LEFT(const long long token) {
-				return GetType(token) == 1;
-			}
-			static bool __RIGHT(const long long token) {
-				return GetType(token) == 2;
-			}
-
-
 
 			static long long FindDivisionPlace(const char* buffer, const long long* token_arr, long long start, long long last, const wiz::LoadDataOption2& option)
 			{
@@ -9664,15 +9658,15 @@ namespace wiz {
 					long long val = GetType(token_arr[a]);
 
 
-					if (len == 1 && (-1 != Equal2(2, val) || -1 != Equal2(2, val))) { // right
+					if (len == 1 && (-1 != Equal2(TYPE_RIGHT, val))) { // right
 						return a;
 					}
 
 					bool pass = false;
-					if (len == 1 && (-1 != Equal2(1, val) || -1 != Equal2(1, val))) { // left
+					if (len == 1 && (-1 != Equal2(TYPE_LEFT, val))) { // left
 						return a;
 					}
-					else if (len == 1 && -1 != Equal2(3, val)) { // assignment
+					else if (len == 1 && -1 != Equal2(TYPE_ASSIGN, val)) { // assignment
 						//
 						pass = true;
 					}
@@ -9681,7 +9675,7 @@ namespace wiz {
 						long long len = GetLength(token_arr[a + 1]);
 						long long val = GetType(token_arr[a + 1]);
 
-						if (!(len == 1 && -1 != Equal2(3, val))) // assignment
+						if (!(len == 1 && -1 != Equal2(TYPE_ASSIGN, val))) // assignment
 						{ // NOT
 							return a;
 						}
@@ -9705,13 +9699,13 @@ namespace wiz {
 
 
 					int b = clock();
-					//std::cout << b - a << "ms\n";
+					std::cout << b - a << "ms\n";
 
 
 					if (!success) {
 						return false;
 					}
-					if (token_arr_len <= 0) { // delete[] buffer;
+					if (token_arr_len <= 0) {
 						if (buffer) {
 							delete[] buffer;
 						}
@@ -9948,6 +9942,7 @@ namespace wiz {
 				return true;
 			}
 		};
+
 	}
 }
 
