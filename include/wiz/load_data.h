@@ -9383,10 +9383,10 @@ namespace wiz {
 				return (x >> 32) & 0x00000000FFFFFFFF;
 			}
 			static long long GetLength(long long x) {
-				return (x & 0x00000000FFFFFFFC) >> 2;
+				return (x & 0x00000000FFFFFFF8) >> 3;
 			}
 			static long long GetType(long long x) { //to enum or enum class?
-				return x & 3;
+				return (x & 6) >> 1;
 			}
 		private:
 			static bool __LoadData(const char* buffer, const long long* token_arr, long long token_arr_len, UserType* _global, const wiz::LoadDataOption2* _option,

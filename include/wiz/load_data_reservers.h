@@ -129,7 +129,7 @@ namespace wiz {
 		private:
 			// todo - rename.
 			static long long Get(long long position, long long length, char ch) {
-				long long x = (position << 32) + (length << 2) + 0;
+				long long x = (position << 32) + (length << 3) + 0;
 
 				if (length != 1) {
 					return x;
@@ -137,106 +137,39 @@ namespace wiz {
 
 				switch (ch) {
 				case '{':
-					x += 1;
+					x += 2; // 010
 					break;
 				case '}':
-					x += 2;
+					x += 4; // 100
 					break;
 				case '=':
-					x += 3;
+					x += 6; // 110
 					break;
 				}
 
 				return x;
 			}
 
-			static void preScanning(const long long dif, const char* text, const long long length, long long* arr, long long* arr_count) {
-				int _arr_count = 0;
-
-				for (long long i = 0; i < length; ++i) {
-					switch (text[i]) {
-					case ' ':
-					case '\t':
-					case '\r':
-					case '\n':
-					case '\v':
-					case '\f':
-					case '\"':
-					case '\\':
-					case '=':
-					case '{':
-					case '}':
-					case '#': // line comment start char
-						arr[_arr_count] = 1 + i + dif; // after called this function, arr[index] += -1?
-						_arr_count++;
-						break;
-					}
-				}
-
-				*arr_count = _arr_count;
+			static long long GetIdx(long long x) {
+				return (x >> 32) & 0x00000000FFFFFFFF;
+			}
+			static long long GetLength(long long x) {
+				return (x & 0x00000000FFFFFFF8) >> 3;
+			}
+			static long long GetType(long long x) { //to enum or enum class?
+				return (x & 6) >> 1;
+			}
+			static bool IsToken2(long long x) {
+				return (x & 1);
 			}
 
-			static void Scanning(char* text, const long long length,
-				const int thr_num,
-				long long*& _token_arr, long long& _token_arr_size) {
+			static void _Scanning(char* text, long long num, const long long length,
+				long long*& token_arr, long long& _token_arr_size, const LoadDataOption2& option) {
 
-				long long* token_arr = new long long[length + 1];
+
 				long long token_arr_size = 0;
-				long long* arr = (long long*)calloc(length + 1, sizeof(long long));// long[length];, null -> +1
-				long long* arr_count = new long long[thr_num];
-				long long* arr_start = new long long[thr_num];
-				long long count = -2;
-
-				for (int i = 0; i < thr_num; ++i) {
-					arr_start[i] = length / thr_num * i;
-				}
 
 				{
-					std::thread* thr = new std::thread[thr_num];
-					for (int i = 0; i < thr_num - 1; ++i) {
-						thr[i] = std::thread(preScanning, length / thr_num * i, text + length / thr_num * i, length / thr_num, arr + length / thr_num * i, arr_count + i);
-					}
-					int last_length = length - length / thr_num * (thr_num - 1);
-					thr[thr_num - 1] = std::thread(preScanning, length / thr_num * (thr_num - 1), text + length / thr_num * (thr_num - 1), last_length, arr + length / thr_num * (thr_num - 1), arr_count + thr_num - 1);
-					for (int i = 0; i < thr_num; ++i) {
-						thr[i].join();
-					}
-
-					delete[] thr;
-				}
-				{ // debug
-					//for (int i = 0; i < length; ++i) {
-					//	std::cout << arr[i] << " ";
-					//}
-					//std::cout << "\n";
-				}
-
-				{
-					long long _count = 0;
-					for (int i = 0; i < thr_num; ++i) {
-						for (long long j = 0, k = 0; j < arr_count[i]; ++j, ++k) {
-							// pass zero.. 
-							if (0 == arr[arr_start[i] + k]) {
-								--j;
-								break;
-							}
-							arr[_count] = arr[arr_start[i] + k] - 1; // chk this.
-							_count++;
-						}
-					}
-					count = _count;
-				}
-
-				{ // debug
-					//std::cout << "debug2\n";
-					//for (int i = 0; i < count; ++i) {
-					//	std::cout << arr[i] << " ";
-					//}
-					//std::cout << "\n";
-				}
-
-				{ // todo - add error check!
-					long long _count = 0;
 					int state = 0;
 
 					long long token_first = 0;
@@ -244,13 +177,348 @@ namespace wiz {
 
 					long long token_arr_count = 0;
 
-					arr[count] = length; // text[arr[count]] == '\0'
-					for (long long i = 0; i <= count; ++i) {
-						const char ch = text[arr[i]];
+					for (long long i = 0; i < length; ++i) {
+						const char ch = text[i];
+
+						if ('\"' == ch) {
+
+							token_last = i - 1;
+							if (token_last - token_first + 1 > 0) {
+								token_arr[num + token_arr_count] = Get(token_first + num, token_last - token_first + 1, text[token_first]);
+								token_arr_count++;
+							}
+
+							token_first = i;
+							token_last = i;
+
+							token_first = i + 1;
+							token_last = i + 1;
+
+							{//
+								token_arr[num + token_arr_count] = 1;
+								token_arr[num + token_arr_count] += Get(i + num, 1, ch);
+								token_arr_count++;
+							}
+
+						}
+						else if ('\'' == ch) {
+
+							token_last = i - 1;
+							if (token_last - token_first + 1 > 0) {
+								token_arr[num + token_arr_count] = Get(token_first + num, token_last - token_first + 1, text[token_first]);
+								token_arr_count++;
+							}
+
+							token_first = i;
+							token_last = i;
+
+							token_first = i + 1;
+							token_last = i + 1;
+
+							{//
+								token_arr[num + token_arr_count] = 1;
+								token_arr[num + token_arr_count] += Get(i + num, 1, ch);
+								token_arr_count++;
+							}
+
+						}
+						else if ('\\' == ch) {
+							{//
+								token_arr[num + token_arr_count] = 1;
+								token_arr[num + token_arr_count] += Get(i + num, 1, ch);
+								token_arr_count++;
+							}
+						}
+						else if ('\n' == ch) {
+							token_last = i - 1;
+							if (token_last - token_first + 1 > 0) {
+								token_arr[num + token_arr_count] = Get(token_first + num, token_last - token_first + 1, text[token_first]);
+								token_arr_count++;
+							}
+							token_first = i + 1;
+							token_last = i + 1;
+
+							{//
+								token_arr[num + token_arr_count] = 1;
+								token_arr[num + token_arr_count] += Get(i + num, 1, ch);
+								token_arr_count++;
+							}
+						}
+						else if ('\0' == ch) {
+							token_last = i - 1;
+							if (token_last - token_first + 1 > 0) {
+								token_arr[num + token_arr_count] = Get(token_first + num, token_last - token_first + 1, text[token_first]);
+								token_arr_count++;
+							}
+							token_first = i + 1;
+							token_last = i + 1;
+
+							{//
+								token_arr[num + token_arr_count] = 1;
+								token_arr[num + token_arr_count] += Get(i + num, 1, ch);
+								token_arr_count++;
+							}
+						}
+						else if (option.LineComment == ch) {
+							token_last = i - 1;
+							if (token_last - token_first + 1 > 0) {
+								token_arr[num + token_arr_count] = Get(token_first + num, token_last - token_first + 1, text[token_first]);
+								token_arr_count++;
+							}
+							token_first = i + 1;
+							token_last = i + 1;
+
+							{//
+								token_arr[num + token_arr_count] = 1;
+								token_arr[num + token_arr_count] += Get(i + num, 1, ch);
+								token_arr_count++;
+							}
+
+						}
+						else if (isWhitespace(ch)) {
+							token_last = i - 1;
+							if (token_last - token_first + 1 > 0) {
+								token_arr[num + token_arr_count] = Get(token_first + num, token_last - token_first + 1, text[token_first]);
+								token_arr_count++;
+							}
+							token_first = i + 1;
+							token_last = i + 1;
+						}
+						else if (option.Left == ch) {
+							token_last = i - 1;
+							if (token_last - token_first + 1 > 0) {
+								token_arr[num + token_arr_count] = Get(token_first + num, token_last - token_first + 1, text[token_first]);
+								token_arr_count++;
+							}
+
+							token_first = i;
+							token_last = i;
+
+							token_arr[num + token_arr_count] = Get(token_first + num, token_last - token_first + 1, text[token_first]);
+							token_arr_count++;
+
+							token_first = i + 1;
+							token_last = i + 1;
+						}
+						else if (option.Right == ch) {
+							token_last = i - 1;
+							if (token_last - token_first + 1 > 0) {
+								token_arr[num + token_arr_count] = Get(token_first + num, token_last - token_first + 1, text[token_first]);
+								token_arr_count++;
+							}
+							token_first = i;
+							token_last = i;
+
+							token_arr[num + token_arr_count] = Get(token_first + num, token_last - token_first + 1, text[token_first]);
+							token_arr_count++;
+
+							token_first = i + 1;
+							token_last = i + 1;
+
+						}
+						else if (option.Assignment == ch) {
+							token_last = i - 1;
+							if (token_last - token_first + 1 > 0) {
+								token_arr[num + token_arr_count] = Get(token_first + num, token_last - token_first + 1, text[token_first]);
+								token_arr_count++;
+							}
+							token_first = i;
+							token_last = i;
+
+							token_arr[num + token_arr_count] = Get(token_first + num, token_last - token_first + 1, text[token_first]);
+							token_arr_count++;
+
+							token_first = i + 1;
+							token_last = i + 1;
+						}
+					}
+
+					if (length - 1 - token_first + 1 > 0) {
+						token_arr[num + token_arr_count] = Get(token_first + num, length - 1 - token_first + 1, text[token_first]);
+						token_arr_count++;
+					}
+					token_arr_size = token_arr_count;
+				}
+
+				{
+					_token_arr_size = token_arr_size;
+				}
+			}
+
+			static void ScanningNew(char* text, const long long length,
+				long long*& _token_arr, long long& _token_arr_size, const LoadDataOption2& option)
+			{
+				const int thr_num = 8;
+				std::thread thr[thr_num];
+				long long start[thr_num];
+				long long last[thr_num];
+
+				{
+					start[0] = 0;
+
+					for (int i = 1; i < thr_num; ++i) {
+						start[i] = length / thr_num * i;
+
+						for (long long x = start[i]; x <= length; ++x) {
+							if (isWhitespace(text[x]) || '\0' == text[x] ||
+								option.Left == text[x] || option.Right == text[x] || option.Assignment == text[x]) {
+								start[i] = x;
+								break;
+							}
+						}
+					}
+					for (int i = 0; i < thr_num - 1; ++i) {
+						last[i] = start[i + 1];
+						for (long long x = last[i]; x <= length; ++x) {
+							if (isWhitespace(text[x]) || '\0' == text[x] ||
+								option.Left == text[x] || option.Right == text[x] || option.Assignment == text[x]) {
+								last[i] = x;
+								break;
+							}
+						}
+					}
+					last[thr_num - 1] = length + 1;
+				}
+				long long real_token_arr_count = 0;
+
+				long long* tokens = new long long[length + 1];
+				long long token_count = 0;
+
+				long long token_arr_size[thr_num];
+
+				for (int i = 0; i < thr_num; ++i) {
+					thr[i] = std::thread(_Scanning, text + start[i], start[i], last[i] - start[i], std::ref(tokens), std::ref(token_arr_size[i]), option);
+				}
+
+				for (int i = 0; i < thr_num; ++i) {
+					thr[i].join();
+				}
+
+				{
+					long long _count = 0;
+					for (int i = 0; i < thr_num; ++i) {
+						for (long long j = 0; j < token_arr_size[i]; ++j) {
+							tokens[token_count] = tokens[start[i] + j];
+							token_count++;
+						}
+					}
+				}
+
+				int state = 0;
+				long long qouted_start;
+				long long slush_start;
+
+				for (long long i = 0; i < token_count; ++i) {
+					const long long len = GetLength(tokens[i]);
+					const char ch = text[GetIdx(tokens[i])];
+					const long long idx = GetIdx(tokens[i]);
+					const bool isToken2 = IsToken2(tokens[i]);
+					const long long type = GetType(tokens[i]);
+
+					if (isToken2) {
+						if (0 == state && '\"' == ch) {
+							state = 1;
+							qouted_start = i;
+						}
+						else if (0 == state && '\'' == ch) { // for $lint
+							state = 4;
+							qouted_start = i;
+						}
+						else if (4 == state && '\'' == ch) { 
+							state = 0;
+
+							{
+								long long idx = GetIdx(tokens[qouted_start]);
+								long long len = GetLength(tokens[qouted_start]);
+								long long type = GetType(tokens[qouted_start]);
+
+								len = GetIdx(tokens[i]) - idx + 1;
+
+								
+								if (qouted_start > 0 && 0 == GetType(tokens[qouted_start - 1])	&& !IsToken2(tokens[qouted_start - 1])
+									&& GetIdx(tokens[qouted_start - 1]) + GetLength(tokens[qouted_start - 1]) == GetIdx(tokens[qouted_start])) {
+									len += GetLength(tokens[qouted_start - 1]);
+									idx = GetIdx(tokens[qouted_start - 1]);
+								}
+								if (i < token_count - 1 && 0 == GetType(tokens[i + 1]) && !IsToken2(tokens[i + 1]) 
+									&& GetIdx(tokens[i + 1]) == GetIdx(tokens[i]) + GetLength(tokens[i])) {
+									len += GetLength(tokens[i + 1]);
+								}
+
+								tokens[real_token_arr_count] = Get(idx, len, type);
+								real_token_arr_count++;
+							}
+						}
+						else if (0 == state && option.LineComment == ch) {
+							state = 2;
+						}
+						else if (1 == state && '\\' == ch) {
+							state = 3;
+							slush_start = idx;
+						}
+						else if (1 == state && '\"' == ch) {
+							state = 0;
+
+							{
+								long long idx = GetIdx(tokens[qouted_start]);
+								long long len = GetLength(tokens[qouted_start]);
+								long long type = GetType(tokens[qouted_start]);
+
+								len = GetIdx(tokens[i]) - idx + 1;
+
+								tokens[real_token_arr_count] = Get(idx, len, type);
+								real_token_arr_count++;
+							}
+						}
+						else if (3 == state) {
+							if (idx != slush_start + 1) {
+								--i;
+							}
+							state = 1;
+						}
+						else if (2 == state && ('\n' == ch || '\0' == ch)) {
+							state = 0;
+						}
+					}
+					else if (0 == state && !('\n' == ch || '\0' == ch)) { // '\\' case?
+						// case :  abc'def ghi'abc
+						if (i < token_count - 1 && 0 == type && IsToken2(tokens[i + 1]) && '\'' == text[GetIdx(tokens[i + 1])]
+							&& idx + len == GetIdx(tokens[i+1])) {
+							//
+						}
+						else {
+							tokens[real_token_arr_count] = tokens[i];
+							real_token_arr_count++;
+						}
+					}
+				}
+
+				{
+					_token_arr = tokens;
+					_token_arr_size = real_token_arr_count;
+				}
+			}
+
+			static void Scanning(char* text, const long long length,
+				long long*& _token_arr, long long& _token_arr_size, const LoadDataOption2& option) {
+
+				long long* token_arr = new long long[length + 1];
+				long long token_arr_size = 0;
+
+				{
+					int state = 0;
+
+					long long token_first = 0;
+					long long token_last = -1;
+
+					long long token_arr_count = 0;
+
+					for (long long i = 0; i <= length; ++i) {
+						const char ch = text[i];
 
 						if (0 == state) {
-							if ('#' == ch) {
-								token_last = arr[i] - 1;
+							if (option.LineComment == ch) {
+								token_last = i - 1;
 								if (token_last - token_first + 1 > 0) {
 									token_arr[token_arr_count] = Get(token_first, token_last - token_first + 1, text[token_first]);
 									token_arr_count++;
@@ -262,60 +530,60 @@ namespace wiz {
 								state = 1;
 							}
 							else if (isWhitespace(ch) || '\0' == ch) {
-								token_last = arr[i] - 1;
+								token_last = i - 1;
 								if (token_last - token_first + 1 > 0) {
 									token_arr[token_arr_count] = Get(token_first, token_last - token_first + 1, text[token_first]);
 									token_arr_count++;
 								}
-								token_first = arr[i] + 1;
-								token_last = arr[i] + 1;
+								token_first = i + 1;
+								token_last = i + 1;
 							}
-							else if ('{' == ch) {
-								token_last = arr[i] - 1;
+							else if (option.Left == ch) {
+								token_last = i - 1;
 								if (token_last - token_first + 1 > 0) {
 									token_arr[token_arr_count] = Get(token_first, token_last - token_first + 1, text[token_first]);
 									token_arr_count++;
 								}
 
-								token_first = arr[i];
-								token_last = arr[i];
+								token_first = i;
+								token_last = i;
 
 								token_arr[token_arr_count] = Get(token_first, token_last - token_first + 1, text[token_first]);
 								token_arr_count++;
 
-								token_first = arr[i] + 1;
-								token_last = arr[i] + 1;
+								token_first = i + 1;
+								token_last = i + 1;
 							}
-							else if ('}' == ch) {
-								token_last = arr[i] - 1;
+							else if (option.Right == ch) {
+								token_last = i - 1;
 								if (token_last - token_first + 1 > 0) {
 									token_arr[token_arr_count] = Get(token_first, token_last - token_first + 1, text[token_first]);
 									token_arr_count++;
 								}
-								token_first = arr[i];
-								token_last = arr[i];
+								token_first = i;
+								token_last = i;
 
 								token_arr[token_arr_count] = Get(token_first, token_last - token_first + 1, text[token_first]);
 								token_arr_count++;
 
-								token_first = arr[i] + 1;
-								token_last = arr[i] + 1;
+								token_first = i + 1;
+								token_last = i + 1;
 
 							}
-							else if ('=' == ch) {
-								token_last = arr[i] - 1;
+							else if (option.Assignment == ch) {
+								token_last = i - 1;
 								if (token_last - token_first + 1 > 0) {
 									token_arr[token_arr_count] = Get(token_first, token_last - token_first + 1, text[token_first]);
 									token_arr_count++;
 								}
-								token_first = arr[i];
-								token_last = arr[i];
+								token_first = i;
+								token_last = i;
 
 								token_arr[token_arr_count] = Get(token_first, token_last - token_first + 1, text[token_first]);
 								token_arr_count++;
 
-								token_first = arr[i] + 1;
-								token_last = arr[i] + 1;
+								token_first = i + 1;
+								token_last = i + 1;
 							}
 						}
 						else if (1 == state) {
@@ -327,44 +595,28 @@ namespace wiz {
 							}
 						}
 						else if (2 == state) {
-							if (arr[i] > arr[i - 1] + 1) {
-								--i;
-							}
 							state = 1;
 						}
 						else if (3 == state) {
 							if ('\n' == ch || '\0' == ch) {
 								state = 0;
 
-								token_first = arr[i] + 1;
-								token_last = arr[i] + 1;
+								token_first = i + 1;
+								token_last = i + 1;
 							}
 						}
 					}
 
 					token_arr_size = token_arr_count;
 
-					count = _count;
-
 					if (0 != state) {
 						std::cout << "[" << state << "] state is not zero.\n";
 					}
 				}
 
-				{ //debug
-					//for (int i = 0; i < count; ++i) {
-					//	std::cout << arr[i] << " ";
-					//}
-					//std::cout << "\n";
-				}
-
 				{
 					_token_arr = token_arr;
 					_token_arr_size = token_arr_size;
-
-					delete[] arr_start;
-					delete[] arr_count;
-					free(arr);
 				}
 			}
 
@@ -381,9 +633,6 @@ namespace wiz {
 
 				std::string temp;
 				char* buffer = nullptr;
-				std::vector<long long> start(thr_num + 1, 0);
-				std::vector<long long> last(thr_num + 1, 0);
-				std::vector<long long> token_arr_len(thr_num + 1, 0);
 				long long file_length;
 
 				{
@@ -404,7 +653,7 @@ namespace wiz {
 						long long* token_arr;
 						long long token_arr_size;
 
-						Scanning(buffer, file_length, thr_num, token_arr, token_arr_size); // todo - rename
+						ScanningNew(buffer, file_length, token_arr, token_arr_size, option);
 						//int b = clock();
 					//	std::cout << b - a << "ms\n";
 						_buffer = buffer;
@@ -416,7 +665,6 @@ namespace wiz {
 
 				return{ true, 1 };
 			}
-
 		private:
 			std::ifstream* pInFile;
 		public:
