@@ -1,13 +1,14 @@
-G :
-  empty |
-  var = val |
-  val |
-  G G 
+  G :
+    empty |
+    var = val |
+    val |
+    G G 
   
-G : 
-  var = { list of G }
-G : 
-  { list of G }
+  G : 
+    var = { list of G }
+    
+  G : 
+    { list of G }
   
 =, {, }  can be changed easily in ClauText API. ( only char -> char )
 
