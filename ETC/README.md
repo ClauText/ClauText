@@ -5,10 +5,10 @@
     G G 
   
   G : 
-    var = { list of G }
+    var = { G }
     
   G : 
-    { list of G }
+    { G }
   
 =, {, }  can be changed easily in ClauText API. ( only char -> char )
 
